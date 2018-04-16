@@ -3,9 +3,9 @@ const {deIndent} = require('./util');
 
 const cache = {};
 
-const jsdom = require('jsdom');
-
-const dom = false;// = new jsdom.JSDOM(fs.readFileSync('./test/test.html'), 'utf8');
+const htmlPath = './test/test.html';
+const htmlText = fs.existsSync(htmlPath) && fs.readFileSync(htmlPath)
+const win = typeof window === 'undefined' ? (new (require('jsdom').JSDOM)(htmlText, 'utf8')).window : window;
 
 module.exports = {
     getTestCodes(testFile, func) {
@@ -18,6 +18,8 @@ module.exports = {
                 cache[testFile] = false;
             }
         }
+
+        const name = testFile.split('/').pop().split('.').shift();
 
         if (cache[testFile]) {
             const testSource = cache[testFile];
@@ -34,7 +36,7 @@ module.exports = {
             } while (res);
         }
 
-        codes._html = dom && dom.window.document.getElementById(name);
+        codes._html = win && win.document.getElementById(name);
 
         return codes;
 

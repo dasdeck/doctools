@@ -17,11 +17,39 @@ module.exports = {
             const props = {};
 
             data.forEach(el => {
-                if(['member', 'function', 'event'].includes(el.kind)&& el.memberof && el.memberof.split('.').pop() === name) {
+                if(['member', 'function', 'event'].includes(el.kind)&& el.memberof && el.memberof === base + '.' + name) {
                     props[el.name] = el;
                 }
+
             })
             return props;
+        }
+
+        function findProps(data) {
+            const res = findMembers(data, 'props')
+            if (runtime && runtime['props']) {
+                const realProps = runtime['props'];
+                _.forEach(res, prop => {
+
+                    const realProp = realProps[prop.name]
+                    if (realProp) {
+
+                        prop.required = prop.required || ~prop.meta.code.value.indexOf('{"required":true}') || realProp.required;
+
+                        if (!prop.type) {
+                            if(realProp.type && realProp.type instanceof Function) {
+                                prop.type = {names: [realProp.type.name]};
+                            } else if(realProp instanceof Function) {
+                                prop.type = {names: [realProp.name]};
+                            } else {
+                                debugger;
+                            }
+                        }
+                    }
+                });
+            }
+            return res;
+
         }
 
         function findData(data) {
@@ -49,6 +77,18 @@ module.exports = {
         function getTriggers(data) {
 
             return data.filter();
+        }
+
+        function findMethods(data) {
+            const res = findMembers(data, 'methods');
+            const parser = require('./moduleParser');
+            _.forEach(res, func => {
+                const fun = parser.analyseFunction(func, name);
+                fun.signature = fun.signature.replace('module.exports.methods.', '');
+                res[func.name] = fun;
+
+            });
+            return res;
         }
 
         function parseTemplate(template, desc = {}) {
@@ -97,12 +137,12 @@ module.exports = {
             return desc;
         }
 
-        function parseJS(source) {
+        function parseJS(source, runtime) {
 
             const desc = {};
             const jsParsed = jsdoc.explainSync({source});
 
-            ['props', {data: findData}, 'computed', 'methods', 'events', {emit: findEvents}, {trigger: data => data.filter(el => el.kind === 'trigger')}].forEach(type => {
+            [{props: findProps}, {data: findData}, 'computed', {methods: findMethods}, 'events', {emit: findEvents}, {trigger: data => data.filter(el => el.kind === 'trigger')}].forEach(type => {
 
                 const simple = typeof type === 'string';
 
@@ -114,21 +154,35 @@ module.exports = {
                 }
             });
 
+            jsParsed.forEach(data => {
+                if (data.longname === base) {
+                    desc.description = data.description;
+                }
+            })
+
             return desc
         }
+
+        const base = 'module.exports';
 
         const text = fs.readFileSync(file, 'utf8');
         const res = vueComiler.parseComponent(text);
 
         const template = res.template && res.template.content;
         const script = res.script && res.script.content;
+        let runtime;
+        if (script) {
+            runtime = eval(script.replace(/import/g, '//import').replace('export default', 'global.res = '));
+            // debugger;
+        }
 
+        const name = file.split('/').pop().split('.').shift();
         const desc = {
-            name: file.split('/').pop().split('.').shift(),
+            name,
             file,
             template,
             script,
-            ...script && parseJS(script)
+            ...script && parseJS(script, runtime)
         };
 
         parseTemplate(template, desc);

@@ -5,7 +5,7 @@
             <div :class="['uk-modal-dialog', clsWidth]">
                 <div v-if="opened">
                     <component ref="content" v-bind="props " :is="content"/>
-                    <!-- @slot The slot for the
+                    <!-- @slot default The slot for the
                     content if slotted method is used -->
                     <slot></slot>
                 </div>
@@ -26,25 +26,28 @@
         props: {
             /**
              * When using the modal with a content component, you can pass the child's component properties here
-             * @type {Object}
+             * @example
+             * <Modal :props="{type:'checkbox'}" :content="InputConpnent"/>
              */
-            props: Object,
+            props: {
+                type: Object,
+                required: true
+            },
 
             /**
              * A component descriptor to construct a child element from
-             * @type {Component}
              */
             content: Object,
 
             /**
              * Optional uk-width-($with) class for the modal to use
-             * @type {Number}
              **/
-            width: String,
+            width: {
+                type: String
+            },
 
             /**
              * Adds the uk-modal-Container class
-             * @type {Boolean}
              */
             container: Boolean
         },

@@ -59,22 +59,24 @@ module.exports = {
 
         Object.keys(options).forEach(name => {
 
-            const cols = ['name', 'type', 'default', 'description'];
+            const cols = ['name', 'type', 'default', 'description'].reduce((prev, curr, index) => {prev[index] = curr; return prev;}, {});
 
             const rows = [];
 
             options[name].forEach((param, index) => {
-                const row = [
-                    param.name,
-                    getTypes(param.type.names),
-                    param.defaultvalue,
-                    param.description
-                ];
+                const row = {
+                    0: param.name,
+                    1: getTypes(param.type.names),
+                    2: param.defaultvalue,
+                    3: param.description
+                };
+
+                row.optional = param.optional;
                 rows.push(row);
             });
 
             const emptyCols = [];
-            cols.forEach((name, index) => {
+            _.forEach(cols, (name, index) => {
                 if (!rows.some(row => row[index])) {
                     emptyCols.push(index);
                 }
@@ -84,7 +86,7 @@ module.exports = {
 
             emptyCols.forEach(index => {
                 table.forEach(row => {
-                    row.splice(index, 1);
+                    row.splice ? row.splice(index, 1) : delete row[index];
                 });
             });
 
@@ -99,14 +101,12 @@ module.exports = {
     analyseFunction(el, name) {
         const func = {el};
 
-        const tables = {};
-
         if (el.params) {
 
             Object.assign(func, this.mapParams(el));
 
         } else {
-            func.signature = `${el.longname}(*) : *`;
+            func.signature = `${el.longname}()`;
             // const text = _.get(require('./dist/utils.cjs.js'), el.longname) + '';
             // func.signature = text.substr(0, text.indexOf('{')).replace('function', '').trim();
         }
@@ -115,7 +115,6 @@ module.exports = {
             func.signature += ` : ${getTypesRaw(el.returns[0].type.names)}`;
         }
 
-        func.tables = tables;
 
         func.tests = getTestCodes(name, el.longname);
 
@@ -124,7 +123,7 @@ module.exports = {
 
     map(entries, name = null) {
 
-        const coverage = covers[name] && covers[name].lines.pct;
+        const coverage = covers[name] && covers[name].lines.pct || 0;
 
         const file = {
             name,

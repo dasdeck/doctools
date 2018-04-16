@@ -17,7 +17,6 @@
         <!-- @param {Number} nodeId - the id of the node that has been hovered -->
         <a v-if="exists" class="uk-position-cover" @mouseover="$trigger('elementHover', nodeId)" @mouseout="$trigger('elementLeave', nodeId)" @click.prevent="builder.edit(node)"></a>
 
-        <!-- @slot a slot -->
         <div class="yo-builder-nav-element uk-builder-element-hover">
             <ul class="uk-grid uk-grid-collapse">
                 <li><a :title="$trans('Copy')" class="yo-builder-icon-copy" uk-tooltip="delay: 1000" @click.prevent="builder.clone(node)"></a></li>
@@ -38,9 +37,18 @@
 
     import {some} from 'lodash';
 
+    /**
+     * An Element represents an Element in the layout-editor of the Builder.
+     * It implicitly extends `Node`.
+     * @extends Node
+     */
     export default {
 
         computed: {
+            /**
+             * The uniquie continous ID if this component
+             * @type {Number}
+             */
             nodeId() {
                 return this.findId().id;
             }
@@ -49,7 +57,11 @@
         methods: {
 
             /**
+             * Determines the uniquie Id for this component
              * @returns {Number} Returns the id of this component
+             * @private
+             * @param {Node} [root = this.builder.layout] - The root node to start counting from
+             * @param {Integer} [id = 1] - The ID to start counting from
              */
             findId(root = this.builder.layout, id = 1) {
                 let found = some(root.children, child => {

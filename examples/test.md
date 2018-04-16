@@ -1,0 +1,5 @@
+#### {{=name}}
+
+```javascript
+{{=script}}
+```
