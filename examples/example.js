@@ -5,6 +5,11 @@ const all = parser.parse(__dirname);
 
 debugger;
 
+/**
+ * @file
+ * @ignore
+ */
+
 const options = {
     interpolate: /{{{([\s\S]+?)}}}/g,
     evaluate: /{{([\s\S]+?)}}/g,

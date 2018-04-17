@@ -30,7 +30,7 @@ module.exports = {
         },
         'UIkitComponent'(desc) {
 
-            desc.runtime = desc.runtime || UIkit.components[desc.name] && UIkit.components[desc.name].options;
+            desc.runtime = desc.runtime || UIkit.components[desc.name] && UIkit.components[desc.name].options || UIkit.mixin[desc.name];
             const componentParser = require('./componentParser');
             const res = componentParser.map(desc);
             Object.assign(desc, res);

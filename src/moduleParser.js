@@ -120,6 +120,8 @@ module.exports = {
                 desc.description = el.description;
                 if (el.type) {
                     desc.type = el.type.names[0];
+                } else if(el.ignore) {
+                    desc.ignore = true;
                 }
 
             } else if (el.kind === 'function' && !el.undocumented) {
