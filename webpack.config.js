@@ -44,6 +44,10 @@ module.exports = {
 
     mode: 'development',
 
+    externals: {
+        'vue': 'Vue'
+    },
+
     module: {
         rules: [
             {

@@ -1,8 +1,6 @@
 const parser = require('../src/parser');
 const _ = require('lodash');
 
-// const ajax = parser.parse(`${__dirname}/ajax.js`);
-// const modal = parser.parse(`${__dirname}/Modal.vue`);
 const all = parser.parse(__dirname);
 
 debugger;

@@ -19,7 +19,8 @@ import _ from 'lodash';
 export default {
     components: {
         Tree,
-        Component,
+        UIkitComponent: Component,
+        Vue: Component,
         Module
     },
 

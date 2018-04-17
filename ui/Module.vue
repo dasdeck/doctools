@@ -6,10 +6,10 @@
 
         <hr>
 
-        <template v-if="data.functions">
-            <li v-for="func in data.functions">
-            <h2>{{func.el.name}}</h2>
-            {{func.el.description}}
+        <template v-if="data.function">
+            <li v-for="func in data.function">
+            <h2>{{func.name}}</h2>
+            {{func.description}}
             <h4><code>{{func.signature}}</code></h4>
             <PropTable v-for="(table, name) in func.tables" :name="name" :data="table" :headers="true"/>
             <hr>

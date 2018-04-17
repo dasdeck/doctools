@@ -21,15 +21,26 @@
 </template>
 
 <script>
+import _ from 'lodash';
+
 export default {
     props: {
         name: String,
         data: [Array, Object],
-        headers: [Array, Boolean]
+        headers: [Array, Boolean, Object]
     },
     computed: {
         filteredHeaders() {
-            return this.headers === true ? this.data[0] : this.headers;
+            const res = {};
+            const headerToUse = this.headers === true ? this.data[0] : this.headers;
+            _.forEach(headerToUse, (title, index) => {
+                if (_.some(this.data, row => {
+                    return row[index];
+                })) {
+                    res[index] = title;
+                }
+            });
+            return res;
         },
         filteredData() {
             return this.headers === true ? this.data.slice(1) : this.data;

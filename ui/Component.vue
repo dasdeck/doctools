@@ -7,6 +7,9 @@
         <hr>
 
         <template v-if="data.props">
+
+            <PropTable name="props" :data="props" :headers="{name: 'name', type: 'type', defaultvalue: 'default', description: 'description'}" />
+
             <h2>props:</h2>
 
             <table class="uk-table uk-table-striped">
@@ -24,7 +27,7 @@
                         <tr :style="!prop.required ? {opacity: 0.5} : {}">
 
                             <td >{{prop.name}}</td>
-                            <td >{{prop.type.names.join('|')}}</td>
+                            <td >{{prop.type && prop.type.names.join('|')}}</td>
                             <td >{{prop.description}}</td>
                         </tr>
                         <tr v-for="example in prop.examples">
@@ -56,9 +59,9 @@
 
             <li v-for="method in methods">
 
-            <h3>{{method.el.name}}</h3>
+            <h3>{{method.name}}</h3>
             <pre>{{method.signature}}</pre>
-            {{method.el.description}}
+            {{method.description}}
 
             <PropTable v-for="(table, name) in method.tables" :name="name" :data="table.slice(1)" :headers="['name', 'type', 'description']" />
 
@@ -71,7 +74,7 @@
         <template v-if="data.computed">
             <h2>computed:</h2>
             <li v-for="computed in data.computed">
-                    <h3>{{computed.name}}{{computed.type && ' : ' + computed.type.names.join('|')}}</h3>
+                    <h3>{{computed.name}}{{computed.type && (' : ' + computed.type.names.join('|'))}}</h3>
                     {{computed.description}}
 
                 </li>
@@ -129,8 +132,11 @@ export default {
 
     computed: {
         methods() {
+            return _.filter(this.data.methods, method => this.private || method.access !== 'private');
+        },
 
-            return _.filter(this.data.methods, method => this.private || method.el.access !== 'private');
+        props() {
+            return _.map(this.data.props, prop => ({...prop, type: prop.type && prop.type.names.join('|')}));
         }
     }
 }

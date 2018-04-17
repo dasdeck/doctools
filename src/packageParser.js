@@ -27,7 +27,7 @@ module.exports = {
             const parser = require('./parser');
             const res = parser.parse(file);
 
-            if (res.type === 'module' && !res.functions.length && !res.constants.length) {
+            if (res.ignore) {
                 return;
             }
             pack[res.type] = pack[res.type] || {};
@@ -44,4 +44,4 @@ module.exports = {
         return pack;
 
     }
-}
+};

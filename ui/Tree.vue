@@ -32,7 +32,7 @@ export default {
     computed: {
 
         categories() {
-            return {component: 'Components', module: 'Modules'};
+            return {'Vue': 'Vue', 'module': 'Modules', 'UIkitComponent': 'UIkit'};
         }
 
     }

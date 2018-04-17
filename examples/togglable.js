@@ -2,17 +2,36 @@ import UIkit from '../api/index';
 import {$$, Animation, assign, attr, css, fastdom, hasAttr, hasClass, height, includes, isBoolean, isUndefined, isVisible, noop, Promise, toFloat, toggleClass, toNodes, Transition, trigger} from '../util/index';
 
 /**
- * @kind UIKit.component
- * @type Togglable
+ * @file
+ * @type {UIkitComponent}
  */
+
 export default {
 
     props: {
+        /**
+         * The class that is being toggled. Defaults to the hidden attribute.
+         */
         cls: Boolean,
+        /**
+         * Reveal item directly or with a transition.
+         */
         animation: 'list',
+        /**
+         * Animation duration in milliseconds.
+         */
         duration: Number,
+        /**
+         *
+         */
         origin: String,
+        /**
+         *
+         */
         transition: String,
+        /**
+         * Toggle the targets successively.
+         */
         queued: Boolean
     },
 
@@ -125,14 +144,6 @@ export default {
                         ? el.style.height === '0px'
                         : !this.isToggled(el);
 
-            /**
-             * Fires before the element is shown
-             * @event beforeshow
-             */
-            /**
-             * Fires before the event is hidden
-             * @event beforehide
-             */
             if (!trigger(el, `before${show ? 'show' : 'hide'}`, [this])) {
                 return Promise.reject();
             }
@@ -148,7 +159,7 @@ export default {
 
             return promise.then(() => {
                 trigger(el, show ? 'shown' : 'hidden', [this]);
-                UIkit.update(null, el);
+                UIkit.update(el);
             });
         },
 
@@ -158,16 +169,19 @@ export default {
                 return;
             }
 
+            let changed;
             if (this.cls) {
-                toggleClass(el, this.cls, includes(this.cls, ' ') ? undefined : toggled);
+                changed = includes(this.cls, ' ') || Boolean(toggled) !== hasClass(el, this.cls);
+                changed && toggleClass(el, this.cls, includes(this.cls, ' ') ? undefined : toggled);
             } else {
-                attr(el, 'hidden', !toggled ? '' : null);
+                changed = Boolean(toggled) === hasAttr(el, 'hidden');
+                changed && attr(el, 'hidden', !toggled ? '' : null);
             }
 
             $$('[autofocus]', el).some(el => isVisible(el) && (el.focus() || true));
 
             this.updateAria(el);
-            UIkit.update(null, el);
+            changed && UIkit.update(el);
         },
 
         _toggleImmediate(el, show) {
