@@ -5,7 +5,7 @@ const _ = require('lodash');
 const glob = require('glob');
 const path = require('path');
 
-const {crudeImport} = require('./util');
+const {crudeImport, findPropDefaults} = require('./util');
 
 const base = 'module.exports';
 
@@ -23,34 +23,14 @@ function findMembers(data, name) {
     return props;
 }
 
+
 function findProps(data, runtime) {
     const res = findMembers(data, 'props')
-    if (runtime && runtime['props']) {
-        const realProps = runtime['props'];
-        const ukDefaults = runtime['defaults'];
-        _.forEach(res, prop => {
 
-            const realProp = realProps[prop.name]
-            if (realProp) {
-
-                prop.required = prop.required || ~prop.meta.code.value.indexOf('{"required":true}') || realProp.required;
-
-                if (!prop.type) {
-                    if(realProp.type && realProp.type instanceof Function) {
-                        prop.type = {names: [realProp.type.name]};
-                    } else if(realProp instanceof Function) {
-                        prop.type = {names: [realProp.name]};
-                    } else {
-                        debugger;
-                    }
-                }
-
-                if (!prop.defaultvalue && ukDefaults) {
-                    prop.defaultvalue = ukDefaults[prop.name];
-                }
-            }
-        });
+    if (runtime) {
+        findPropDefaults(res, runtime);
     }
+
     return res;
 
 }

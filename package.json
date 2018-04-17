@@ -12,7 +12,8 @@
     "glob": "^7.1.2",
     "jsdoc-api": "^4.0.3",
     "jsdom": "^11.7.0",
-    "lodash": "^4.17.5"
+    "lodash": "^4.17.5",
+    "vue-router": "^3.0.1"
   },
   "devDependencies": {
     "babel-core": "^6.26.0",

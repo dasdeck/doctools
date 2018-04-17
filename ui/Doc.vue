@@ -6,7 +6,8 @@
         </label>
         <div  class="uk-width-3-4"></div>
         <Tree class="uk-width-1-4" :selected="selected" :data="data" @show="selected=$event"></Tree>
-        <component :private="private" class="uk-width-3-4"  v-if="selected" :is="selected.type" :data="selected"></component>
+        <component :registry="data" :private="private" class="uk-width-3-4"  v-if="selected" :is="selected.type" :data="selected"></component>
+         <router-view class="uk-width-3-4" :private="private" ></router-view>
     </div>
 </template>
 
@@ -37,6 +38,12 @@ export default {
     },
 
     computed: {
+    },
+
+    methods: {
+        restoreLinks() {
+            // this.data.
+        }
     }
 
 }

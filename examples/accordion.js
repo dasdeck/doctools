@@ -17,6 +17,7 @@ export default {
         targets: String,
         /**
          * Index of the element to open initially.
+         * @type {}
          */
         active: null,
         /**

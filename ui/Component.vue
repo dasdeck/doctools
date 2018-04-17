@@ -8,8 +8,6 @@
 
         <template v-if="data.props">
             <h2>props:</h2>
-
-            <b>simple:</b>
             <PropTable :data="props" :annotations="['examples']" :headers="{name: 'name', type: 'type', defaultvalue: 'default', description: 'description'}" />
         </template>
 
@@ -31,8 +29,10 @@
             <li v-for="method in methods">
 
             <h3>{{method.name}}</h3>
-            <pre>{{method.signature}}</pre>
-            {{method.description}}
+            <code>{{method.signature}}</code>
+            <p>
+                {{method.description}}
+            </p>
 
             <PropTable v-for="(table, name) in method.tables" :name="name" :data="table.slice(1)" :headers="['name', 'type', 'description']" />
 
@@ -97,7 +97,8 @@ export default {
     },
     props: {
         data: Object,
-        private: Boolean
+        private: Boolean,
+        registry: Object
     },
 
     computed: {
@@ -106,7 +107,12 @@ export default {
         },
 
         props() {
-            return _.map(this.data.props, prop => ({...prop, type: prop.type && prop.type.names.join('|')}));
+
+            const props = this.data.props;
+
+            _.forEach(props, prop => prop._style = {...prop._style, opacity: prop.optional ? 0.5 : 1, 'font-style':  prop.inherited ? 'italic' : undefined});
+
+            return _.orderBy(_.mapValues(props, prop => ({...prop, type: prop.type && prop.type.names.join('|')})), ['inherited', 'name'], ['desc', 'asc']);
         }
     }
 }

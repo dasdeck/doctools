@@ -12,7 +12,7 @@
 
                 <tbody>
                     <template v-for="row in filteredData">
-                        <tr :style="row.optional ? {opacity: 0.5} : {}">
+                        <tr :style="row._style">
                             <td v-for="(header, col) in filteredHeaders" >{{row[col]}}</td>
                         </tr>
 

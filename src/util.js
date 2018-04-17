@@ -1,3 +1,4 @@
+const _ = require('lodash');
 
 module.exports = {
     /**
@@ -17,6 +18,46 @@ module.exports = {
 
     crudeImport(script) {
         return eval(script.replace(/import/g, '//import').replace('export default', 'global.res = '));
+    },
+
+    findPropDefaults(props, runtime) {
+        if (runtime && runtime['props']) {
+
+            const realProps = runtime['props'];
+            const ukDefaults = runtime['defaults'];
+
+            _.forEach(props, prop => {
+
+                const realProp = realProps[prop.name];
+                if (typeof realProp !== 'undefined') {
+
+                    prop.required = prop.required || prop.meta.code.value && ~prop.meta.code.value.indexOf('{"required":true}') || realProp && realProp.required;
+
+                    if (!prop.type) {
+                        if (realProp.type && realProp.type instanceof Function) {
+                            prop.type = {names: [realProp.type.name]};
+                        } else if(realProp instanceof Function) {
+                            prop.type = {names: [realProp.name]};
+                        } else if(typeof realProp === 'string') {
+                            prop.type = {names: [realProp]};
+                        } else if(realProp === null) {
+                            prop.type = {name: ['null']};
+                        } else {
+                            debugger;
+                        }
+                    }
+
+                    // TODO override defaultValues
+                    if (ukDefaults) {
+                        prop.defaultvalue = ukDefaults[prop.name];
+
+                        if (prop.type.names.includes('list') && _.isArray(prop.defaultvalue)) {
+                            prop.defaultvalue = prop.defaultvalue.join(',');
+                        }
+                    }
+                }
+            });
+        }
     }
 };
 
