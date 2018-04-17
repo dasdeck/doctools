@@ -115,7 +115,7 @@ module.exports = {
 
         all.forEach(el => {
 
-            if (el.kind === 'desc') {
+            if (el.kind === 'file') {
 
                 desc.description = el.description;
                 if (el.type) {

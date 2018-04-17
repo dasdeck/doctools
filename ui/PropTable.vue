@@ -1,7 +1,7 @@
 <template>
 <div>
 
-    <h3>{{name}}</h3>
+    <h3 v-if="name">{{name}}</h3>
     <table class="uk-table uk-table-striped">
 
                 <thead v-if="filteredHeaders">
@@ -11,9 +11,21 @@
                 </thead>
 
                 <tbody>
-                    <tr v-for="row in filteredData" :style="row.optional ? {opacity: 0.5} : {}">
-                        <td v-for="(header, col) in filteredHeaders" >{{row[col]}}</td>
-                    </tr>
+                    <template v-for="row in filteredData">
+                        <tr :style="row.optional ? {opacity: 0.5} : {}">
+                            <td v-for="(header, col) in filteredHeaders" >{{row[col]}}</td>
+                        </tr>
+
+                        <template v-for="annotation in annotations">
+                            <tr v-if="row[annotation]" v-for="content in row[annotation]">
+                                <td :colspan="numCols">
+                                    ↳<code>{{content}}</code>
+                                </td>
+                            </tr>
+                        </template>
+
+                    </template>
+
                 </tbody>
             </table>
 
@@ -27,7 +39,8 @@ export default {
     props: {
         name: String,
         data: [Array, Object],
-        headers: [Array, Boolean, Object]
+        headers: [Array, Boolean, Object],
+        annotations: [Array]
     },
     computed: {
         filteredHeaders() {
@@ -41,6 +54,9 @@ export default {
                 }
             });
             return res;
+        },
+        numCols() {
+            return _.size(this.filteredHeaders);
         },
         filteredData() {
             return this.headers === true ? this.data.slice(1) : this.data;

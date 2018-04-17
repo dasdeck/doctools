@@ -7,38 +7,10 @@
         <hr>
 
         <template v-if="data.props">
-
-            <PropTable name="props" :data="props" :headers="{name: 'name', type: 'type', defaultvalue: 'default', description: 'description'}" />
-
             <h2>props:</h2>
 
-            <table class="uk-table uk-table-striped">
-
-                <thead>
-                    <tr>
-                        <th>name</th>
-                        <th>type</th>
-                        <th>description</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    <template v-for="prop in data.props">
-                        <tr :style="!prop.required ? {opacity: 0.5} : {}">
-
-                            <td >{{prop.name}}</td>
-                            <td >{{prop.type && prop.type.names.join('|')}}</td>
-                            <td >{{prop.description}}</td>
-                        </tr>
-                        <tr v-for="example in prop.examples">
-                            <td >example:</td>
-                            <td colspan="2" ><pre>{{example}}</pre></td>
-                        </tr>
-                    </template>
-                </tbody>
-
-            </table>
-        <hr>
+            <b>simple:</b>
+            <PropTable :data="props" :annotations="['examples']" :headers="{name: 'name', type: 'type', defaultvalue: 'default', description: 'description'}" />
         </template>
 
 
@@ -54,7 +26,6 @@
         <template v-if="methods.length">
             <h2>methods:</h2>
 
-
             <ul class="uk-list">
 
             <li v-for="method in methods">
@@ -67,17 +38,16 @@
 
             </li>
             </ul>
-                <hr>
+            <hr>
 
         </template>
 
         <template v-if="data.computed">
             <h2>computed:</h2>
             <li v-for="computed in data.computed">
-                    <h3>{{computed.name}}{{computed.type && (' : ' + computed.type.names.join('|'))}}</h3>
-                    {{computed.description}}
-
-                </li>
+                <h3>{{computed.name}}{{computed.type && (' : ' + computed.type.names.join('|'))}}</h3>
+                {{computed.description}}
+            </li>
         </template>
 
         <template v-if="data.events">
