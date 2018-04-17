@@ -5,8 +5,9 @@ const _ = require('lodash');
 
 const devServer = {
 
-    contentBase: __dirname,
+    contentBase: [__dirname, 'examples', 'src'],
     watchContentBase: true,
+    inline: true,
     before(app) {
 
         app.get('/data.json', (req, res, next) => {

@@ -4,9 +4,9 @@ const _ = require('lodash');
 const jsdoc = require('jsdoc-api');
 
 
-
 const getTypesRaw = arr => arr ? arr.join(' | ') : '';
-const getTypes = arr => arr ? arr.join(' &#124; ').replace(/\*/, '&#42;') : '';
+// const getTypes = arr => arr ? arr.join(' &#124; ').replace(/\*/, '&#42;') : '';
+const getTypes = getTypesRaw;
 
 module.exports = {
 
@@ -131,6 +131,13 @@ module.exports = {
             }
 
             if (!el.undocumented) {
+
+                el.examples && el.examples.forEach(example => {
+                    const marked = require('marked');
+                    marked(example, {highlight(code) {
+                        //TODO collect example
+                    }})
+                })
                 if (el.see) {
                     // debugger
                     // markDown.push(`## ${el.longname || el.name}`);
