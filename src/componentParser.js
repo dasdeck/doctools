@@ -140,8 +140,9 @@ module.exports = {
 
     },
 
-    map({documented: entries, runtime}) {
+    map(input) {
 
+        const {documented: entries, runtime, function: funcs} = input;
         const desc = {};
 
         [
@@ -161,8 +162,18 @@ module.exports = {
             const members =  simple ? findMembers(entries, name, runtime) : type[name](entries, runtime);
             if (_.size(members)) {
                 desc[name] = members;
+
+                //remove functions form the general function list
+                _.forEach(members, member => {
+                    _.remove(funcs, func => func === member);
+                });
             }
+
+
+
         });
+
+
 
         entries.forEach(data => {
             if (data.longname === base) {
@@ -191,7 +202,7 @@ module.exports = {
         const name = file.split('/').pop().split('.').shift();
 
         return {
-            type: 'Vue',
+            type: 'VueComponent',
             name,
             file,
             template,

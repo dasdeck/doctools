@@ -6,7 +6,7 @@
 
         <hr>
 
-        <template v-if="data.props">
+        <template v-if="data.props && Object.keys(data.props).length">
             <h2>props:</h2>
             <PropTable :data="props" :annotations="['examples']" :headers="{name: 'name', type: 'type', defaultvalue: 'default', description: 'description'}" />
         </template>
@@ -84,16 +84,27 @@
             </ul>
         </template>
 
+        <template v-if="data.function">
+            <ul class="uk-list">
+                <li v-for="func in data.function">
+                    <Function :func="func"/>
+                    <hr>
+                </li>
+            </ul>
+        </template>
+
     </div>
 </template>
 
 <script>
 
 import PropTable from './PropTable.vue';
+import Function from './Function.vue';
 import _ from 'lodash';
 export default {
     components: {
-        PropTable
+        PropTable,
+        Function
     },
     props: {
         data: Object,
@@ -117,7 +128,3 @@ export default {
     }
 }
 </script>
-
-<style>
-
-</style>

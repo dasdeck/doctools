@@ -2,6 +2,9 @@
 
 const glob = require('glob');
 const _ = require('lodash');
+const fs = require('fs');
+const path = require('path');
+const packageParser = require('./src/packageParser');
 
 const devServer = {
 
@@ -10,17 +13,43 @@ const devServer = {
     inline: true,
     before(app) {
 
+        const config = global.doctoolsConfig || {base: './examples'};
+        // console.log("dev-server-pwd", process.cwd(), global.doctoolsConfig);
+
+        console.log('building docs...');
+
+        const parser = require(__dirname + '/src/parser');
+        let data = parser.parse(config);
+
+        if (config.watch && data instanceof packageParser.Package) {
+            const watchedFiles = packageParser.Package.getIncludedFiles(config);
+
+            fs.watch(config.base, {encoding: 'buffer'}, (eventType, filename) => {
+
+                if (watchedFiles.includes(filename)) {
+                    console.log(filename, 'changed!!');
+                }
+            });
+        }
+
         app.get('/data.json', (req, res, next) => {
 
-            glob.sync('./src/*.js').forEach(file => {
-                delete require.cache[require.resolve(file)];
-            });
+            if (config.developMode) {
 
-            const parser = require('./src/parser');
-            const data = parser.parse('./examples');
+                console.log('repasring whole docu');
 
-            console.log('req data.json')
+                glob.sync(__dirname + '/src/*.js').forEach(file => {
+                    delete require.cache[require.resolve(file)];
+                });
+
+                const parser = require(__dirname + '/src/parser');
+                data = parser.parse(config);
+            }
+
+            console.log('req data.json', config);
+
             res.json(data);
+
             next();
         });
 
@@ -28,6 +57,8 @@ const devServer = {
 };
 
 module.exports = {
+
+    context: __dirname,
 
     entry: {
         index: './index.js'

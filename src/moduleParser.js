@@ -11,6 +11,7 @@ const getTypes = getTypesRaw;
 module.exports = {
 
     analyzeModule(source) {
+        this.source = source;
         const entries = jsdoc.explainSync({source});
         return this.map(entries);//this.map(entries);
     },
@@ -92,9 +93,37 @@ module.exports = {
 
     analyseFunction(el) {
 
+        //extract default values
+        const regex = RegExp(/name\((.*?)\)\s*{/.source.replace('name', el.name));
+        const res = regex.exec(this.source);
+        if (!res && !el.see) {
+            debugger //why
+        } else if (res) {
+            const args = res[1].split(',').map(v => v.trim());
+
+            args.forEach(arg => {
+                const [name, value] = arg.trim().split('=').map(v => v.trim());
+                if (value) {
+                    const param = _.find(el.params, ['name', name]);
+                    if(_.isUndefined(param.defaultvalue)) {
+                        // debugger;
+                        param.defaultvalue = value;
+                        param.optional = true;
+                    }
+                }
+            });
+
+            const more = regex.exec(this.source);
+            if (more && more.index !== res.index) {
+                throw 'could not find unique method definition for: ' + el.longname + ' in: ' + this.source;
+            }
+        }
+
         if (el.params) {
 
+
             Object.assign(el, this.mapParams(el));
+
 
         } else {
             el.signature = `${el.longname}()`;
@@ -136,18 +165,21 @@ module.exports = {
                     const marked = require('marked');
                     marked(example, {highlight(code) {
                         //TODO collect example
-                    }})
-                })
-                if (el.see) {
+                    }});
+                });
+                if (el.kind === 'function' && el.see) {
+                    const orig = _.find(desc[el.kind], func => func.name === el.see[0]);
                     // debugger
+                    // _.assign(el, orig);
+                    el.reference = orig.longname;
                     // markDown.push(`## ${el.longname || el.name}`);
                     // el.description && markDown.push(el.description);
                     // markDown.push(`see: <a href="#${el.see}">${el.see}</a>`);
-                } else {
-                    desc[el.kind] = desc[el.kind] || [];
-                    desc[el.kind].push(el);
-                    desc.documented.push(el);
                 }
+
+                desc[el.kind] = desc[el.kind] || [];
+                desc[el.kind].push(el);
+                desc.documented.push(el);
             }
         });
 

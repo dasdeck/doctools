@@ -1,53 +1,76 @@
-
 const _ = require('lodash');
 const {findPropDefaults} = require('./util');
-module.exports = {
-    analyzePackage(dir, search = '**/*.+(js|vue)') {
+const path = require('path');
+const fs = require('fs');
+const glob = require('glob');
 
-        const path = require('path');
-        const packPath = path.join(dir, 'package.json');
-        const fs = require('fs');
-        let packageJson;
+class Package {
+
+    constructor(config) {
+
+        const dir = config.base;
+        this.config = config;
+
+        this.dir = dir;
+        this.name = dir.split('/').pop();
+
+        this.type = 'package';
+
+        this.init();
+        this.createLinks();
+    }
+
+    init() {
+
+        const packPath = path.join(this.dir, 'package.json');
         if (fs.existsSync(packPath)) {
-            packageJson = require();
+            this.packageJson = require(packPath);
         }
 
-        const name = dir.split('/').pop();
-
-        const pack = {
-            name,
-            trigger: [],
-            packageJson
+        this.globals = {
+            trigger: []
         };
 
-        const globPath = path.join(name, search);
+        this.modules = {};
 
-        const glob = require('glob');
-        const files = glob.sync(globPath);
+        const files = Package.getIncludedFiles(this.config);
         files.forEach(file => {
 
             const parser = require('./parser');
             const res = parser.parse(file);
 
-            if (res.ignore) {
-                return;
+            if (!res.ignore) {
+                this.addModule(res);
             }
-            pack[res.type] = pack[res.type] || {};
-            pack[res.type][res.name] = res;
-
-            const _ = require('lodash');
-            _.forEach(res.trigger, trigger => {
-                trigger.source = res.name;
-                pack.trigger.push(trigger);
-            });
-
-            //connect inheritance
 
         });
 
-        ['UIkitComponent'].forEach(type => {
+    }
 
-            const registry = pack[type];
+    addModule(module) {
+
+        this.modules[module.type] = this.modules[module.type] || {};
+        this.modules[module.type][module.name] = module;
+
+        _.forEach(module.trigger, trigger => {
+            trigger.source = module.name;
+            this.globals.trigger.push(trigger);
+        });
+    }
+
+    patch(module) {
+        this.addModule(module);
+        this.createLinks();
+    }
+
+    createLinks() {
+
+        const linkedModules = {};
+
+        ['UIkitComponent', 'VueComponent', 'module'].forEach(type => {
+
+
+            const registry = linkedModules[type] = _.cloneDeep(this.modules[type]);
 
             _.forEach(registry, comp => {
 
@@ -91,7 +114,29 @@ module.exports = {
             });
         });
 
-        return pack;
+        _.assign(this, linkedModules);
+    }
+}
+
+Package.getIncludedFiles = function(config) {
+    return glob.sync(path.join(config.base, config.search || '**/*.+(js|vue)'));
+};
+
+module.exports = {
+
+    Package,
+
+
+
+    /**
+     *
+     * @param {Object} config
+     * @param {String} config.base - package directory
+     * @param {String} [config.search = '** /*.+(js|vue)'] - glob of files to document for this package (default value pseudo escaped)
+     * @param {String} [config.subpackage] - glob of sub-packages to recursively inlcude document
+     */
+    analyzePackage(config) {
+        return new Package(config);
 
     }
 };

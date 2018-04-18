@@ -11,6 +11,8 @@ const globals = [
 const store = {};
 
 module.exports = {
+
+
     install() {
         globals.forEach(name => {
             store[name] = global[name];
@@ -41,6 +43,16 @@ module.exports = {
         };
 
 
+    },
+
+    get() {
+        if (!this.uikit) {
+
+            this.install();
+            this.uikit = require('uikit');
+            this.clear();
+        }
+        return this.uikit;
     },
 
     clear() {

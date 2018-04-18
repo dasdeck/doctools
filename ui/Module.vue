@@ -2,33 +2,41 @@
     <div>
         <h1>{{data.name}}</h1>
 
-        {{data.description}}
+        <p>
+            {{data.description}}
+        </p>
 
         <hr>
 
-        <template v-if="data.function">
-            <li v-for="func in data.function">
-            <h2>{{func.name}}</h2>
-            {{func.description}}
-            <h4><code>{{func.signature}}</code></h4>
-            <PropTable v-for="(table, name) in func.tables" :name="name" :data="table" :headers="true"/>
+        <template v-for="desc in data.documented" v-if="hasKind(desc.kind)">
+            <component :is="desc.kind" :data="desc"/>
             <hr>
-            </li>
-            </ul>
         </template>
+
+
 
     </div>
 </template>
 
 <script>
 import PropTable from './PropTable.vue';
+import Function from './Function.vue';
+import Constant from './Constant.vue';
+import _ from 'lodash';
 
 export default {
     components: {
-        PropTable
+        PropTable,
+        Function,
+        Constant
     },
     props: {
         data: Object
+    },
+    methods: {
+        hasKind(kind) {
+            return this.$options.components[_.upperFirst(kind)];
+        }
     }
 }
 </script>

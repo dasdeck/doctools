@@ -1,12 +1,11 @@
+/* eslint-env node */
+
 const fs = require('fs');
+
 const util = require('./util');
 const {getTestCodes} = require('./testParser');
 
-const uikitShim = require('./uikitShims');
-
-uikitShim.install();
-const UIkit = require('uikit');
-uikitShim.clear();
+const UIkit = require('./uikitShims').get();
 
 module.exports = {
 
@@ -20,7 +19,7 @@ module.exports = {
         }
     },
     mapper: {
-        'Vue'(desc) {
+        'VueComponent'(desc) {
             const componentParser = require('./componentParser');
             const res = componentParser.map(desc);
             Object.assign(desc, res);
@@ -36,16 +35,30 @@ module.exports = {
             Object.assign(desc, res);
         }
     },
-    parse(file) {
+    /**
+     * Parses the data defined in config and returns an object containing the parsed structure
+     * @param {String|Object} [config = {}] - filePath or config hash
+     * @param {String} config.base - root path to operate on
+     * @returns {Object} the parsed structure
+     */
+    parse(config = {}) {
+
+        if (typeof config === 'string') {
+            config = {base: config};
+        }
+
+        //set required defaults
+        config.base = config && config.base || process.cwd();
+
+        const file = config.base;
 
         const name = file.split('/').pop().split('.').shift();
         const desc = {file, name, type: 'module'};
 
         if (fs.lstatSync(file).isDirectory()) {
 
-            desc.type = 'package';
             const packageParser = require('./packageParser');
-            const res = packageParser.analyzePackage(file);
+            const res = packageParser.analyzePackage(config);
             Object.assign(desc, res);
             return res;
         }
@@ -59,24 +72,32 @@ module.exports = {
         }
 
         const moduleParser = require('./moduleParser');
-        const jsDoc = moduleParser.analyzeModule(desc.script);
+        try {
 
-        Object.assign(desc, jsDoc);
-        //coverage
-        // const cover = require('./coverage/coverage.sum.json');
-        // const covers = {};
-        // _.forEach(cover, (entry, name) => {
-        //     covers[name.split('/').pop().replace(/.js/g,'')] = entry;
-        // });
-        // const coverage = covers[name] && covers[name].lines.pct || 0;
+            const jsDoc = moduleParser.analyzeModule(desc.script);
+
+            Object.assign(desc, jsDoc);
+            //coverage
+            // const cover = require('./coverage/coverage.sum.json');
+            // const covers = {};
+            // _.forEach(cover, (entry, name) => {
+            //     covers[name.split('/').pop().replace(/.js/g,'')] = entry;
+            // });
+            // const coverage = covers[name] && covers[name].lines.pct || 0;
 
 
-        //test codes (per function / member)
-        // el.tests = getTestCodes(name, el.longname);
+            //test codes (per function / member)
+            // el.tests = getTestCodes(name, el.longname);
 
-        if (this.mapper[desc.type]) {
-            this.mapper[desc.type](desc);
-        }
+            if (this.mapper[desc.type]) {
+                this.mapper[desc.type](desc);
+            }
+
+    } catch (e) {
+        console.warn('error while parsing: ' + file);
+        console.warn(e);
+        return ;
+    }
 
         return desc;
     }
