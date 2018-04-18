@@ -5,10 +5,15 @@ const _ = require('lodash');
 const glob = require('glob');
 const path = require('path');
 
-const {crudeImport, findPropDefaults} = require('./util');
+const {findRuntime, findPropDefaults} = require('./util');
 
 const base = 'module.exports';
 
+/**
+ * @file
+ * the componentmapper offers functions to map a regular jsdoc file into a meaningfull json structure
+ * it can also enrich the jsdoc structure with valuable runtime informations
+ */
 
 function findMembers(data, name) {
 
@@ -140,6 +145,7 @@ module.exports = {
 
     },
 
+
     map(input) {
 
         const {documented: entries, runtime, function: funcs} = input;
@@ -194,10 +200,6 @@ module.exports = {
         const template = res.template && res.template.content;
         const script = res.script && res.script.content;
 
-        let runtime;
-        if (script) {
-            runtime = crudeImport;
-        }
 
         const name = file.split('/').pop().split('.').shift();
 
@@ -207,7 +209,6 @@ module.exports = {
             file,
             template,
             script,
-            runtime
         };
 
     }

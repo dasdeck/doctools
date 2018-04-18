@@ -3,7 +3,6 @@
 const _ = require('lodash');
 const jsdoc = require('jsdoc-api');
 
-
 const getTypesRaw = arr => arr ? arr.join(' | ') : '';
 // const getTypes = arr => arr ? arr.join(' &#124; ').replace(/\*/, '&#42;') : '';
 const getTypes = getTypesRaw;
@@ -91,46 +90,52 @@ module.exports = {
 
     },
 
+    guessDefaultParamValues(el) {
+
+          //extract default values
+          const regex = RegExp(/name\((.*?)\)\s*{/.source.replace('name', el.name));
+          const res = regex.exec(this.source);
+          if (!res && !el.see) {
+              debugger //why
+          } else if (res) {
+              const args = res[1].split(',').map(v => v.trim());
+
+              args.forEach(arg => {
+                  const [name, value] = arg.trim().split('=').map(v => v.trim());
+                  if (value) {
+                      const param = _.find(el.params, ['name', name]);
+                      if(_.isUndefined(param.defaultvalue)) {
+                          // debugger;
+                          param.defaultvalue = value;
+                          param.optional = true;
+                      }
+                  }
+              });
+
+              const more = regex.exec(this.source);
+              if (more && more.index !== res.index) {
+                  throw 'could not find unique method definition for: ' + el.longname + ' in: ' + this.source;
+              }
+          }
+
+    },
+
     analyseFunction(el) {
 
-        //extract default values
-        const regex = RegExp(/name\((.*?)\)\s*{/.source.replace('name', el.name));
-        const res = regex.exec(this.source);
-        if (!res && !el.see) {
-            debugger //why
-        } else if (res) {
-            const args = res[1].split(',').map(v => v.trim());
-
-            args.forEach(arg => {
-                const [name, value] = arg.trim().split('=').map(v => v.trim());
-                if (value) {
-                    const param = _.find(el.params, ['name', name]);
-                    if(_.isUndefined(param.defaultvalue)) {
-                        // debugger;
-                        param.defaultvalue = value;
-                        param.optional = true;
-                    }
-                }
-            });
-
-            const more = regex.exec(this.source);
-            if (more && more.index !== res.index) {
-                throw 'could not find unique method definition for: ' + el.longname + ' in: ' + this.source;
-            }
-        }
+        this.guessDefaultParamValues(el);
 
         if (el.params) {
-
 
             Object.assign(el, this.mapParams(el));
 
 
         } else {
+
+            //empty default signature
             el.signature = `${el.longname}()`;
-            // const text = _.get(require('./dist/utils.cjs.js'), el.longname) + '';
-            // func.signature = text.substr(0, text.indexOf('{')).replace('function', '').trim();
         }
 
+        //add first return statement to signature
         if (el.returns && el.returns[0]) {
             el.signature += ` : ${getTypesRaw(el.returns[0].type.names)}`;
         }

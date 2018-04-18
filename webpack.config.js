@@ -48,7 +48,7 @@ const devServer = {
 
             console.log('req data.json', config);
 
-            res.json(data);
+            res.json(data.serialize());
 
             next();
         });
@@ -61,7 +61,7 @@ module.exports = {
     context: __dirname,
 
     entry: {
-        index: './index.js'
+        'index': './index.js'
     },
 
     devServer,
@@ -77,7 +77,8 @@ module.exports = {
     mode: 'development',
 
     externals: {
-        'vue': 'Vue'
+        'vue': 'Vue',
+        'uikit': 'UIkit'
     },
 
     module: {

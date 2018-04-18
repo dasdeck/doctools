@@ -14,11 +14,22 @@
             </div>
         </template>
 
+        <template v-if="data.globals.trigger.length">
+            <h2 >trigger:</h2>
+            <Function v-for="trigger in data.globals.trigger" :data="trigger"/>
+        </template>
+
   </div>
 </template>
 
 <script>
+import Function from './Function.vue';
+
 export default {
+    components: {
+        Function
+    },
+
     props: {
         data: Object
     }

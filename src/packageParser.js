@@ -37,7 +37,7 @@ class Package {
         files.forEach(file => {
 
             const parser = require('./parser');
-            const res = parser.parse(file);
+            const res = parser.parse({...this.config, base:file});
 
             if (!res.ignore) {
                 this.addModule(res);
@@ -52,8 +52,10 @@ class Package {
         this.modules[module.type] = this.modules[module.type] || {};
         this.modules[module.type][module.name] = module;
 
+        const {mapParams} = require('./moduleParser');
         _.forEach(module.trigger, trigger => {
             trigger.source = module.name;
+            mapParams(trigger);
             this.globals.trigger.push(trigger);
         });
     }
@@ -61,6 +63,12 @@ class Package {
     patch(module) {
         this.addModule(module);
         this.createLinks();
+    }
+
+    serialize() {
+
+        return {...this, config: undefined};
+
     }
 
     createLinks() {
@@ -77,7 +85,9 @@ class Package {
                 const runtime = comp.runtime;
                 if (runtime) {
 
-                    comp.extends =  _.find(registry, ['runtime', runtime.extends]);
+                    // delete comp.runtime;
+
+                    comp.extends =  runtime.extends && _.find(registry, ['runtime', runtime.extends]);
 
                     if (runtime.extends && !comp.extends) {
                         console.warn('could not link extend on: ' + comp.name);
@@ -85,7 +95,7 @@ class Package {
 
                     comp.mixins = _.filter(
                             _.map(
-                                _.map(runtime.mixins, mixin => _.find(registry, ['runtime', mixin])),
+                                _.map(runtime.mixins, mixin => mixin && _.find(registry, ['runtime', mixin])),
                                 mixin => mixin && mixin.name, mixin => mixin));
 
                     if (runtime.mixins && runtime.mixins.length !== comp.mixins.length) {
@@ -98,6 +108,7 @@ class Package {
                     [comp.extends, ...comp.mixins].forEach(name => {
                         if (name) {
                             const def = registry[name];
+                            if(!def) debugger
                             _.assign(props, _.mapValues(def.props, prop => ({...prop, inherited: name, _style : {...prop._style, 'font-style': 'italic'}})));
                         }
                     });
@@ -113,6 +124,7 @@ class Package {
 
             });
         });
+
 
         _.assign(this, linkedModules);
     }

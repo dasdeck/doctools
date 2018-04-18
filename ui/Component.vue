@@ -87,7 +87,7 @@
         <template v-if="data.function">
             <ul class="uk-list">
                 <li v-for="func in data.function">
-                    <Function :func="func"/>
+                    <Function :data="func"/>
                     <hr>
                 </li>
             </ul>

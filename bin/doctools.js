@@ -6,8 +6,8 @@ const fs = require('fs');
 const glob = require('glob');
 
 const argv = require('minimist')(process.argv.slice(2), {alias: {
-    config: ['-c', '--config'],
-    search: ['-s', '--search']
+    config: ['c', '--config'],
+    search: ['s', '--search']
 }});
 
 /**
@@ -19,9 +19,7 @@ const argv = require('minimist')(process.argv.slice(2), {alias: {
 
 const configFile = argv.config ? argv.config : path.join(process.cwd(), 'doctools.config.js');
 
-let config = {
-
-};
+let config = {};
 
 if (fs.existsSync(configFile)) {
     config = require(configFile);
@@ -31,7 +29,6 @@ if (fs.existsSync(configFile)) {
 config.base = config.base || argv._[0];
 config.search = config.search || argv.search;
 
-
 global.doctoolsConfig = config;
 
 if (argv.explain) {
@@ -39,6 +36,7 @@ if (argv.explain) {
     const res = parser.parse(config);
     console.log(res);
 } else {
+    process.argv = [...process.argv.slice(0,2)];
     //force the dev-server to use local config
     process.argv.push('--config');
     process.argv.push(path.join(__dirname, '..', 'webpack.config.js'));

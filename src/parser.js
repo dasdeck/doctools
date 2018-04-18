@@ -1,6 +1,7 @@
 /* eslint-env node */
 
 const fs = require('fs');
+const componentMappper = require('./componentMapper');
 
 const util = require('./util');
 const {getTestCodes} = require('./testParser');
@@ -11,8 +12,7 @@ module.exports = {
 
     preProcess: {
         vue(desc, file) {
-            const componentParser = require('./componentParser');
-            Object.assign(desc, componentParser.unpack(file));
+            Object.assign(desc, componentMappper.unpack(file));
         },
         js(desc, file) {
             desc.script = fs.readFileSync(file, 'utf8');
@@ -20,18 +20,16 @@ module.exports = {
     },
     mapper: {
         'VueComponent'(desc) {
-            const componentParser = require('./componentParser');
-            const res = componentParser.map(desc);
+
+            const res = componentMappper.map(desc);
             Object.assign(desc, res);
             if (desc.template) {
-                componentParser.parseTemplate(desc);
+                componentMappper.parseTemplate(desc);
             }
         },
         'UIkitComponent'(desc) {
-
-            desc.runtime = desc.runtime || UIkit.components[desc.name] && UIkit.components[desc.name].options || UIkit.mixin[desc.name];
-            const componentParser = require('./componentParser');
-            const res = componentParser.map(desc);
+            // desc.runtime = desc.runtime || UIkit.components[desc.name] && UIkit.components[desc.name].options || UIkit.mixin[desc.name];
+            const res = componentMappper.map(desc);
             Object.assign(desc, res);
         }
     },
@@ -85,9 +83,10 @@ module.exports = {
             // });
             // const coverage = covers[name] && covers[name].lines.pct || 0;
 
-
             //test codes (per function / member)
             // el.tests = getTestCodes(name, el.longname);
+
+            desc.runtime = util.findRuntime(config, desc);
 
             if (this.mapper[desc.type]) {
                 this.mapper[desc.type](desc);

@@ -16,6 +16,26 @@ module.exports = {
         return lines.map(line => newIndent + line.replace(origIndent, '')).join('\n');
     },
 
+    findRuntime(config, desc) {
+
+        let runtime;
+        if (config.runtime) {
+            runtime = _.get(config.runtime, `${desc.type}.${desc.name}`) || _.get(config.runtime, desc.name);
+        }
+
+        if(!runtime && config.crudeImport) {
+            try {
+                runtime = this.crudeImport(desc.script);
+            } catch (e) {
+                console.warn('could not import runtime for: ' + desc.name);
+                console.warn(e);
+            }
+        }
+
+        return runtime;
+
+    },
+
     crudeImport(script) {
         return eval(script.replace(/import/g, '//import').replace('export default', 'global.res = '));
     },
