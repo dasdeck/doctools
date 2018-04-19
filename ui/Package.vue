@@ -47,6 +47,9 @@
 <script>
 import Function from './Function.vue';
 
+/**
+ * view for package overviews
+ */
 export default {
     components: {
         Function

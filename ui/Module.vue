@@ -24,6 +24,10 @@ import Function from './Function.vue';
 import Constant from './Constant.vue';
 import _ from 'lodash';
 
+/**
+ * View to render module files
+ *
+ */
 export default {
     components: {
         PropTable,

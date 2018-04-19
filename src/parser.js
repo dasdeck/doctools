@@ -9,7 +9,7 @@ const {getTestCodes} = require('./testParser');
 
 const defaultConfig = require('./configDefaults');
 
-const  preProcess = {
+const preProcess = {
     vue(desc, file) {
         Object.assign(desc, componentMappper.unpack(file));
     },
