@@ -8,8 +8,15 @@
 </template>
 
 <script>
+
+/**
+ * document layout for constants
+ */
 export default {
     props: {
+        /**
+         * the descriptor for this constant
+         */
         data: Object
     }
 }

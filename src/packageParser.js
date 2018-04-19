@@ -1,9 +1,12 @@
 const _ = require('lodash');
-const {findPropDefaults} = require('./util');
+const util = require('./util');
 const path = require('path');
 const fs = require('fs');
 const glob = require('glob');
 
+/**
+ * the Package parser
+ */
 class Package {
 
     constructor(config) {
@@ -55,6 +58,8 @@ class Package {
         const {mapParams} = require('./moduleParser');
         _.forEach(module.trigger, trigger => {
             trigger.source = module.name;
+
+            trigger.simpleName = trigger.name;
             mapParams(trigger);
             this.globals.trigger.push(trigger);
         });
@@ -75,12 +80,18 @@ class Package {
 
         const linkedModules = {};
 
-        ['UIkitComponent', 'VueComponent', 'module'].forEach(type => {
+        this.config.types.forEach(type => {
 
 
             const registry = linkedModules[type] = _.cloneDeep(this.modules[type]);
 
             _.forEach(registry, comp => {
+
+                comp.fileInPackage = comp.file.replace(this.dir, '.');
+
+                if (this.packageJson && this.packageJson.main && path.resolve(path.join(this.dir, this.packageJson.main)) === path.resolve(comp.file)) {
+                    this.main = comp;
+                }
 
                 const runtime = comp.runtime;
                 if (runtime) {
@@ -91,34 +102,68 @@ class Package {
 
                     if (runtime.extends && !comp.extends) {
                         console.warn('could not link extend on: ' + comp.name);
-                    }
 
-                    comp.mixins = _.filter(
-                            _.map(
-                                _.map(runtime.mixins, mixin => mixin && _.find(registry, ['runtime', mixin])),
-                                mixin => mixin && mixin.name, mixin => mixin));
+                        comp.extends = this.config.runtime && this.config.runtime[type] && _.findKey(this.config.runtime[type], runtime.extends);
 
-                    if (runtime.mixins && runtime.mixins.length !== comp.mixins.length) {
-                        console.warn('could not link all mixins on: ' + comp.name);
-                    }
-
-                    const props = {};
-
-
-                    [comp.extends, ...comp.mixins].forEach(name => {
-                        if (name) {
-                            const def = registry[name];
-                            if(!def) debugger
-                            _.assign(props, _.mapValues(def.props, prop => ({...prop, inherited: name, _style : {...prop._style, 'font-style': 'italic'}})));
+                        if (!comp.extends) {
+                            console.warn('could not find extend on: ' + comp.name);
                         }
+                    }
+
+
+
+                    comp.mixins = [];
+
+
+                    //resolve mixins
+                    _.forEach(runtime.mixins, (mixin, index) => {
+                        const definition = mixin && _.find(registry, ['runtime', mixin]);
+
+                        const name = mixin && this.config.runtime && this.config.runtime[type] && _.findKey(this.config.runtime[type], mixin);
+                        if(!name) {
+                            console.warn('could not find mixin ' + index + ' in: ' + comp.name);
+                        }
+                        if(!definition) {
+                            console.warn('could not link  mixin ' + (name || index) + ' for: ' + comp.name);
+                        }
+
+                        comp.mixins.push({name, linked: !!definition});
+
                     });
 
-                    _.assign(props, comp.props);
 
-                    //find prop defaults again, as default may change in inherited type
-                    findPropDefaults(props, comp.runtime);
+                    //merge inherited props, methods, computeds  to component
+                    ['props', 'methods', 'computed'].forEach(type => {
 
-                    comp.props = props;
+                        const res = {};
+
+                        const inheritanceChain = comp.extends ? [comp.extends] : [];
+
+
+                        [...inheritanceChain, ...comp.mixins].forEach((desc) => {
+                            if (desc) {
+
+                                const def = registry[desc.name];
+                                if(def) {
+                                    _.assign(res, _.mapValues(def[type], member => ({...member, inherited: desc, _style : {...member._style, 'font-style': 'italic'}})));
+                                }
+                                if(desc.linked !== !!def) {
+                                    debugger
+                                }
+
+                            } else {
+                                debugger;
+                            }
+                        });
+
+                        _.assign(res, comp[type]);
+
+                        //find prop defaults again, as default may change in inherited type
+                        util.findPropDefaults(res, comp.runtime);
+
+                        comp[type] = res;
+
+                    })
 
                 }
 
@@ -138,10 +183,8 @@ module.exports = {
 
     Package,
 
-
-
     /**
-     *
+     * @private
      * @param {Object} config
      * @param {String} config.base - package directory
      * @param {String} [config.search = '** /*.+(js|vue)'] - glob of files to document for this package (default value pseudo escaped)

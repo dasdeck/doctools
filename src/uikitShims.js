@@ -42,14 +42,18 @@ module.exports = {
             createElement: () => ({classList: {add() {}, toggle() {}, contains() {}}})
         };
 
+        this.uikit = require('uikit');
 
+    },
+
+    registerGlobal() {
+        UIkit = this.get();
     },
 
     get() {
         if (!this.uikit) {
 
             this.install();
-            this.uikit = require('uikit');
             this.clear();
         }
         return this.uikit;

@@ -10,10 +10,10 @@
                 <i v-else>{{ title }}</i>
             </span>
         </div>
-        <!-- @trigger elementLeave triggered when an element in the layout editor is hovered-->
+        <!-- @trigger elementHover triggered when an element in the layout editor is hovered-->
         <!-- @param {Number} nodeId - the id of the node that has been hovered -->
 
-        <!-- @trigger elementHover triggered when the mouse leaves a layout editor element -->
+        <!-- @trigger elementLeave triggered when the mouse leaves a layout editor element -->
         <!-- @param {Number} nodeId - the id of the node that has been hovered -->
         <a v-if="exists" class="uk-position-cover" @mouseover="$trigger('elementHover', nodeId)" @mouseout="$trigger('elementLeave', nodeId)" @click.prevent="builder.edit(node)"></a>
 

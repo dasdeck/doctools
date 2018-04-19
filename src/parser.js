@@ -2,37 +2,65 @@
 
 const fs = require('fs');
 const componentMappper = require('./componentMapper');
+const _ = require('lodash');
 
 const util = require('./util');
 const {getTestCodes} = require('./testParser');
 
-const UIkit = require('./uikitShims').get();
+const defaultConfig = require('./configDefaults');
+
+const  preProcess = {
+    vue(desc, file) {
+        Object.assign(desc, componentMappper.unpack(file));
+    },
+    js(desc, file) {
+        desc.script = fs.readFileSync(file, 'utf8');
+    }
+};
+
+const mapper = {
+    'VueComponent'(desc) {
+
+        const res = componentMappper.map(desc);
+        Object.assign(desc, res);
+        if (desc.template) {
+            componentMappper.parseTemplate(desc);
+        }
+    },
+    'UIkitComponent'(desc) {
+        const res = componentMappper.map(desc);
+        Object.assign(desc, res);
+    }
+};
+
+/**
+ * @file
+ * @example
+```js
+//import parser
+import parser from 'doctools';
+
+//use on a single file
+parser.parse("path/to/a/file/or/directory"); //shorthand for parser.parse({base: "path/to/a/file/or/directory"})
+
+...
+//pass a config
+parser.parse({
+    base: __dirname,
+    ...
+});
+
+...
+
+//or use default config
+parser.parse();
+
+```
+ */
+
 
 module.exports = {
 
-    preProcess: {
-        vue(desc, file) {
-            Object.assign(desc, componentMappper.unpack(file));
-        },
-        js(desc, file) {
-            desc.script = fs.readFileSync(file, 'utf8');
-        }
-    },
-    mapper: {
-        'VueComponent'(desc) {
-
-            const res = componentMappper.map(desc);
-            Object.assign(desc, res);
-            if (desc.template) {
-                componentMappper.parseTemplate(desc);
-            }
-        },
-        'UIkitComponent'(desc) {
-            // desc.runtime = desc.runtime || UIkit.components[desc.name] && UIkit.components[desc.name].options || UIkit.mixin[desc.name];
-            const res = componentMappper.map(desc);
-            Object.assign(desc, res);
-        }
-    },
     /**
      * Parses the data defined in config and returns an object containing the parsed structure
      * @param {String|Object} [config = {}] - filePath or config hash
@@ -45,8 +73,7 @@ module.exports = {
             config = {base: config};
         }
 
-        //set required defaults
-        config.base = config && config.base || process.cwd();
+        _.defaults(config, defaultConfig);
 
         const file = config.base;
 
@@ -63,16 +90,16 @@ module.exports = {
 
         const extension = file.split('.').pop();
 
-        if (!this.preProcess[extension]) {
+        if (!preProcess[extension]) {
             throw 'unknown extension: ' + extension;
         } else {
-            this.preProcess[extension](desc, file);
+            preProcess[extension](desc, file);
         }
 
         const moduleParser = require('./moduleParser');
         try {
 
-            const jsDoc = moduleParser.analyzeModule(desc.script);
+            const jsDoc = moduleParser.analyzeModule(desc.script, config);
 
             Object.assign(desc, jsDoc);
             //coverage
@@ -88,16 +115,17 @@ module.exports = {
 
             desc.runtime = util.findRuntime(config, desc);
 
-            if (this.mapper[desc.type]) {
-                this.mapper[desc.type](desc);
+            if (mapper[desc.type]) {
+                mapper[desc.type](desc);
             }
 
     } catch (e) {
         console.warn('error while parsing: ' + file);
-        console.warn(e);
-        return ;
+        throw e;
     }
 
         return desc;
     }
 }
+
+exports.de

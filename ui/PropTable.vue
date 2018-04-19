@@ -1,35 +1,34 @@
 <template>
 <div>
-
     <h3 v-if="name">{{name}}</h3>
     <table class="uk-table uk-table-striped">
 
-                <thead v-if="filteredHeaders">
-                    <tr>
-                        <th v-for="header in filteredHeaders">{{header}}</th>
+        <thead v-if="filteredHeaders">
+            <tr>
+                <th v-for="header in filteredHeaders">{{header}}</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <template v-for="row in filteredData">
+                <tr :style="row._style">
+                    <td v-for="(header, col) in filteredHeaders" >{{row[col]}}</td>
+                </tr>
+
+                <template v-for="annotation in annotations">
+                    <tr v-if="row[annotation]" v-for="content in row[annotation]">
+                        <td :colspan="numCols">
+                            ↳<code>{{content}}</code>
+                        </td>
                     </tr>
-                </thead>
+                </template>
 
-                <tbody>
-                    <template v-for="row in filteredData">
-                        <tr :style="row._style">
-                            <td v-for="(header, col) in filteredHeaders" >{{row[col]}}</td>
-                        </tr>
+            </template>
 
-                        <template v-for="annotation in annotations">
-                            <tr v-if="row[annotation]" v-for="content in row[annotation]">
-                                <td :colspan="numCols">
-                                    ↳<code>{{content}}</code>
-                                </td>
-                            </tr>
-                        </template>
+        </tbody>
+    </table>
 
-                    </template>
-
-                </tbody>
-            </table>
-
-            </div>
+    </div>
 </template>
 
 <script>

@@ -6,15 +6,17 @@ const fs = require('fs');
 const path = require('path');
 const packageParser = require('./src/packageParser');
 
+const config = global.doctoolsConfig;
+
 const devServer = {
 
+    historyApiFallback: {
+        index: 'ui/index.html',
+    },
     contentBase: [__dirname, 'examples', 'src'],
     watchContentBase: true,
     inline: true,
     before(app) {
-
-        const config = global.doctoolsConfig || {base: './examples'};
-        // console.log("dev-server-pwd", process.cwd(), global.doctoolsConfig);
 
         console.log('building docs...');
 
@@ -24,10 +26,11 @@ const devServer = {
         if (config.watch && data instanceof packageParser.Package) {
             const watchedFiles = packageParser.Package.getIncludedFiles(config);
 
-            fs.watch(config.base, {encoding: 'buffer'}, (eventType, filename) => {
-
+            fs.watch(config.base, {recursive: true}, (eventType, filename) => {
+                filename = path.join(config.base, filename);
                 if (watchedFiles.includes(filename)) {
                     console.log(filename, 'changed!!');
+
                 }
             });
         }
@@ -36,7 +39,7 @@ const devServer = {
 
             if (config.developMode) {
 
-                console.log('repasring whole docu');
+                console.log('re-parsing whole docu');
 
                 glob.sync(__dirname + '/src/*.js').forEach(file => {
                     delete require.cache[require.resolve(file)];
@@ -46,7 +49,8 @@ const devServer = {
                 data = parser.parse(config);
             }
 
-            console.log('req data.json', config);
+            console.log(app);
+            console.log('serving data.json', config);
 
             res.json(data.serialize());
 
@@ -56,12 +60,12 @@ const devServer = {
     }
 };
 
-module.exports = {
+const ui = {
 
     context: __dirname,
 
     entry: {
-        'index': './index.js'
+        'index': './ui/index.js'
     },
 
     devServer,
@@ -98,3 +102,27 @@ module.exports = {
         ]
     },
 };
+
+const configs = [ui];
+
+if (_.isString(config.runtime)) {
+    const runtime = require(config.runtime);
+
+    packageParser.Package.getIncludedFiles(config).forEach(file => {
+
+        if(file.includes('.vue'))
+        configs.push({
+            ...runtime,
+            entry: {
+                [file]: file
+            },
+            output: {
+                path: process.cwd() + '/runtime',
+                filename: '[name].runtime'
+            }
+        })
+    });
+
+}
+
+module.exports = configs;

@@ -10,11 +10,7 @@
             <h4>{{title}}</h4>
             <ul class="uk-nav uk-nav-default">
                 <li :style="{opacity: entry.documented.length > 1 ? 1 : 0.2}" v-for="entry in filteredData[category]">
-                    <router-link active-class="uk-active" tag="li" :to="`/component/${category}.${entry.name}`">
-                        <a>
-                            {{entry.name}}
-                        </a>
-                    </router-link>
+                    <ModuleLink :data="entry"/>
                 </li>
             </ul>
 
@@ -24,7 +20,13 @@
 
 <script>
 
+import ModuleLink from './ModuleLink.vue';
+
 export default {
+    components: {
+        ModuleLink
+    },
+
     props : {
         data: Object,
         value: Object

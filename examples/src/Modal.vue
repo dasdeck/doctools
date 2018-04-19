@@ -20,6 +20,8 @@
 
     /**
      * A reusable modal component using UIkit.modal and VUE
+     * @example
+     * <Modal><ChilComponent/></Modal>
      */
     export default {
 

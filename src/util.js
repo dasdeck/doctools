@@ -19,11 +19,17 @@ module.exports = {
     findRuntime(config, desc) {
 
         let runtime;
+
+        // const babel = require('babel-core');
+        // const res = babel.transform(desc.script);
+
         if (config.runtime) {
             runtime = _.get(config.runtime, `${desc.type}.${desc.name}`) || _.get(config.runtime, desc.name);
         }
 
-        if(!runtime && config.crudeImport) {
+
+
+        if (!runtime && config.crudeImport) {
             try {
                 runtime = this.crudeImport(desc.script);
             } catch (e) {
@@ -31,6 +37,7 @@ module.exports = {
                 console.warn(e);
             }
         }
+
 
         return runtime;
 

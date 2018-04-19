@@ -20,7 +20,10 @@ function findMembers(data, name) {
     const props = {};
 
     data.forEach(el => {
-        if(['member', 'function', 'event'].includes(el.kind)&& el.memberof && el.memberof === base + '.' + name) {
+
+        const longAdd = base + '.' + name;
+        if(['member', 'function', 'event'].includes(el.kind)&& el.memberof && el.memberof === longAdd) {
+            el.simpleName = el.name;
             props[el.name] = el;
         }
 
@@ -32,6 +35,7 @@ function findMembers(data, name) {
 function findProps(data, runtime) {
     const res = findMembers(data, 'props')
 
+    //
     if (runtime) {
         findPropDefaults(res, runtime);
     }
@@ -82,9 +86,9 @@ function findMethods(data) {
 
 module.exports = {
 
-    parseTemplate(desc) {
+    parseTemplate(res) {
 
-        const template = desc.template;
+        const template = res.template;
 
         const named = ['param', 'trigger', 'slot'];
         const subKind = ['param'];
@@ -100,7 +104,7 @@ module.exports = {
             if (templateComment) {
                 const comment = templateComment[0];
                 const kind = templateComment[1];
-                const type = templateComment[2];
+                const type = {names: [templateComment[2]]};
 
                 const useName = named.includes(kind);
 
@@ -120,8 +124,8 @@ module.exports = {
                     }
                 } else if (parentKind.includes(kind)) {
                     currentParent = current;
-                    desc[kind] = desc[kind] || [];
-                    desc[kind].push(current);
+                    res[kind] = res[kind] || [];
+                    res[kind].push(current);
                 }
             }
 
@@ -131,25 +135,26 @@ module.exports = {
 
     analyzeComponent(file) {
 
-        const desc = this.unpack(file);
+        const res = this.unpack(file);
 
-        const jsParsed = jsdoc.explainSync({source: desc.script});
+        const jsParsed = jsdoc.explainSync({source: res.script});
 
-        const res = this.map(jsParsed, desc.runtime);
+        const res = this.map(jsParsed, res.runtime);
 
-        Object.assign(desc, res);
+        Object.assign(res, res);
 
-        parseTemplate(template, desc);
+        parseTemplate(template, res);
 
-        return desc;
+        return res;
 
     },
 
 
-    map(input) {
+    map(desc) {
 
-        const {documented: entries, runtime, function: funcs} = input;
-        const desc = {};
+        const {documented: entries, runtime, function: funcs} = desc;
+
+        const res = {};
 
         [
             {props: findProps},
@@ -158,7 +163,8 @@ module.exports = {
             {methods: findMethods},
             'events',
             {emit: findEvents},
-            {trigger: data => data.filter(el => el.kind === 'trigger')}
+            {trigger: data => data.filter(el => el.kind === 'trigger')},
+            {components: (data, runtime) => ['test']}
         ].forEach(type => {
 
             const simple = typeof type === 'string';
@@ -167,7 +173,7 @@ module.exports = {
 
             const members =  simple ? findMembers(entries, name, runtime) : type[name](entries, runtime);
             if (_.size(members)) {
-                desc[name] = members;
+                res[name] = members;
 
                 //remove functions form the general function list
                 _.forEach(members, member => {
@@ -183,11 +189,11 @@ module.exports = {
 
         entries.forEach(data => {
             if (data.longname === base) {
-                desc.description = data.description;
+                res.description = data.description;
             }
         })
 
-        return desc
+        return res
     },
 
     unpack(file) {

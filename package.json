@@ -2,12 +2,30 @@
   "name": "yootheme-doctools",
   "version": "1.0.0",
   "description": "collection of helpers to generate code documentation",
-  "main": "parser.js",
+  "main": "src/parser.js",
   "bin": {
     "doctools": "./bin/doctools.js"
   },
   "scripts": {
-    "dev": "./bin/doctools.js"
+    "dev": "./bin/doctools.js examples --dev",
+    "dev:help": "./bin/doctools.js --dev",
+    "help": "./bin/doctools.js",
+    "example": "./bin/doctools.js examples"
+  },
+  "extra": {
+    "binDocs": {
+      "doctools": "see `doctools -h` for help"
+    },
+    "scriptDocs": {
+      "dev": "runs the dev-server in watch mode on the examples",
+      "dev:help": "runs the dev-server in watch mode on the the doctools source (creating self documentation)",
+      "help": "runs the dev-server showing the documentation for this tool",
+      "example": "runs the dev-server showing the example documentation"
+    }
+  },
+  "repository": {
+      "type" : "git",
+      "url" : "github:dasdeck/doctools"
   },
   "author": "",
   "license": "MIT",

@@ -1,12 +1,10 @@
 import Vue from 'vue';
-import Doc from './ui/Doc.vue';
+import Doc from './Doc.vue';
 import VueRouter from 'vue-router';
 import _ from 'lodash';
-import Content from './ui/Content.vue';
+import Content from './Content.vue';
 
 Vue.use(VueRouter);
-
-
 
 fetch('data.json').then(res => res.json()).then(data => {
 
@@ -18,11 +16,6 @@ fetch('data.json').then(res => res.json()).then(data => {
         }
 
     };
-
-    Vue.filter('notEmpty', data => {
-        debugger;
-        return !_.isEmpty(data) && _.size(data);
-    });
 
     const router = new VueRouter({
         routes: [
