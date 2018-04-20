@@ -2,10 +2,21 @@ import {Class, Togglable} from '../mixin/index';
 import {$, $$, attr, filter, getIndex, hasClass, includes, index, toggleClass, unwrap, wrapAll} from '../util/index';
 
 /**
+ *
  * @file
  * @type {UIkitComponent}
  */
 
+ /**
+  * test
+  */
+export function test() {
+
+}
+
+ /**
+  * an accordion component
+  */
 export default {
 
     mixins: [Class, Togglable],

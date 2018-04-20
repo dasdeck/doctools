@@ -6,12 +6,13 @@ const fs = require('fs');
 
 const argv = require('minimist')(process.argv.slice(2), {
     '--': true,
-    boolean: ['dev'],
+    boolean: ['dev', 'explain'],
     string: ['config', 'search'],
     alias: {
         config: ['c', '--config'],
         search: ['s', '--search'],
-        dev: ['d', '--dev']
+        dev: ['d', '--dev'],
+        explain: ['e', '--explain']
     }
 });
 
@@ -27,10 +28,9 @@ const argv = require('minimist')(process.argv.slice(2), {
 
 const base = argv._[0];
 
-const configFile = argv.config ? argv.config : path.join(base || process.cwd(), 'doctools.config.js');
-
 let config = {};
 
+const configFile = argv.config ? argv.config : path.join(base || process.cwd(), 'doctools.config.js');
 if (fs.existsSync(configFile)) {
     config = require(configFile);
     console.log('config file used: ', configFile);

@@ -19,8 +19,37 @@ class Package {
 
         this.type = 'package';
 
+        this.resource = this.package = this.dir.replace(config.resourceBase, '').replace(/\//g, '.').substr(1);
+
+        this.resources = {};
+        this.modules = {};
+
+        if (config.subPackages){
+            console.log('using subpackages:', config.subPackages);
+
+            this.subPackages = {};
+            glob.sync(path.join(this.dir, config.subPackages)).forEach(subPackage => {
+
+                const parser = require('./parser');
+
+                const res = parser.parse({...config, base:subPackage});
+
+
+                this.resources[res.resource] = res;
+                Object.assign(this.resources, res.resources);
+                delete res.resources;
+
+                this.subPackages[subPackage.split('/').pop()] = res.resource;
+
+
+
+            });
+
+        }
+
         this.init();
         this.createLinks();
+
     }
 
     init() {
@@ -34,26 +63,27 @@ class Package {
             trigger: []
         };
 
-        this.modules = {};
-
         const files = Package.getIncludedFiles(this.config);
         files.forEach(file => {
 
             const parser = require('./parser');
-            const res = parser.parse({...this.config, base:file});
+            const res = parser.parse({...this.config, base:file, package: this});
 
             if (!res.ignore) {
                 this.addModule(res);
             }
-
         });
 
     }
 
     addModule(module) {
 
+        const resource = module.resource;
+
+        this.resources[resource] = module;
+
         this.modules[module.type] = this.modules[module.type] || {};
-        this.modules[module.type][module.name] = module;
+        this.modules[module.type][module.name] = resource;//module;
 
         const {mapParams} = require('./moduleParser');
         _.forEach(module.trigger, trigger => {
@@ -76,7 +106,11 @@ class Package {
 
     }
 
-    createLinks() {
+    findDefinitionName(type, runtime) {
+        return this.config.runtime && this.config.runtime[type] && _.findKey(this.config.runtime[type], runtime);
+    }
+
+    createLinks(resource = this.resources) {
 
         const linkedModules = {};
 
@@ -85,7 +119,9 @@ class Package {
 
             const registry = linkedModules[type] = _.cloneDeep(this.modules[type]);
 
-            _.forEach(registry, comp => {
+            _.forEach(registry, resource => {
+
+                const comp = this.resources[resource];
 
                 comp.fileInPackage = comp.file.replace(this.dir, '.');
 
@@ -103,7 +139,7 @@ class Package {
                     if (runtime.extends && !comp.extends) {
                         console.warn('could not link extend on: ' + comp.name);
 
-                        comp.extends = this.config.runtime && this.config.runtime[type] && _.findKey(this.config.runtime[type], runtime.extends);
+                        comp.extends = this.findDefinitionName(runtime.extends);
 
                         if (!comp.extends) {
                             console.warn('could not find extend on: ' + comp.name);
@@ -119,7 +155,7 @@ class Package {
                     _.forEach(runtime.mixins, (mixin, index) => {
                         const definition = mixin && _.find(registry, ['runtime', mixin]);
 
-                        const name = mixin && this.config.runtime && this.config.runtime[type] && _.findKey(this.config.runtime[type], mixin);
+                        const name = mixin && this.findDefinitionName(type, mixin);
                         if(!name) {
                             console.warn('could not find mixin ' + index + ' in: ' + comp.name);
                         }
@@ -185,10 +221,7 @@ module.exports = {
 
     /**
      * @private
-     * @param {Object} config
-     * @param {String} config.base - package directory
-     * @param {String} [config.search = '** /*.+(js|vue)'] - glob of files to document for this package (default value pseudo escaped)
-     * @param {String} [config.subpackage] - glob of sub-packages to recursively inlcude document
+     * @param {DoctoolsConfig} config
      */
     analyzePackage(config) {
         return new Package(config);

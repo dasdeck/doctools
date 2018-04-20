@@ -1,5 +1,5 @@
 <template>
-    <router-link active-class="uk-active" :tag="tag" :to="`/component/${data.type}.${data.name}`">
+    <router-link active-class="uk-active" :tag="tag" :to="`/${data.resource}`">
         <a>
             {{data.name}}
         </a>

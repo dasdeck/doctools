@@ -185,8 +185,6 @@ module.exports = {
 
         });
 
-
-
         entries.forEach(data => {
             if (data.longname === base) {
                 res.description = data.description;

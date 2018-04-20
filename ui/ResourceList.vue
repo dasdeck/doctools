@@ -1,20 +1,14 @@
 <template>
     <div>
-        <input v-model="filter">
-
-        <h4>
-            <router-link :to="`/package/${data.name}`">{{data.name}}</router-link>
-        </h4>
-
         <template v-for="(title, category) in filteredCategories">
             <h4>{{title}}</h4>
             <ul class="uk-nav uk-nav-default">
-                <li :style="{opacity: entry.documented.length > 1 ? 1 : 0.2}" v-for="entry in filteredData[category]">
-                    <ModuleLink :data="entry"/>
+                <li :style="{opacity: $resources[entry].documented.length > 1 ? 1 : 0.2}" v-for="(entry) in filteredData[category]">
+                    <ModuleLink :data="$resources[entry]"/>
                 </li>
             </ul>
-
         </template>
+
     </div>
 </template>
 
@@ -27,16 +21,21 @@ export default {
         ModuleLink
     },
 
-    props : {
-        data: Object,
-        value: Object
-    },
+    inject: ['$resources', '$settings'],
 
-    data() {
-        return {filter: ''};
+    props : {
+        /**
+         * the current package
+         */
+        data: Object
+
     },
 
     computed: {
+
+        filter() {
+            return this.$settings.filter;
+        },
 
         categories() {
             return {'VueComponent': 'Vue', 'UIkitComponent': 'UIkit', 'module': 'Modules'};
@@ -52,10 +51,14 @@ export default {
             if(this.filter) {
 
                 const data = {};
+
+
                 _.forEach(this.categories, (cat, name) => {
-                    _.forEach(this.data[name], (entry, key) => {
+                    _.forEach(this.data[name], (resource, key) => {
+                        const entry = this.$resources[resource];
                         if (entry.name.includes(this.filter)) {
-                            data[key] = entry;
+                            data[name] = data[name] || {};
+                            data[name][key] = resource;
                         }
                     })
                 });
@@ -67,8 +70,7 @@ export default {
 
     }
 
-
-}
+};
 </script>
 
 <style>

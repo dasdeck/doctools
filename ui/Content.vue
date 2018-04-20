@@ -1,5 +1,5 @@
 <template>
-    <component :is="data.type" :data="data" :options="options"></component>
+    <component :is="data.type" :data="data"></component>
 </template>
 
 <script>
@@ -22,7 +22,6 @@ export default {
   },
 
   props: {
-      options: Object,
       data: Object
   }
 }

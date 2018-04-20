@@ -9,16 +9,12 @@ Vue.use(VueRouter);
 fetch('data.json').then(res => res.json()).then(data => {
 
     window.$data = data;
-    const findPackage = (data, name) => {
 
-        if (data.name === name) {
-            return data;
-        }
-
-    };
+    data.resources[data.name] = data;
 
     const router = new VueRouter({
         routes: [
+
             {
                 path: '/',
                 redirect: (route) => {
@@ -28,24 +24,15 @@ fetch('data.json').then(res => res.json()).then(data => {
                 }
             },
             {
-                path: '/package/:name',
+                path: '/:resource',
                 component: Content,
                 props: (route) => {
                     return {
-                        data: findPackage(data, route.params.name)
+                        data: data.resources[route.params.resource]
                     }
                 }
-            },
-            {
-                path: '/component/:address',
-                component: Content,
-                props: (route) => {
-                    return {
-                        data: _.get(data, route.params.address)
-                    }
-                }
-
             }
+
         ]
       })
 

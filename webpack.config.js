@@ -5,8 +5,36 @@ const _ = require('lodash');
 const fs = require('fs');
 const path = require('path');
 const packageParser = require('./src/packageParser');
+const webpack = require('webpack');
+const MemFs = require('memory-fs');
+const requireFromString = require('require-from-string');
 
-const config = global.doctoolsConfig;
+
+
+function webpackFile(config, filename) {
+    const runtime = require(config.runtime);
+
+    const compiler = webpack({
+        ...runtime,
+        entry: {
+            [filename]: filename
+        },
+        output: {
+            libraryTarget: 'commonjs'
+        }
+    });
+
+    compiler.outputFileSystem = new MemFs;
+
+    return new Promise(resolve => {
+
+        compiler.run((err, res) => {
+            const data = compiler.outputFileSystem.readFileSync(Object.keys(res.compilation.assets)[0] ,'utf8');
+            const rt = requireFromString(data);
+            resolve(rt);
+        });
+    });
+}
 
 const devServer = {
 
@@ -21,14 +49,28 @@ const devServer = {
         console.log('building docs...');
 
         const parser = require(__dirname + '/src/parser');
-        let data = parser.parse(config);
+        const config = parser.prepareConfig(global.doctoolsConfig);
 
-        if (config.watch && data instanceof packageParser.Package) {
+        let data;
+
+        if (config.watch) {
             const watchedFiles = packageParser.Package.getIncludedFiles(config);
 
             fs.watch(config.base, {recursive: true}, (eventType, filename) => {
                 filename = path.join(config.base, filename);
                 if (watchedFiles.includes(filename)) {
+
+                    if (_.isString(config.runtime)) {
+
+                        webpackFile(config, filename).then(desc => {
+                            debugger;
+                            if (data instanceof packageParser.Package) {
+                                debugger;
+                                // data(patch());
+                            }
+                        });
+                    }
+
                     console.log(filename, 'changed!!');
 
                 }
@@ -37,15 +79,17 @@ const devServer = {
 
         app.get('/data.json', (req, res, next) => {
 
-            if (config.developMode) {
+            if(!data || config.developMode) {
 
-                console.log('re-parsing whole docu');
+                if (config.developMode) {
 
-                glob.sync(__dirname + '/src/*.js').forEach(file => {
-                    delete require.cache[require.resolve(file)];
-                });
+                    console.log('re-parsing whole docu');
 
-                const parser = require(__dirname + '/src/parser');
+                    glob.sync(__dirname + '/src/*.js').forEach(file => {
+                        delete require.cache[require.resolve(file)];
+                    });
+
+                }
                 data = parser.parse(config);
             }
 
@@ -104,25 +148,5 @@ const ui = {
 };
 
 const configs = [ui];
-
-if (_.isString(config.runtime)) {
-    const runtime = require(config.runtime);
-
-    packageParser.Package.getIncludedFiles(config).forEach(file => {
-
-        if(file.includes('.vue'))
-        configs.push({
-            ...runtime,
-            entry: {
-                [file]: file
-            },
-            output: {
-                path: process.cwd() + '/runtime',
-                filename: '[name].runtime'
-            }
-        })
-    });
-
-}
 
 module.exports = configs;

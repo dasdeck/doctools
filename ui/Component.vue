@@ -104,13 +104,14 @@ export default {
     },
     props: {
         data: Object,
-        options: Object,
         registry: Object
     },
 
+    inject: ['$settings'],
+
     computed: {
         methods() {
-            return _.filter(this.data.methods, method => this.options.private || method.access !== 'private');
+            return _.filter(this.data.methods, method => this.$settings.private || method.access !== 'private');
         },
 
         props() {

@@ -19,7 +19,7 @@ module.exports = {
      * a glob to search for files to be included
      * @type {GlobString}
      */
-    search: '+(src|ui)/**/*.+(js|vue)',
+    search: 'src/**/*.+(js|vue)',
 
     /**
      * enables 'hot reload' for the parser code
@@ -48,5 +48,11 @@ module.exports = {
      * weather to watch and patch the documentation
      * @type {Boolean}
      */
-    watch: true
+    watch: true,
+
+    /**
+     * a glob to search for files to be included, or false
+     * @type {GlobString|Boolean}
+     */
+    subPackages: false
 };

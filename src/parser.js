@@ -4,6 +4,8 @@ const fs = require('fs');
 const componentMappper = require('./componentMapper');
 const _ = require('lodash');
 
+const path = require('path');
+
 const util = require('./util');
 const {getTestCodes} = require('./testParser');
 
@@ -34,6 +36,16 @@ const mapper = {
 };
 
 /**
+ * @mutates
+ * @param {DoctoolsConfig} config
+ */
+function prepareConfig(config) {
+    _.defaults(config, defaultConfig);
+    config.resourceBase = config.resourceBase || path.dirname(config.base);
+    return config;
+}
+
+/**
  * @file
  * @example
 ```js
@@ -44,6 +56,7 @@ import parser from 'doctools';
 parser.parse("path/to/a/file/or/directory"); //shorthand for parser.parse({base: "path/to/a/file/or/directory"})
 
 ...
+
 //pass a config
 parser.parse({
     base: __dirname,
@@ -54,12 +67,12 @@ parser.parse({
 
 //or use default config
 parser.parse();
-
 ```
  */
 
-
 module.exports = {
+
+    prepareConfig,
 
     /**
      * Parses the data defined in config and returns an object containing the parsed structure
@@ -73,20 +86,28 @@ module.exports = {
             config = {base: config};
         }
 
-        _.defaults(config, defaultConfig);
+        prepareConfig(config);
 
         const file = config.base;
 
-        const name = file.split('/').pop().split('.').shift();
-        const desc = {file, name, type: 'module'};
+        const resource = file.replace(config.resourceBase, '').replace(/\//g, '.').substr(1);
 
         if (fs.lstatSync(file).isDirectory()) {
 
             const packageParser = require('./packageParser');
             const res = packageParser.analyzePackage(config);
-            Object.assign(desc, res);
+            res.resource = resource;
             return res;
         }
+
+        const name = file.split('/').pop().split('.').shift();
+        const desc = {
+            file,
+            package: config.package && config.package.resource,
+            name,
+            resource,
+            type: 'module'
+        };
 
         const extension = file.split('.').pop();
 

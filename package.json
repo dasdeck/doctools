@@ -24,8 +24,8 @@
     }
   },
   "repository": {
-      "type" : "git",
-      "url" : "github:dasdeck/doctools"
+    "type": "git",
+    "url": "github:dasdeck/doctools"
   },
   "author": "",
   "license": "MIT",
@@ -41,6 +41,7 @@
     "lodash": "^4.17.5",
     "marked": "^0.3.19",
     "minimist": "^1.2.0",
+    "require-from-string": "^2.0.2",
     "uikit": "^3.0.0-beta.42",
     "vue": "^2.5.16",
     "vue-loader": "^14.2.2",

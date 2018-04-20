@@ -1,17 +1,22 @@
 <template>
     <div uk-grid>
-        <label class="uk-width-1-4">
-            show private members:
-        <input class="uk-checkbox" type="checkbox" v-model="options.private">
-        </label>
-        <div  class="uk-width-3-4"></div>
-        <Tree class="uk-width-1-4" :selected="selected" :data="data" @show="selected = $event"></Tree>
-        <router-view class="uk-width-3-4" :options="options" ></router-view>
+        <div class="uk-width-1-4">
+            <label >
+                show private members:
+                <input class="uk-checkbox" type="checkbox" v-model="settings.private">
+            </label>
+
+            <input type="text" v-model="settings.filter">
+
+            <PackageTree :data="data" />
+        </div>
+        <router-view class="uk-width-3-4" ></router-view>
     </div>
 </template>
 
 <script>
-import Tree from './Tree.vue';
+import PackageTree from './PackageTree.vue';
+
 import _ from 'lodash';
 
 /**
@@ -20,7 +25,7 @@ import _ from 'lodash';
 export default {
 
     components: {
-        Tree
+        PackageTree
     },
 
 
@@ -30,6 +35,13 @@ export default {
          * currently ony supporting packages!
          */
         data: Object
+    },
+
+    provide() {
+        return {
+            $resources: this.data.resources,
+            $settings: this.settings
+        };
     },
 
     data() {
@@ -42,9 +54,11 @@ export default {
             /**
              * general application wide settings
              */
-            options: {
-                private:false
+            settings: {
+                private:false,
+                filter:''
             }
+
         };
     },
 
