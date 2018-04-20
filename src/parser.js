@@ -142,11 +142,13 @@ module.exports = {
 
     } catch (e) {
         console.warn('error while parsing: ' + file);
-        throw e;
+        if(config.strict) {
+            throw e;
+        } else {
+            console.log(e.message);
+        }
     }
 
         return desc;
     }
 }
-
-exports.de

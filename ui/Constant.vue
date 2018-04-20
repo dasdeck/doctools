@@ -15,7 +15,7 @@
 export default {
     props: {
         /**
-         * the descriptor for this constant
+         * the descriptor jsodc for this constant
          */
         data: Object
     }

@@ -2,7 +2,6 @@
   <div>
       <h1>{{data.name}}</h1>
 
-
     <template v-if="data.packageJson">
 
       <p>{{data.packageJson.description}}</p>
@@ -12,7 +11,6 @@
             <code v-if="data.packageJson.bin">npm i -g {{data.packageJson.repository.url}}</code>
             <code v-else>npm i -D {{data.packageJson.repository.url}}</code>
         </template>
-
 
         <template v-if="data.packageJson.bin">
             <h2>cli / bin:</h2>

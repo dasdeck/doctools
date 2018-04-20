@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 /* eslint-env node */
-const _ = require('lodash');
 const path = require('path');
 const fs = require('fs');
+const webpack = require('webpack');
+const devServer = require('webpack-dev-server');
 
 const argv = require('minimist')(process.argv.slice(2), {
     '--': true,
@@ -52,7 +53,47 @@ if (argv.explain) {
 } else {
     process.argv = [...process.argv.slice(0, 2), ...argv['--']];
     //force the dev-server to use local config
-    process.argv.push('--config');
-    process.argv.push(path.join(__dirname, '..', 'webpack.config.js'));
-    require('webpack-dev-server/bin/webpack-dev-server');
+    const uiWPConfig = path.join(__dirname, '..', 'ui', 'webpack.config.js');
+
+    manualStart(uiWPConfig);
+    // process.argv.push('--config');
+    // process.argv.push(uiWPConfig);
+    // require('webpack-dev-server/bin/webpack-dev-server');
+}
+
+function manualStart(cfg) {
+
+    const wpConfig = require(cfg);
+    const devServerConfig = require(__dirname + '/../devServer');
+
+    devServerConfig.stats = {
+        cached: false,
+        cachedAssets: false,
+        color: true
+    };
+
+    const portfinder = require('portfinder');
+    portfinder.basePort = devServerConfig.port || 8080;
+
+    portfinder.getPort((err, port) => {
+
+        devServerConfig.port = port;
+        devServerConfig.host = devServerConfig.host || 'localhost';
+        devServer.addDevServerEntrypoints(wpConfig, devServerConfig);
+
+        const compiler = webpack(wpConfig);
+
+        const server = new devServer(compiler, devServerConfig);
+
+        global.doctoolsConfig.server = server;
+
+        server.listen(devServerConfig.port, devServerConfig.host, function(err, res) {
+            if (err) {
+                throw err;
+            }
+
+            console.log('server started');
+            console.log(`http://${devServerConfig.host}:${devServerConfig.port}`);
+        });
+    });
 }

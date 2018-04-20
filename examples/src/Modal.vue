@@ -16,10 +16,11 @@
 </template>
 
 <script>
+
     import UIkit from 'uikit';
 
     /**
-     * A reusable modal component using UIkit.modal and VUE
+     * A reusable modal component using UIkit.modal and VUE.
      * @example
      * <Modal><ChilComponent/></Modal>
      */
@@ -42,7 +43,7 @@
             content: Object,
 
             /**
-             * Optional uk-width-($with) class for the modal to use
+             * Optional uk-width-($with) class for the modal to use.
              **/
             width: {
                 type: String
@@ -137,7 +138,7 @@
 
             /**
              * Closes the modal
-             * @returns {Promise} A promise that resolves when the modal is closed
+             * @returns {Promise} A promise that resolves when the modal is closed.
              */
             close() {
                 return this.modal.hide();

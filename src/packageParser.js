@@ -23,6 +23,7 @@ class Package {
 
         this.resources = {};
         this.modules = {};
+        this.runtime = {};
 
         if (config.subPackages){
             console.log('using subpackages:', config.subPackages);
@@ -34,13 +35,10 @@ class Package {
 
                 const res = parser.parse({...config, base:subPackage});
 
-
                 this.resources[res.resource] = res;
                 Object.assign(this.resources, res.resources);
+                this.subPackages[res.name] = res.resource;
                 delete res.resources;
-
-                this.subPackages[subPackage.split('/').pop()] = res.resource;
-
 
 
             });
@@ -66,12 +64,38 @@ class Package {
         const files = Package.getIncludedFiles(this.config);
         files.forEach(file => {
 
-            const parser = require('./parser');
-            const res = parser.parse({...this.config, base:file, package: this});
+            this.addFile(file);
 
-            if (!res.ignore) {
-                this.addModule(res);
-            }
+        });
+
+    }
+
+    addFile(file) {
+        const parser = require('./parser');
+        const res = parser.parse({...this.config, base:file, package: this});
+        if (!res.ignore) {
+            this.addModule(res);
+        }
+    }
+
+    analyzeRuntime() {
+
+        return new Promise(res => {
+
+            const jobs = [];
+            _.forEach(this.resources, desc => {
+
+                if(!this.runtime[desc.resource]) {
+                    const job = util.findRuntime(this.config, desc).then(runtime => {
+                        this.runtime[desc.resource] = runtime;
+                    });
+                    jobs.push(job);
+                }
+            })
+
+
+            Promise.all(jobs).then(all => res(this));
+
         });
 
     }
@@ -96,12 +120,18 @@ class Package {
     }
 
     patch(module) {
-        this.addModule(module);
+        if (_.isString(module)) {
+            this.addFile(module);
+        } else {
+            this.addModule(module);
+        }
         this.createLinks();
     }
 
     serialize() {
 
+        this.analyzeRuntime();
+        _.forEach(this.resources, resource => delete resource.config);
         return {...this, config: undefined};
 
     }

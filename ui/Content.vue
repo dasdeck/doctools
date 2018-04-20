@@ -22,7 +22,14 @@ export default {
   },
 
   props: {
-      data: Object
+      resource: String,
+      resources: Object
+  },
+
+  computed: {
+    data() {
+      return this.resources[this.resource];
+    }
   }
 }
 </script>

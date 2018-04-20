@@ -4,39 +4,60 @@ import VueRouter from 'vue-router';
 import _ from 'lodash';
 import Content from './Content.vue';
 
+import SockJS from 'sockjs-client';
+
+let app;
+
 Vue.use(VueRouter);
+
+
+function setData(data) {
+    window.$data = data;
+    data.resources[data.name] = data;
+    if (app) {
+        _.assign(app.data, data);
+    }
+}
 
 fetch('data.json').then(res => res.json()).then(data => {
 
-    window.$data = data;
+    setData(data);
+    init();
+});
 
-    data.resources[data.name] = data;
+function init() {
+
 
     const router = new VueRouter({
         routes: [
 
             {
                 path: '/',
-                redirect: (route) => {
-                    if (data.type === 'package') {
-                        return '/package/' + data.name;
-                    }
+                redirect(route) {
+                    return '/' + window.$data.resource;
                 }
             },
             {
                 path: '/:resource',
                 component: Content,
-                props: (route) => {
-                    return {
-                        data: data.resources[route.params.resource]
-                    }
-                }
+                beforeEnter(route, to , next) {
+                    next(window.$data.resources[route.params.resource] ? undefined : '/');
+                },
+                props: true
             }
 
         ]
-      })
+        })
 
     const comp = Vue.extend(({...Doc}));
-    new comp({propsData: {data}, el: '#app', router})
-});
+    app = new comp({propsData: {initialData: window.$data}, el: '#app', router});
 
+    const socket = new SockJS('http://localhost:8080/sockjs-node')
+    socket.onmessage = res => {
+        if (res.data.indexOf('{"type":"doc-changed"') === 0) {
+
+            const newData = JSON.parse(res.data).data;
+            setData(newData);
+        }
+    }
+}

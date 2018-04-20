@@ -1,16 +1,21 @@
 <template>
-    <div uk-grid>
-        <div class="uk-width-1-4">
-            <label >
-                show private members:
-                <input class="uk-checkbox" type="checkbox" v-model="settings.private">
-            </label>
+    <div>
+        <div v-if="data" uk-grid>
+            <div class="uk-width-1-4">
+                <label >
+                    show private members:
+                    <input class="uk-checkbox" type="checkbox" v-model="settings.private">
+                </label>
 
-            <input type="text" v-model="settings.filter">
+                <input type="text" v-model="settings.filter">
 
-            <PackageTree :data="data" />
+                <PackageTree :data="data"/>
+            </div>
+            <router-view class="uk-width-3-4" :resources="data.resources"></router-view>
         </div>
-        <router-view class="uk-width-3-4" ></router-view>
+        <div v-else>
+            waitng for data...
+        </div>
     </div>
 </template>
 
@@ -34,18 +39,23 @@ export default {
          * the main data returned from the doctool parser
          * currently ony supporting packages!
          */
-        data: Object
+        initialData: {
+            required: true,
+            type: Object
+        }
     },
 
     provide() {
         return {
-            $resources: this.data.resources,
+            $docData: this.data,
             $settings: this.settings
         };
     },
 
     data() {
         return {
+
+            data: this.initialData,
             /**
              * the selected module/component
              */

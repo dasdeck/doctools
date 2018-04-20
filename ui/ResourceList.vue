@@ -3,12 +3,11 @@
         <template v-for="(title, category) in filteredCategories">
             <h4>{{title}}</h4>
             <ul class="uk-nav uk-nav-default">
-                <li :style="{opacity: $resources[entry].documented.length > 1 ? 1 : 0.2}" v-for="(entry) in filteredData[category]">
-                    <ModuleLink :data="$resources[entry]"/>
+                <li :style="{opacity: $docData.resources[entry].documented.length > 1 ? 1 : 0.2}" v-for="(entry) in filteredData[category]">
+                    <ModuleLink :data="$docData.resources[entry]"/>
                 </li>
             </ul>
         </template>
-
     </div>
 </template>
 
@@ -21,7 +20,7 @@ export default {
         ModuleLink
     },
 
-    inject: ['$resources', '$settings'],
+    inject: ['$docData', '$settings'],
 
     props : {
         /**
@@ -55,7 +54,7 @@ export default {
 
                 _.forEach(this.categories, (cat, name) => {
                     _.forEach(this.data[name], (resource, key) => {
-                        const entry = this.$resources[resource];
+                        const entry = this.$docData.resources[resource];
                         if (entry.name.includes(this.filter)) {
                             data[name] = data[name] || {};
                             data[name][key] = resource;

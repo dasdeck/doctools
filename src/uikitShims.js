@@ -8,11 +8,23 @@ const globals = [
     'document'
 ];
 
+/**
+ * @file
+ * a set of tools to load UIkit insinde a Node environement
+ * this does not claim to be complete at all!
+ */
+
 const store = {};
 
+
+/**
+ * uikit tools
+ */
 module.exports = {
 
-
+    /**
+     * shims all necessery globals on order for UIkit to boostrap
+     */
     install() {
         globals.forEach(name => {
             store[name] = global[name];
@@ -46,10 +58,17 @@ module.exports = {
 
     },
 
+    /**
+     * registers UIkit as a global variable, similar to the browser version
+     */
     registerGlobal() {
         UIkit = this.get();
     },
 
+
+    /**
+     * gets the UIkit object
+     */
     get() {
         if (!this.uikit) {
 
@@ -59,11 +78,14 @@ module.exports = {
         return this.uikit;
     },
 
+
+    /**
+     * resets the global varaibles to their initial state
+     */
     clear() {
         globals.forEach(name => {
             global[name] = store[name];
         });
     }
-}
-
+};
 

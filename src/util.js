@@ -1,6 +1,47 @@
+/* eslint-env node */
 const _ = require('lodash');
+const webpack = require('webpack');
+const MemFs = require('memory-fs');
+const requireFromString = require('require-from-string');
 
 module.exports = {
+
+    /**
+     *
+     * @param {DoctoolsConfig} config
+     * @param {String} filename
+     * @returns {Promise} returns an object with the result of a webpacked require of the given file
+     */
+    webpackFile(config, filename) {
+        const runtime = require(config.runtime);
+
+        const compiler = webpack({
+            ...runtime,
+            entry: {
+                [filename]: filename
+            },
+            output: {
+                libraryTarget: 'commonjs'
+            }
+        });
+
+        compiler.outputFileSystem = new MemFs;
+
+        return new Promise(resolve => {
+
+            compiler.run((err, res) => {
+                const data = compiler.outputFileSystem.readFileSync(Object.keys(res.compilation.assets)[0] ,'utf8');
+                try {
+                    const rt = requireFromString(data);
+                    resolve(rt.default ? rt.default : rt);
+                } catch(e) {
+                    console.warn('could not load runtime for:', filename);
+                    resolve({});
+                }
+            });
+        });
+    },
+
     /**
      * normalizes indention to 0
      * @param {String} string - string to indent
@@ -18,26 +59,34 @@ module.exports = {
 
     findRuntime(config, desc) {
 
-        let runtime;
+        return new Promise(res => {
 
-        // const babel = require('babel-core');
-        // const res = babel.transform(desc.script);
+            let runtime;
 
-        if (config.runtime) {
-            runtime = _.get(config.runtime, `${desc.type}.${desc.name}`) || _.get(config.runtime, desc.name);
-        }
+            // const babel = require('babel-core');
+            // const res = babel.transform(desc.script);
 
+            if (config.runtime) {
 
-
-        if (!runtime && config.crudeImport) {
-            try {
-                runtime = this.crudeImport(desc.script);
-            } catch (e) {
-                console.warn('could not import runtime for: ' + desc.name);
-                console.warn(e);
+                if(_.isString(config.runtime)) {
+                    this.webpackFile(config, desc.file).then(res);
+                } else {
+                    runtime = _.get(config.runtime, `${desc.type}.${desc.name}`) || _.get(config.runtime, desc.name);
+                    res(runtime);
+                }
             }
-        }
 
+
+            if (!runtime && config.crudeImport) {
+                try {
+                    runtime = this.crudeImport(desc.script);
+                } catch (e) {
+                    console.warn('could not import runtime for: ' + desc.name);
+                    console.warn(e);
+                }
+            }
+
+        })
 
         return runtime;
 

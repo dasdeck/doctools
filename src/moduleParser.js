@@ -104,7 +104,9 @@ module.exports = {
                 const [name, value] = arg.trim().split('=').map(v => v.trim());
                 if (value) {
                     const param = _.find(el.params, ['name', name]);
-                    if(_.isUndefined(param.defaultvalue)) {
+                    // if(!param) debugger;
+                    // @TODO auto doc undocuemted default?
+                    if (param && _.isUndefined(param.defaultvalue)) {
                         // debugger;
                         param.defaultvalue = value;
                         param.optional = true;

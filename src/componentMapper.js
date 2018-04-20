@@ -7,7 +7,7 @@ const path = require('path');
 
 const {findRuntime, findPropDefaults} = require('./util');
 
-const base = 'module.exports';
+let base; //= 'module.exports';
 
 /**
  * @file
@@ -153,6 +153,17 @@ module.exports = {
     map(desc) {
 
         const {documented: entries, runtime, function: funcs} = desc;
+
+        base = 'module.exports';
+        desc.all.forEach(entry => {
+            if ((entry.type && entry.type.names.includes(desc.type)) && entry.kind === 'constant') {
+                base = entry.longname;
+            }
+            // if (entry.name === 'exports' && desc.name === 'PackageTree') {
+            //     console.log(desc);
+            //     debugger;
+            // }
+        });
 
         const res = {};
 
