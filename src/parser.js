@@ -41,6 +41,7 @@ const mapper = {
  */
 function prepareConfig(config) {
     _.defaults(config, defaultConfig);
+    //ests teh resourceBase e.g. the root package
     config.resourceBase = config.resourceBase || path.dirname(config.base);
     return config;
 }
@@ -76,8 +77,7 @@ module.exports = {
 
     /**
      * Parses the data defined in config and returns an object containing the parsed structure
-     * @param {String|Object} [config = {}] - filePath or config hash
-     * @param {String} config.base - root path to operate on
+     * @param {String|DoctoolsConfig} [config = {}] - filePath or config hash
      * @returns {Object} the parsed structure
      */
     parse(config = {}) {
@@ -90,65 +90,63 @@ module.exports = {
 
         const file = config.base;
 
-        const resource = file.replace(config.resourceBase, '').replace(/\//g, '.').substr(1);
-
         if (fs.lstatSync(file).isDirectory()) {
 
-            const packageParser = require('./packageParser');
-            const res = packageParser.analyzePackage(config);
-            res.resource = resource;
+            const Package = require('./Package');
+            const res = new Package(config);
             return res;
-        }
 
-        const name = file.split('/').pop().split('.').shift();
-        const desc = {
-            file,
-            package: config.package && config.package.resource,
-            name,
-            resource,
-            type: 'module'
-        };
-
-        const extension = file.split('.').pop();
-
-        if (!preProcess[extension]) {
-            throw 'unknown extension: ' + extension;
         } else {
-            preProcess[extension](desc, file);
-        }
 
-        const moduleParser = require('./moduleParser');
-        try {
+            let desc = {};
 
-            const jsDoc = moduleParser.analyzeModule(desc.script, config);
+            const extension = file.split('.').pop();
 
-            Object.assign(desc, jsDoc);
-            //coverage
-            // const cover = require('./coverage/coverage.sum.json');
-            // const covers = {};
-            // _.forEach(cover, (entry, name) => {
-            //     covers[name.split('/').pop().replace(/.js/g,'')] = entry;
-            // });
-            // const coverage = covers[name] && covers[name].lines.pct || 0;
-
-            //test codes (per function / member)
-            // el.tests = getTestCodes(name, el.longname);
-
-            desc.runtime = util.findRuntime(config, desc);
-
-            if (mapper[desc.type]) {
-                mapper[desc.type](desc);
+            if (!preProcess[extension]) {
+                throw 'unknown extension: ' + extension;
+            } else {
+                preProcess[extension](desc, file);
             }
 
-    } catch (e) {
-        console.warn('error while parsing: ' + file);
-        if(config.strict) {
-            throw e;
-        } else {
-            console.log(e.message);
-        }
-    }
+            const Module = require('./Module');
 
-        return desc;
+            try {
+
+                // const jsDoc = moduleParser.analyzeModule(desc.script, config);
+
+                desc = new Module(config, desc, config.package);
+
+                // Object.assign(desc, jsDoc);
+
+                //coverage
+                // const cover = require('./coverage/coverage.sum.json');
+                // const covers = {};
+                // _.forEach(cover, (entry, name) => {
+                //     covers[name.split('/').pop().replace(/.js/g,'')] = entry;
+                // });
+                // const coverage = covers[name] && covers[name].lines.pct || 0;
+
+                //test codes (per function / member)
+                // el.tests = getTestCodes(name, el.longname);
+
+                // desc.runtime = util.findRuntime(config, desc);
+
+                if (mapper[desc.type]) {
+                    mapper[desc.type](desc);
+                }
+
+        } catch (e) {
+            console.warn('error while parsing: ' + file);
+            if (config.strict) {
+                throw e;
+            } else {
+                console.log(e.message);
+                console.log(e.stack);
+            }
+        }
+
+            return desc;
+
+        }
     }
 }

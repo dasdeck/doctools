@@ -21,14 +21,23 @@ export default {
     Package
   },
 
+  inject: ['$doc'],
+
   props: {
-      resource: String,
-      resources: Object
+    /**
+     * the address of the current resource
+     * will be set by vue router
+     */
+    resource: String
   },
 
   computed: {
+    /**
+     * the data for the current content view.
+     * the fata is dereferenced from the current's routes resource paremter
+      */
     data() {
-      return this.resources[this.resource];
+      return this.$doc.resources[this.resource];
     }
   }
 }

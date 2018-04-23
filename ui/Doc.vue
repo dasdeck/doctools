@@ -11,7 +11,7 @@
 
                 <PackageTree :data="data"/>
             </div>
-            <router-view class="uk-width-3-4" :resources="data.resources"></router-view>
+            <router-view class="uk-width-3-4"/>
         </div>
         <div v-else>
             waitng for data...
@@ -47,8 +47,7 @@ export default {
 
     provide() {
         return {
-            $docData: this.data,
-            $settings: this.settings
+            $doc: this
         };
     },
 
@@ -70,6 +69,12 @@ export default {
             }
 
         };
+    },
+
+    computed: {
+        resources() {
+            return this.data && this.data.resources || {};
+        }
     },
 
     created() {

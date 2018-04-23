@@ -3,63 +3,39 @@ const util = require('./util');
 const path = require('path');
 const fs = require('fs');
 const glob = require('glob');
+const TreeItem = require('./TreeItem');
 
 /**
  * the Package parser
  */
-class Package {
+class Package extends TreeItem {
 
     constructor(config) {
 
-        const dir = config.base;
-        this.config = config;
-
-        this.dir = dir;
-        this.name = dir.split('/').pop();
+        super(config)
 
         this.type = 'package';
-
-        this.resource = this.package = this.dir.replace(config.resourceBase, '').replace(/\//g, '.').substr(1);
 
         this.resources = {};
         this.modules = {};
         this.runtime = {};
 
-        if (config.subPackages){
-            console.log('using subpackages:', config.subPackages);
 
-            this.subPackages = {};
-            glob.sync(path.join(this.dir, config.subPackages)).forEach(subPackage => {
-
-                const parser = require('./parser');
-
-                const res = parser.parse({...config, base:subPackage});
-
-                this.resources[res.resource] = res;
-                Object.assign(this.resources, res.resources);
-                this.subPackages[res.name] = res.resource;
-                delete res.resources;
-
-
-            });
-
-        }
-
+        this.analyzeSubPackages();
         this.init();
         this.createLinks();
+        this.mapGlobals();
 
     }
 
     init() {
 
-        const packPath = path.join(this.dir, 'package.json');
+        const packPath = path.join(this.path, 'package.json');
         if (fs.existsSync(packPath)) {
             this.packageJson = require(packPath);
         }
 
-        this.globals = {
-            trigger: []
-        };
+
 
         const files = Package.getIncludedFiles(this.config);
         files.forEach(file => {
@@ -70,12 +46,37 @@ class Package {
 
     }
 
+    analyzeSubPackages() {
+
+        if (this.config.subPackages){
+            console.log('using subpackages:', this.config.subPackages);
+
+            this.subPackages = {};
+            glob.sync(path.join(this.path, this.config.subPackages)).forEach(subPackage => {
+
+                const parser = require('./parser');
+
+                const res = parser.parse({...this.config, base:subPackage});
+
+                this.resources[res.resource] = res;
+                Object.assign(this.resources, res.resources);
+                this.subPackages[res.name] = res.resource;
+                delete res.resources;
+
+            });
+
+        }
+
+    }
+
     addFile(file) {
+
         const parser = require('./parser');
         const res = parser.parse({...this.config, base:file, package: this});
         if (!res.ignore) {
             this.addModule(res);
         }
+
     }
 
     analyzeRuntime() {
@@ -93,7 +94,6 @@ class Package {
                 }
             })
 
-
             Promise.all(jobs).then(all => res(this));
 
         });
@@ -106,38 +106,73 @@ class Package {
 
         this.resources[resource] = module;
 
+        delete this.runtime[resource]; //clear runtime cache;
+
         this.modules[module.type] = this.modules[module.type] || {};
         this.modules[module.type][module.name] = resource;//module;
 
-        const {mapParams} = require('./moduleParser');
-        _.forEach(module.trigger, trigger => {
-            trigger.source = module.name;
+    }
 
-            trigger.simpleName = trigger.name;
-            mapParams(trigger);
-            this.globals.trigger.push(trigger);
+    mapGlobals() {
+
+        this.globals = {
+            trigger: []
+        };
+
+        _.forEach(this.resources, module => {
+            _.forEach(module.trigger, trigger => {
+                trigger.source = module.name;
+
+                trigger.simpleName = trigger.name;
+                util.mapParams(trigger);
+                this.globals.trigger.push(trigger);
+            });
         });
+
     }
 
     patch(module) {
-        if (_.isString(module)) {
-            this.addFile(module);
-        } else {
-            this.addModule(module);
-        }
-        this.createLinks();
+
+        return new Promise(resolve => {
+
+            if (_.isString(module)) {
+                this.addFile(module);
+            } else {
+                this.addModule(module);
+            }
+
+            this.mapGlobals();
+
+            this.analyzeRuntime().then(res => {
+                this.createLinks();
+                resolve(this.serialize());
+            })
+        });
+
     }
 
+    /**
+     * strips data that is not needed in the UI or elsewhere
+     * and is potentially large and/or circular
+     */
     serialize() {
 
-        this.analyzeRuntime();
-        _.forEach(this.resources, resource => delete resource.config);
-        return {...this, config: undefined};
+        // this.analyzeRuntime();
+        // _.forEach(this.resources, resource => delete resource.config);
+
+        const res = {
+            ...this,
+            resources: _.mapValues(this.resources, resource => resource.serialize()),
+            config: undefined,
+            runtime: undefined
+        };
+        return res;
 
     }
 
-    findDefinitionName(type, runtime) {
-        return this.config.runtime && this.config.runtime[type] && _.findKey(this.config.runtime[type], runtime);
+    //try s to match
+    findDefinitionName(runtime) {
+        return _.findKey(this.runtime, runtime);
     }
 
     createLinks(resource = this.resources) {
@@ -153,16 +188,14 @@ class Package {
 
                 const comp = this.resources[resource];
 
-                comp.fileInPackage = comp.file.replace(this.dir, '.');
 
-                if (this.packageJson && this.packageJson.main && path.resolve(path.join(this.dir, this.packageJson.main)) === path.resolve(comp.file)) {
+                if (this.packageJson && this.packageJson.main && path.resolve(path.join(this.path, this.packageJson.main)) === path.resolve(comp.path)) {
                     this.main = comp;
                 }
 
-                const runtime = comp.runtime;
-                if (runtime) {
+                const runtime = this.runtime[comp.resource];
 
-                    // delete comp.runtime;
+                if (runtime) {
 
                     comp.extends =  runtime.extends && _.find(registry, ['runtime', runtime.extends]);
 
@@ -176,8 +209,6 @@ class Package {
                         }
                     }
 
-
-
                     comp.mixins = [];
 
 
@@ -185,7 +216,7 @@ class Package {
                     _.forEach(runtime.mixins, (mixin, index) => {
                         const definition = mixin && _.find(registry, ['runtime', mixin]);
 
-                        const name = mixin && this.findDefinitionName(type, mixin);
+                        const name = mixin && this.findDefinitionName(mixin);
                         if(!name) {
                             console.warn('could not find mixin ' + index + ' in: ' + comp.name);
                         }
@@ -236,7 +267,6 @@ class Package {
             });
         });
 
-
         _.assign(this, linkedModules);
     }
 }
@@ -245,16 +275,4 @@ Package.getIncludedFiles = function(config) {
     return glob.sync(path.join(config.base, config.search || '**/*.+(js|vue)'));
 };
 
-module.exports = {
-
-    Package,
-
-    /**
-     * @private
-     * @param {DoctoolsConfig} config
-     */
-    analyzePackage(config) {
-        return new Package(config);
-
-    }
-};
+module.exports = Package;

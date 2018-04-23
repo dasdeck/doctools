@@ -97,23 +97,30 @@ import PropTable from './PropTable.vue';
 import Function from './Function.vue';
 import _ from 'lodash';
 export default {
+
     components: {
         ModuleLink,
         PropTable,
         Function
     },
+
     props: {
-        data: Object,
-        registry: Object
+        data: Object
     },
 
-    inject: ['$settings'],
+    inject: ['$doc'],
 
     computed: {
+        /**
+         * the filtered list of methods
+         */
         methods() {
-            return _.filter(this.data.methods, method => this.$settings.private || method.access !== 'private');
+            return _.filter(this.data.methods, method => this.$doc.settings.private || method.access !== 'private');
         },
 
+        /**
+         * the lsit of props with added style information for rendering
+         */
         props() {
 
             const props = this.data.props;

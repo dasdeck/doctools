@@ -1,5 +1,5 @@
 /* eslint-env node */
-const packageParser = require('./src/packageParser');
+const Package = require('./src/Package');
 const fs = require('fs');
 const path = require('path');
 const _ = require('lodash');
@@ -23,22 +23,15 @@ module.exports = {
         let data;
 
         if (config.watch) {
-            const watchedFiles = packageParser.Package.getIncludedFiles(config);
+            const watchedFiles = Package.getIncludedFiles(config);
 
             fs.watch(config.base, {recursive: true}, (eventType, filename) => {
                 filename = path.join(config.base, filename);
                 if (watchedFiles.includes(filename)) {
 
-                    if (_.isString(config.runtime)) {
-
-                        if (data.patch) {
-
-                            data.patch(filename).then(res => {
-
-                            });
-                        }
+                    data && data.patch && data.patch(filename).then(res => {
                         config.server.sockWrite(config.server.sockets, 'doc-changed', data.serialize());
-                    }
+                    });
 
                     console.log(filename, 'changed!!');
 

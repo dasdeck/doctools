@@ -2,11 +2,11 @@
     <div>
         <h4>
             <ModuleLink :data="data" tag="div"/>
-            <ResourceList v-if="selectedPackage === data || $settings.filter" :data="data"/>
+            <ResourceList v-if="selectedPackage === data || $doc.settings.filter" :data="data"/>
 
             <ul uk-accordion v-if="data.subPackages && Object.keys(data.subPackages).length" class="uk-list">
                 <li>
-                    <PackageTree v-for="subPackage in data.subPackages" :resources="resources" :data="resources[subPackage]"/>
+                    <PackageTree v-for="subPackage in data.subPackages" :data="$doc.resources[subPackage]"/>
                 </li>
             </ul>
 
@@ -29,7 +29,7 @@ const PackageTree = {
         ResourceList
     },
 
-    inject: ['$settings'],
+    inject: ['$doc'],
 
     props : {
         /**
@@ -38,26 +38,17 @@ const PackageTree = {
         data: {
             required: true,
             type: Object
-        },
-
-        /**
-         * the currently selected pacakges
-         */
-        resources: {
-            type: Object,
-            default() {
-                return this.data.resources;
-            }
         }
+
     },
 
     computed: {
         selectedPackage() {
-            const resource = this.resources[this.$route.params.resource];
+            const resource = this.$doc.resources[this.$route.params.resource];
             if(!resource) {
                 debugger;
             }
-            return this.resources[resource.package];
+            return this.$doc.resources[resource.package || resource.resource];
         }
     }
 

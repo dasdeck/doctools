@@ -4,8 +4,11 @@ const webpack = require('webpack');
 const MemFs = require('memory-fs');
 const requireFromString = require('require-from-string');
 
+const getTypesRaw = arr => arr ? arr.join(' | ') : '';
+
 module.exports = {
 
+    getTypesRaw,
     /**
      *
      * @param {DoctoolsConfig} config
@@ -55,6 +58,81 @@ module.exports = {
             [, origIndent] = /(\s*)/.exec(lines[0]);//.match()
         }
         return lines.map(line => newIndent + line.replace(origIndent, '')).join('\n');
+    },
+
+    mapParams(el, config) {
+
+        const tables = el.tables = {};
+
+        const basicArgs = el.params.filter(param => !~param.name.indexOf('.'));
+
+        const options = {0: []};
+        el.params.filter(param => ~param.name.indexOf('.'))
+        .forEach(param => {
+            const [option, key] = param.name.split('.');
+            options[option] = options[option] || [];
+            param.name = key;
+            options[option].push(param);
+        });
+
+        basicArgs.forEach(param => {
+            options[0].push(param);
+        });
+
+        el.signature = `${el.simpleName || el.name} (${
+            basicArgs.map(param => {
+                let pString = param.name;//
+
+                pString += `: ${this.getTypesRaw(param.type.names)}`;
+
+                if (param.optional) {
+                    pString = `[${pString}]`;
+                }
+
+                return pString;
+            }).join(', ')
+
+        })`;
+
+        Object.keys(options).forEach(name => {
+
+            const cols = ['name', 'type', 'default', 'description'].reduce((prev, curr, index) => {prev[index] = curr; return prev;}, {});
+
+            const rows = [];
+
+            options[name].forEach((param, index) => {
+                const row = {
+                    0: param.name,
+                    1: this.getTypesRaw(param.type.names),
+                    2: param.defaultvalue,
+                    3: param.description
+                };
+
+                row.optional = param.optional;
+                rows.push(row);
+            });
+
+            const emptyCols = [];
+            _.forEach(cols, (name, index) => {
+                if (!rows.some(row => row[index])) {
+                    emptyCols.push(index);
+                }
+            });
+
+            const table = [cols, ...rows];
+
+            emptyCols.forEach(index => {
+                table.forEach(row => {
+                    row.splice ? row.splice(index, 1) : delete row[index];
+                });
+            });
+
+            tables[name == 0 ? 'arguments' : name] = table;
+
+        });
+
+        return el;
+
     },
 
     findRuntime(config, desc) {

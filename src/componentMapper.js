@@ -5,7 +5,7 @@ const _ = require('lodash');
 const glob = require('glob');
 const path = require('path');
 
-const {findRuntime, findPropDefaults} = require('./util');
+const {findPropDefaults} = require('./util');
 
 let base; //= 'module.exports';
 
@@ -73,7 +73,7 @@ function getTriggers(data) {
 
 function findMethods(data) {
     const res = findMembers(data, 'methods');
-    const parser = require('./moduleParser');
+    const parser = require('./Module');
     _.forEach(res, func => {
         // const fun = parser.analyseFunction(func, name);
         func.signature = func.signature && func.signature.split('.methods.').pop();
