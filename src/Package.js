@@ -18,16 +18,13 @@ class Package extends TreeItem {
 
         this.resources = {};
         this.modules = {};
-        this.runtime = {};
 
         this.analyzeSubPackages();
-        this.init();
-        this.createLinks();
-        this.mapGlobals();
+
 
     }
 
-    init() {
+    loadFiles() {
 
         const packPath = path.join(this.path, 'package.json');
         if (fs.existsSync(packPath)) {
@@ -48,7 +45,8 @@ class Package extends TreeItem {
         if (this.config.subPackages){
             console.log('using subpackages:', this.config.subPackages);
 
-            this.subPackages = {};
+            this.subPackages = this.subPackages || {};
+
             glob.sync(path.join(this.path, this.config.subPackages)).forEach(subPackage => {
 
                 const parser = require('./parser');
@@ -56,9 +54,9 @@ class Package extends TreeItem {
                 const res = parser.parse({...this.config, base:subPackage});
 
                 this.resources[res.resource] = res;
-                Object.assign(this.resources, res.resources);
                 this.subPackages[res.name] = res.resource;
-                delete res.resources;
+                // Object.assign(this.resources, res.resources);
+                // delete res.resources;
 
             });
 
@@ -66,17 +64,10 @@ class Package extends TreeItem {
 
     }
 
-    addFile(file) {
-
-        const parser = require('./parser');
-        const res = parser.parse({...this.config, base:file, package: this});
-        if (!res.ignore) {
-            this.addModule(res);
-        }
-
-    }
-
     analyze() {
+
+
+        this.loadFiles();
 
         return new Promise(res => {
 
@@ -88,22 +79,48 @@ class Package extends TreeItem {
                 }
             });
 
-            Promise.all(jobs).then(all => res(this));
+            Promise.all(jobs).then(all => {
+
+                try {
+
+                    this.createLinks();
+                    this.mapGlobals();
+
+                } catch (e) {
+
+                    debugger;
+                }
+
+                res(this);
+
+            });
 
         });
 
     }
 
-    addModule(module) {
+    addFile(file, replace = false) {
+
+        const parser = require('./parser');
+        const res = parser.parse({...this.config, base:file, package: this});
+        if (!res.ignore) {
+            this.addModule(res, replace);
+        }
+
+    }
+
+    addModule(module, replace = false) {
 
         const resource = module.resource;
 
-        this.resources[resource] = module;
+        if (!this.resources[resource] || replace) {
 
-        delete this.runtime[resource]; //clear runtime cache;
 
-        this.modules[module.type] = this.modules[module.type] || {};
-        this.modules[module.type][module.name] = resource;//module;
+            this.resources[resource] = module;
+
+            this.modules[module.type] = this.modules[module.type] || {};
+            this.modules[module.type][module.name] = resource;//module;
+        }
 
     }
 
@@ -130,9 +147,9 @@ class Package extends TreeItem {
         return new Promise(resolve => {
 
             if (_.isString(module)) {
-                this.addFile(module);
+                this.addFile(module, true);
             } else {
-                this.addModule(module);
+                this.addModule(module, true);
             }
 
             this.analyze().then(res => {
@@ -159,7 +176,6 @@ class Package extends TreeItem {
             ...this,
             resources: _.mapValues(this.resources, resource => resource.serialize()),
             config: undefined,
-            runtime: undefined
         };
         return res;
 
@@ -167,28 +183,29 @@ class Package extends TreeItem {
 
     //try s to match
     findDefinitionName(runtime) {
-        return _.findKey(this.runtime, runtime);
+        return _.findKey(this.resources, {runtime});
     }
 
-    createLinks(resource = this.resources) {
 
-        const linkedModules = {};
+
+    createLinks() {
+
 
         this.config.types.forEach(type => {
 
 
-            const registry = linkedModules[type] = _.cloneDeep(this.modules[type]);
+            const registry = _.cloneDeep(this.modules[type]);
 
             _.forEach(registry, resource => {
 
                 const comp = this.resources[resource];
+                const runtime = comp.runtime
 
 
                 if (this.packageJson && this.packageJson.main && path.resolve(path.join(this.path, this.packageJson.main)) === path.resolve(comp.path)) {
                     this.main = comp;
                 }
 
-                const runtime = this.runtime[comp.resource];
 
                 if (runtime) {
 
@@ -235,7 +252,7 @@ class Package extends TreeItem {
                         [...inheritanceChain, ...comp.mixins].forEach((desc) => {
                             if (desc) {
 
-                                const def = registry[desc.name];
+                                const def = this.resources[desc.name];
                                 if(def) {
                                     _.assign(res, _.mapValues(def[type], member => ({...member, inherited: desc, _style : {...member._style, 'font-style': 'italic'}})));
                                 }
@@ -262,7 +279,6 @@ class Package extends TreeItem {
             });
         });
 
-        _.assign(this, linkedModules);
     }
 }
 

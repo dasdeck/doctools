@@ -18,7 +18,7 @@ function findMembers(data, name) {
     data.forEach(el => {
 
         const longAdd = base + '.' + name;
-        if(['member', 'function', 'event'].includes(el.kind)&& el.memberof && el.memberof === longAdd) {
+        if (['member', 'function', 'event'].includes(el.kind)&& el.memberof && el.memberof === longAdd) {
             el.simpleName = el.name;
             props[el.name] = el;
         }

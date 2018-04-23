@@ -20,7 +20,7 @@ module.exports = {
         const parser = require(__dirname + '/src/parser');
         const config = parser.prepareConfig(global.doctoolsConfig);
 
-        let data;
+        let pack;
 
         if (config.watch) {
             const watchedFiles = Package.getIncludedFiles(config);
@@ -29,8 +29,8 @@ module.exports = {
                 filename = path.join(config.base, filename);
                 if (watchedFiles.includes(filename)) {
 
-                    data && data.patch && data.patch(filename).then(res => {
-                        config.server.sockWrite(config.server.sockets, 'doc-changed', data.serialize());
+                    pack && pack.patch && pack.patch(filename).then(res => {
+                        config.server.sockWrite(config.server.sockets, 'doc-changed', pack.serialize());
                     }).catch(console.warn);
 
                     console.log(filename, 'changed!!');
@@ -41,7 +41,7 @@ module.exports = {
 
         app.get('/data.json', (req, res, next) => {
 
-            if (!data || config.developMode) {
+            if (!pack || config.developMode) {
 
                 if (config.developMode) {
 
@@ -52,15 +52,18 @@ module.exports = {
                     });
 
                 }
-                data = parser.parse(config);
+                pack = parser.parse(config);
             }
 
-            console.log(app);
-            console.log('serving data.json', config);
+            // console.log(app);
+            // console.log('serving data.json', config);
 
-            res.json(data.serialize());
+            pack.analyze().then(() => {
+                const data = pack.serialize();
+                res.json(data);
+                next();
+            }).catch(console.warn);
 
-            next();
         });
 
     }

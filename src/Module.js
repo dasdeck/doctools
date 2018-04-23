@@ -13,17 +13,12 @@ class Module extends TreeItem {
         super(config);
         this.package = pack && pack.resource;
 
-
         this.execPluginCallback('onLoad');
-
 
         this.type = this.type || 'module';
 
-
         _.assign(this, desc);
-        const entries = jsdoc.explainSync({source: this.script});
-        this.init(entries, config);//this.init(entries);
-        this.map();
+
 
     }
 
@@ -36,6 +31,12 @@ class Module extends TreeItem {
     }
 
     analyze() {
+
+        if (!this.jsdoc) {
+            this.jsdoc = jsdoc.explainSync({source: this.script});
+            this.init(this.jsdoc, this.config);//this.init(entries);
+            this.map();
+        }
 
         return new Promise(res => {
             if (this.runtime) {
