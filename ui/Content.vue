@@ -4,9 +4,9 @@
 
 <script>
 
-import Component from './Component.vue';
-import Module from './Module.vue';
-import Package from './Package.vue';
+import Component from './types/Component.vue';
+import Module from './types/Module.vue';
+import Package from './types/Package.vue';
 
 /**
  * component wrapper for the vue-router

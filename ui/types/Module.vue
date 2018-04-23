@@ -19,9 +19,9 @@
 </template>
 
 <script>
-import PropTable from './PropTable.vue';
-import Function from './Function.vue';
-import Constant from './Constant.vue';
+import PropTable from '../utils/PropTable.vue';
+import Function from '../utils/Function.vue';
+import Constant from '../utils/Constant.vue';
 import _ from 'lodash';
 
 /**

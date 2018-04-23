@@ -47,7 +47,7 @@
 </template>
 
 <script>
-import Function from './Function.vue';
+import Function from '../utils/Function.vue';
 
 /**
  * view for package overviews

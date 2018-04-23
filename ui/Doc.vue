@@ -33,14 +33,13 @@ export default {
         PackageTree
     },
 
-
     props: {
         /**
          * the main data returned from the doctool parser
          * currently ony supporting packages!
          */
         initialData: {
-            required: true,
+            required: false,
             type: Object
         }
     },
@@ -55,10 +54,6 @@ export default {
         return {
 
             data: this.initialData,
-            /**
-             * the selected module/component
-             */
-            selected: null,
 
             /**
              * general application wide settings
@@ -75,11 +70,7 @@ export default {
         resources() {
             return this.data && this.data.resources || {};
         }
-    },
-
-    created() {
-        this.selected = _.get(this.data, window.location.hash.substr(1));
-    },
+    }
 
 }
 </script>

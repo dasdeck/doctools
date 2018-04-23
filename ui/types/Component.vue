@@ -92,9 +92,9 @@
 </template>
 
 <script>
-import ModuleLink from './ModuleLink.vue';
-import PropTable from './PropTable.vue';
-import Function from './Function.vue';
+import ModuleLink from '../utils/ModuleLink.vue';
+import PropTable from '../utils/PropTable.vue';
+import Function from '../utils/Function.vue';
 import _ from 'lodash';
 export default {
 

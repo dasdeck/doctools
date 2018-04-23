@@ -13,7 +13,7 @@
 
 <script>
 
-import ModuleLink from './ModuleLink.vue';
+import ModuleLink from './utils/ModuleLink.vue';
 
 export default {
     components: {

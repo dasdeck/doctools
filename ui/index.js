@@ -3,7 +3,6 @@ import Doc from './Doc.vue';
 import VueRouter from 'vue-router';
 import _ from 'lodash';
 import Content from './Content.vue';
-
 import SockJS from 'sockjs-client';
 
 let app;
