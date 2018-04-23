@@ -15,4 +15,8 @@ module.exports = class TreeItem {
     serialize() {
         throw 'implement!';
     }
+
+    analyze() {
+        throw 'implement';
+    }
 };

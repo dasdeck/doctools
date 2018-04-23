@@ -31,7 +31,7 @@ module.exports = {
 
                     data && data.patch && data.patch(filename).then(res => {
                         config.server.sockWrite(config.server.sockets, 'doc-changed', data.serialize());
-                    });
+                    }).catch(console.warn);
 
                     console.log(filename, 'changed!!');
 

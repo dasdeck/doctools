@@ -220,8 +220,6 @@ module.exports = {
 
         return {
             type: 'VueComponent',
-            name,
-            file,
             template,
             script,
         };

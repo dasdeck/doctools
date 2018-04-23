@@ -23,7 +23,7 @@ const store = {};
 module.exports = {
 
     /**
-     * shims all necessery globals on order for UIkit to boostrap
+     * shims all neceserry globals in order for UIkit to bootsrap
      */
     install() {
         globals.forEach(name => {

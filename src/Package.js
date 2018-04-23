@@ -20,7 +20,6 @@ class Package extends TreeItem {
         this.modules = {};
         this.runtime = {};
 
-
         this.analyzeSubPackages();
         this.init();
         this.createLinks();
@@ -34,8 +33,6 @@ class Package extends TreeItem {
         if (fs.existsSync(packPath)) {
             this.packageJson = require(packPath);
         }
-
-
 
         const files = Package.getIncludedFiles(this.config);
         files.forEach(file => {
@@ -79,20 +76,17 @@ class Package extends TreeItem {
 
     }
 
-    analyzeRuntime() {
+    analyze() {
 
         return new Promise(res => {
 
             const jobs = [];
-            _.forEach(this.resources, desc => {
 
-                if(!this.runtime[desc.resource]) {
-                    const job = util.findRuntime(this.config, desc).then(runtime => {
-                        this.runtime[desc.resource] = runtime;
-                    });
-                    jobs.push(job);
+            _.forEach(this.resources, desc => {
+                if (desc.type !== 'package') {
+                    jobs.push(desc.analyze());
                 }
-            })
+            });
 
             Promise.all(jobs).then(all => res(this));
 
@@ -141,12 +135,13 @@ class Package extends TreeItem {
                 this.addModule(module);
             }
 
-            this.mapGlobals();
-
-            this.analyzeRuntime().then(res => {
+            this.analyze().then(res => {
                 this.createLinks();
                 resolve(this.serialize());
             })
+
+            this.mapGlobals();
+
         });
 
     }

@@ -15,7 +15,7 @@ function setData(data) {
     window.$data = data;
     data.resources[data.name] = data;
     if (app) {
-        _.assign(app.data, data);
+        app.data = data;
     }
 }
 

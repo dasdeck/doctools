@@ -4,8 +4,8 @@ const _ = require('lodash');
 const jsdoc = require('jsdoc-api');
 const utils = require('./util');
 const TreeItem = require('./TreeItem');
+const componentMappper = require('./componentMapper');
 
-// const getTypes = arr => arr ? arr.join(' &#124; ').replace(/\*/, '&#42;') : '';
 
 class Module extends TreeItem {
 
@@ -13,15 +13,50 @@ class Module extends TreeItem {
 
         super(config);
 
-        this.type = 'module';
+        this.type = this.type || 'module';
 
         this.package = pack && pack.resource;
 
         _.assign(this, desc);
         const entries = jsdoc.explainSync({source: this.script});
-        this.map(entries, config);//this.map(entries);
+        this.init(entries, config);//this.init(entries);
+        this.map();
+
     }
 
+    analyze() {
+
+        return new Promise(res => {
+            if (this.runtime) {
+                res(this);
+            } else {
+                utils.findRuntime(this.config, this).then(runtime => {
+                    this.runtime = runtime;
+
+                    this.map();
+
+                    res(this);
+
+                });
+            }
+        });
+
+    }
+
+    /**
+     * applys custom mapping to module types
+     */
+    map() {
+        if (Module.mapper[this.type]) {
+            Module.mapper[this.type](this);
+        }
+    }
+
+
+
+    /**
+     * @override
+     */
     serialize() {
         return {...this, config: undefined, runtime: undefined};
     }
@@ -31,7 +66,7 @@ class Module extends TreeItem {
      * @param {*} all
      * @param {*} config
      */
-    map(all, config) {
+    init(all, config) {
 
         const desc = {all, documented: []};
 
@@ -91,7 +126,11 @@ class Module extends TreeItem {
         return desc;
     }
 
-    guessDefaultParamValues(el, config) {
+    /**
+     * "guesses" functions default parameters by parsing the code
+     * @param {Object} el - the JSDoc function descriptor
+     */
+    guessDefaultParamValues(el) {
 
         //extract default values
         const regex = RegExp(/name\((.*?)\)\s*{/.source.replace('name', el.name));
@@ -128,12 +167,12 @@ class Module extends TreeItem {
         el.simpleName = el.longname === `module.exports.${el.name}` ? el.name : el.longname;
 
         if (config.inferParameterDefaults) {
-            this.guessDefaultParamValues(el, config);
+            this.guessDefaultParamValues(el);
         }
 
         if (el.params) {
 
-            Object.assign(el, utils.mapParams(el, config));
+            Object.assign(el, utils.mapParams(el));
 
         } else {
 
@@ -150,5 +189,20 @@ class Module extends TreeItem {
     }
 
 }
+
+Module.mapper = {
+    'VueComponent'(desc) {
+
+        const res = componentMappper.map(desc);
+        Object.assign(desc, res);
+        if (desc.template) {
+            componentMappper.parseTemplate(desc);
+        }
+    },
+    'UIkitComponent'(desc) {
+        const res = componentMappper.map(desc);
+        Object.assign(desc, res);
+    }
+};
 
 module.exports = Module;

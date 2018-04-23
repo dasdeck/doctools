@@ -16,9 +16,9 @@ module.exports = {
      * @returns {Promise} returns an object with the result of a webpacked require of the given file
      */
     webpackFile(config, filename) {
+        console.log('webpacking... :', filename);
         const runtime = require(config.runtime);
-
-        const compiler = webpack({
+        const conf = {
             ...runtime,
             entry: {
                 [filename]: filename
@@ -26,23 +26,33 @@ module.exports = {
             output: {
                 libraryTarget: 'commonjs'
             }
-        });
+        };
+        try {
 
-        compiler.outputFileSystem = new MemFs;
+            const compiler = webpack(conf);
 
-        return new Promise(resolve => {
 
-            compiler.run((err, res) => {
-                const data = compiler.outputFileSystem.readFileSync(Object.keys(res.compilation.assets)[0] ,'utf8');
-                try {
-                    const rt = requireFromString(data);
-                    resolve(rt.default ? rt.default : rt);
-                } catch(e) {
-                    console.warn('could not load runtime for:', filename);
-                    resolve({});
-                }
+            compiler.outputFileSystem = new MemFs;
+
+            return new Promise(resolve => {
+
+                compiler.run((err, res) => {
+                    const data = compiler.outputFileSystem.readFileSync(Object.keys(res.compilation.assets)[0] ,'utf8');
+                    try {
+                        const rt = requireFromString(data);
+                        resolve(rt.default ? rt.default : rt);
+                        console.log('webpacked:', filename);
+                    } catch(e) {
+                        console.warn('could not load runtime for:', filename);
+                        resolve({});
+                    }
+                });
             });
-        });
+
+        } catch(e) {
+            console.warn(e);
+            return Promise.reject(e);
+        }
     },
 
     /**
@@ -60,7 +70,7 @@ module.exports = {
         return lines.map(line => newIndent + line.replace(origIndent, '')).join('\n');
     },
 
-    mapParams(el, config) {
+    mapParams(el) {
 
         const tables = el.tables = {};
 
@@ -147,7 +157,7 @@ module.exports = {
             if (config.runtime) {
 
                 if(_.isString(config.runtime)) {
-                    this.webpackFile(config, desc.file).then(res);
+                    this.webpackFile(config, desc.path).then(res);
                 } else {
                     runtime = _.get(config.runtime, `${desc.type}.${desc.name}`) || _.get(config.runtime, desc.name);
                     res(runtime);

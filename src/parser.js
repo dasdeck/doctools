@@ -20,20 +20,6 @@ const preProcess = {
     }
 };
 
-const mapper = {
-    'VueComponent'(desc) {
-
-        const res = componentMappper.map(desc);
-        Object.assign(desc, res);
-        if (desc.template) {
-            componentMappper.parseTemplate(desc);
-        }
-    },
-    'UIkitComponent'(desc) {
-        const res = componentMappper.map(desc);
-        Object.assign(desc, res);
-    }
-};
 
 /**
  * @mutates
@@ -116,8 +102,6 @@ module.exports = {
 
                 desc = new Module(config, desc, config.package);
 
-                // Object.assign(desc, jsDoc);
-
                 //coverage
                 // const cover = require('./coverage/coverage.sum.json');
                 // const covers = {};
@@ -129,11 +113,7 @@ module.exports = {
                 //test codes (per function / member)
                 // el.tests = getTestCodes(name, el.longname);
 
-                // desc.runtime = util.findRuntime(config, desc);
 
-                if (mapper[desc.type]) {
-                    mapper[desc.type](desc);
-                }
 
         } catch (e) {
             console.warn('error while parsing: ' + file);

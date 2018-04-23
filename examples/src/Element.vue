@@ -37,8 +37,6 @@
 
     import {some, upperFirst} from 'lodash';
 
-
-    upperFirst('test');
     /**
      * An Element represents an Element in the layout-editor of the Builder.
      * It implicitly extends `Node`.
