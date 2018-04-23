@@ -5,9 +5,10 @@ import _ from 'lodash';
 import Content from './Content.vue';
 import SockJS from 'sockjs-client';
 
-let app;
-
 Vue.use(VueRouter);
+
+
+let app;
 
 
 function setData(data) {
@@ -29,10 +30,10 @@ function init() {
 
     const router = new VueRouter({
         routes: [
-
             {
                 path: '/',
                 redirect(route) {
+                    //redirect to topmost package
                     return '/' + window.$data.resource;
                 }
             },
@@ -40,6 +41,7 @@ function init() {
                 path: '/:resource',
                 component: Content,
                 beforeEnter(route, to , next) {
+                    //redirect to root if packackage not found
                     next(window.$data.resources[route.params.resource] ? undefined : '/');
                 },
                 props: true

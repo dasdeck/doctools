@@ -3,6 +3,8 @@
  * @type {example}
  * @name config
  */
+const UIkitComponentPlugin = require('./UIkitComponentPlugin');
+const VueComponentPlugin = require('./VueComponentPlugin');
 
  /**
   * a sample config
@@ -63,5 +65,13 @@ module.exports = {
      * throw exceptions instead of warnings
      * @type {Boolean}
      */
-    strict: false
+    strict: false,
+
+    /**
+     * extra mapping plugins
+     */
+    plugins: [
+        new UIkitComponentPlugin,
+        new VueComponentPlugin
+    ]
 };

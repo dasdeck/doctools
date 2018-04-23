@@ -1,7 +1,6 @@
 /* eslint-env node */
 
 const fs = require('fs');
-const componentMappper = require('./componentMapper');
 const _ = require('lodash');
 
 const path = require('path');
@@ -9,11 +8,10 @@ const path = require('path');
 const util = require('./util');
 const {getTestCodes} = require('./testParser');
 
-const defaultConfig = require('./configDefaults');
+const defaultConfig = require('./Config');
 
 const preProcess = {
     vue(desc, file) {
-        Object.assign(desc, componentMappper.unpack(file));
     },
     js(desc, file) {
         desc.script = fs.readFileSync(file, 'utf8');
@@ -61,6 +59,10 @@ module.exports = {
 
     prepareConfig,
 
+    builtinPlugins: [
+
+    ],
+
     /**
      * Parses the data defined in config and returns an object containing the parsed structure
      * @param {String|DoctoolsConfig} [config = {}] - filePath or config hash
@@ -94,12 +96,9 @@ module.exports = {
                 preProcess[extension](desc, file);
             }
 
-            const Module = require('./Module');
-
             try {
 
-                // const jsDoc = moduleParser.analyzeModule(desc.script, config);
-
+                const Module = require('./Module');
                 desc = new Module(config, desc, config.package);
 
                 //coverage
@@ -112,7 +111,6 @@ module.exports = {
 
                 //test codes (per function / member)
                 // el.tests = getTestCodes(name, el.longname);
-
 
 
         } catch (e) {

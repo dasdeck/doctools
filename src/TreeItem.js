@@ -3,6 +3,7 @@
  */
 module.exports = class TreeItem {
     constructor(config) {
+
         this.config = config;
 
         this.path = config.base;
@@ -19,4 +20,5 @@ module.exports = class TreeItem {
     analyze() {
         throw 'implement';
     }
+
 };

@@ -4,7 +4,6 @@ const _ = require('lodash');
 const jsdoc = require('jsdoc-api');
 const utils = require('./util');
 const TreeItem = require('./TreeItem');
-const componentMappper = require('./componentMapper');
 
 
 class Module extends TreeItem {
@@ -12,16 +11,28 @@ class Module extends TreeItem {
     constructor(config, desc, pack = null) {
 
         super(config);
+        this.package = pack && pack.resource;
+
+
+        this.execPluginCallback('onLoad');
+
 
         this.type = this.type || 'module';
 
-        this.package = pack && pack.resource;
 
         _.assign(this, desc);
         const entries = jsdoc.explainSync({source: this.script});
         this.init(entries, config);//this.init(entries);
         this.map();
 
+    }
+
+    execPluginCallback(name) {
+        _.forEach(this.config.plugins, plugin => {
+            if (plugin[name] && plugin.matchesType(this)) {
+                plugin[name](this);
+            }
+        })
     }
 
     analyze() {
@@ -47,9 +58,9 @@ class Module extends TreeItem {
      * applys custom mapping to module types
      */
     map() {
-        if (Module.mapper[this.type]) {
-            Module.mapper[this.type](this);
-        }
+
+       this.execPluginCallback('onMap');
+
     }
 
 
