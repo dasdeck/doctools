@@ -9,6 +9,7 @@ const getTypesRaw = arr => arr ? arr.join(' | ') : '';
 module.exports = {
 
     getTypesRaw,
+
     /**
      *
      * @param {DoctoolsConfig} config
@@ -70,6 +71,10 @@ module.exports = {
         return lines.map(line => newIndent + line.replace(origIndent, '')).join('\n');
     },
 
+    /**
+     * util function to map function (or similar) structures into a unified format
+     * @param {*} el
+     */
     mapParams(el) {
 
         const tables = el.tables = {};
@@ -145,6 +150,11 @@ module.exports = {
 
     },
 
+    /**
+     * helper function to load the runtime for a component or module
+     * @param {*} config
+     * @param {*} desc
+     */
     findRuntime(config, desc) {
 
         return new Promise(res => {
@@ -180,10 +190,20 @@ module.exports = {
 
     },
 
+    /**
+     * primive runtime import
+     * @param {*} script
+     */
     crudeImport(script) {
         return eval(script.replace(/import/g, '//import').replace('export default', 'global.res = '));
     },
 
+    /**
+     * helper funciton to find property defaults
+     * works for UIkit and Vue
+     * @param {*} props
+     * @param {*} runtime
+     */
     findPropDefaults(props, runtime) {
         if (runtime && runtime['props']) {
 
