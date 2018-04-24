@@ -11,7 +11,7 @@ module.exports = class TreeItem extends EventEmitter {
         this.config = config;
 
         this.path = config.base;
-        this.fileInPackage = this.path.replace(this.resourceBase, '.');
+        this.fileInPackage = this.path.replace(this.config.resourceBase, '.');
         this.name = this.path.split('/').pop().split('.').shift();
         this.resource = this.path.replace(config.resourceBase, '').replace(/\//g, '.').substr(1);
 
@@ -20,7 +20,9 @@ module.exports = class TreeItem extends EventEmitter {
     execPluginCallback(name, allowPromise = true) {
         const jobs = [];
         _.forEach(this.config.plugins, plugin => {
-            if (plugin[name] && plugin.matchesType(this)) {
+
+
+            if (plugin[name] && (plugin.matchesType(this) || this.type === 'package')) {
                 const res = plugin[name](this);
                 if (res instanceof Promise) {
 

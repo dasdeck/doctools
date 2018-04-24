@@ -35,6 +35,10 @@ class Package extends TreeItem {
         }
     }
 
+    isRootPackage() {
+        return this === this.getRootPackage();
+    }
+
     loadPackageFile() {
 
         const packPath = path.join(this.path, 'package.json');
@@ -42,6 +46,21 @@ class Package extends TreeItem {
             this.packageJson = require(packPath);
         }
 
+    }
+
+
+    findMain() {
+        if (this.packageJson && this.packageJson.main) {
+
+            const pathToMain = path.resolve(path.join(this.path, this.packageJson.main));
+            _.forEach(this.getResurces(), res => {
+                if (pathToMain === path.resolve(res.path)) {
+
+                    this.main = res.resource;
+                }
+            });
+
+        }
     }
 
     analyzeSubPackages() {
@@ -54,9 +73,9 @@ class Package extends TreeItem {
             glob.sync(path.join(this.path, this.config.subPackages)).forEach(subPackage => {
 
                 const res = new Package({...this.config, base:subPackage}, this);// parser.parse();
-
-                this.resources[res.resource] = res;
                 this.subPackages[res.name] = res.resource;
+                this.resources[res.resource] = res;
+
                 // Object.assign(this.resources, res.resources);
                 // delete res.resources;
 
@@ -71,14 +90,13 @@ class Package extends TreeItem {
         const jobs = [];
 
         _.forEach(this.resources, desc => {
-            // if (desc.type !== 'package') {
+            if (desc.type !== 'package') {
                 jobs.push(desc.analyze());
-            // }
+            }
         });
 
         return Promise.all(jobs).then(all => {
 
-            this.createLinks();
             this.mapGlobals();
 
             return this;
@@ -89,7 +107,7 @@ class Package extends TreeItem {
 
     loadFiles() {
 
-        const files = Package.getIncludedFiles(this.config);
+        const files = this.getIncludedFiles();
         files.forEach(file => {
 
             this.addFile(file);
@@ -122,7 +140,7 @@ class Package extends TreeItem {
             this.modules[module.type][module.name] = resource;//module;
 
         } else if (patch) {
-            existingModule.reset();
+            existingModule.patch(module);
         } else {
             throw 'module already existing'
         }
@@ -158,10 +176,37 @@ class Package extends TreeItem {
         this.mapGlobals();
 
         return this.analyze().then(res => {
-            this.createLinks();
-            return this.serialize();
+            return this.getDataPackage();
         });
 
+    }
+
+    getIncludedFiles() {
+        return glob.sync(path.join(this.config.base, this.config.search || '**/*.+(js|vue)'));
+    };
+
+
+    getResurces() {
+
+        const resources = {};
+        resources[this.resource] = this.serialize();
+
+        _.forEach(this.resources, resource => {
+            if (resource.type === 'package') {
+                _.merge(resources, resource.getResurces());
+            } else {
+                resources[resource.resource] = resource.serialize();
+            }
+        });
+
+        return resources;
+    }
+
+    getDataPackage() {
+        return {
+            resources: this.getResurces(),
+            rootPackage: this.resource
+        }
     }
 
     /**
@@ -173,114 +218,45 @@ class Package extends TreeItem {
         // this.analyzeRuntime();
         // _.forEach(this.resources, resource => delete resource.config);
 
-        const res = {
-            ...this,
-            resources: _.pickBy(_.mapValues(this.resources, resource => resource.serialize()), res => !res.ignore),
-            config: undefined,
-            parent: this.parent && this.parent.resource,
-            ...this.data
-        };
-        return res;
 
-    }
 
-    //try s to match
-    findDefinitionName(runtime) {
-        return _.findKey(this.resources, ['runtime', runtime]);
-    }
+        this.execPluginCallback('onSerialize');
 
-    createLinks() {
+        // if (this.isRootPackage()) {
 
-        this.config.types.forEach(type => {
+        //     const resources = _.pickBy(_.mapValues(this.resources, resource => resource.serialize()), res => !res.ignore);
+        //     resources[this.resource] = {...this, config: undefined, ...this.data, resources: undefined};
 
-            const registry = _.cloneDeep(this.modules[type]);
+        //     return {
+        //         resources,
+        //         rootPackage: this.resource
+        //     }
+        // } else {
 
-            _.forEach(registry, resource => {
-
-                const comp = this.resources[resource];
-                const runtime = comp.runtime
-
-                this[type] = this[type] || {};
-                this[type][comp.name] = resource;
-
-                if (this.packageJson && this.packageJson.main && path.resolve(path.join(this.path, this.packageJson.main)) === path.resolve(comp.path)) {
-                    this.main = comp;
-                }
-
-                if (runtime) {
-
-                    comp.extends =  runtime.extends && _.find(registry, ['runtime', runtime.extends]);
-
-                    if (runtime.extends && !comp.extends) {
-                        console.warn('could not link extend on: ' + comp.name);
-
-                        comp.extends = this.findDefinitionName(runtime.extends);
-
-                        if (!comp.extends) {
-                            console.warn('could not find extend on: ' + comp.name);
-                        }
-                    }
-
-                    comp.mixins = [];
-
-                    //resolve mixins
-                    _.forEach(runtime.mixins, (mixin, index) => {
-                        const definition = mixin && _.find(this.resources, ['runtime', mixin]);
-
-                        const name = mixin && this.findDefinitionName(mixin);
-                        if(!name) {
-                            console.warn('could not find mixin ' + index + ' in: ' + comp.name);
-                        }
-                        if(!definition) {
-                            console.warn('could not link  mixin ' + (name || index) + ' for: ' + comp.name);
-                        }
-
-                        comp.mixins.push({name, linked: !!definition});
-
-                    });
-
-                    //merge inherited props, methods, computeds  to component
-                    ['props', 'methods', 'computed'].forEach(type => {
-
-                        const res = {};
-
-                        const inheritanceChain = comp.extends ? [comp.extends] : [];
-
-                        [...inheritanceChain, ...comp.mixins].forEach((desc) => {
-                            if (desc) {
-
-                                const def = this.resources[desc.name];
-                                if(def) {
-                                    _.assign(res, _.mapValues(def[type], member => ({...member, inherited: desc, _style : {...member._style, 'font-style': 'italic'}})));
-                                }
-                                if(desc.linked !== !!def) {
-                                    debugger
-                                }
-
-                            } else {
-                                debugger;
-                            }
-                        });
-
-                        _.assign(res, comp[type]);
-
-                        //find prop defaults again, as default may change in inherited type
-                        util.findPropDefaults(res, comp.runtime);
-
-                        comp[type] = res;
-
-                    });
-
-                }
+            const types = {};
+            _.forEach(this.resources, resource => {
+                const type = resource.type;
+                types[type] = types[type] || {};
+                types[type][resource.name] = resource.resource;
 
             });
-        });
+
+            return {
+                ...this,
+                package: this.resource,
+                types,
+                resources: undefined,//_.pickBy(_.mapValues(this.resources, resource => resource.serialize()), res => !res.ignore),
+                config: undefined,
+                parent: this.parent && this.parent.resource,
+                ...this.data
+            };
+        // }
 
     }
+
+
+
 }
 
-Package.getIncludedFiles = function(config) {
-    return glob.sync(path.join(config.base, config.search || '**/*.+(js|vue)'));
-};
 
 module.exports = Package;

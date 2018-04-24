@@ -9,7 +9,7 @@
 
                 <input type="text" v-model="settings.filter">
 
-                <PackageTree :data="data"/>
+                <PackageTree :data="resources[data.rootPackage]"/>
             </div>
             <router-view class="uk-width-3-4"/>
         </div>

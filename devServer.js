@@ -25,7 +25,7 @@ module.exports = {
         //additionally watch add an remove of files
         if (config.watch) {
 
-            const watchedFiles = Package.getIncludedFiles(config);
+            const watchedFiles = pack.getIncludedFiles();
 
             // util.watchPack(config, pack);
 
@@ -48,7 +48,7 @@ module.exports = {
         pack.on('change', () => {
 
             pack.analyze().then(() => {
-                config.server.sockWrite(config.server.sockets, 'doc-changed', pack.serialize());
+                config.server.sockWrite(config.server.sockets, 'doc-changed', pack.getDataPackage());
             });
 
         });
@@ -73,7 +73,7 @@ module.exports = {
             // console.log('serving data.json', config);
 
             pack.analyze().then(() => {
-                const data = pack.serialize();
+                const data = pack.getDataPackage();
                 res.json(data);
                 next();
             }).catch(console.warn);

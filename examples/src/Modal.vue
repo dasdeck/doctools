@@ -38,6 +38,11 @@
             },
 
             /**
+             * a test property
+             */
+            test: String,
+
+            /**
              * A component descriptor to construct a child element from
              */
             content: Object,

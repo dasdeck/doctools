@@ -3,7 +3,7 @@
         <template v-for="(title, category) in filteredCategories">
             <h4>{{title}}</h4>
             <ul class="uk-nav uk-nav-default">
-                <li v-for="(entry) in filteredData[category]" :style="{opacity: $doc.resources[entry].documented.length > 1 ? 1 : 0.2}">
+                <li v-for="(entry) in filteredData.types[category]" :style="{opacity: $doc.resources[entry].documented.length > 1 ? 1 : 0.2}">
                     <router-link :to="`/${$doc.resources[entry].resource}`">
                         {{$doc.resources[entry].name}}
                     </router-link>
@@ -38,7 +38,7 @@
             },
 
             filteredCategories() {
-                return _.pickBy(this.categories, (cat, name) => _.size(this.filteredData[name]));
+                return _.pickBy(this.categories, (cat, name) => _.size(this.filteredData.types[name]));
             },
 
             filteredData() {
@@ -48,7 +48,7 @@
                     const data = {};
 
                     _.forEach(this.categories, (cat, name) => {
-                        _.forEach(this.data[name], (resource, key) => {
+                        _.forEach(this.data.types[name], (resource, key) => {
                             const entry = this.$docData.resources[resource];
                             if (entry.name.includes(this.filter)) {
                                 data[name] = data[name] || {};

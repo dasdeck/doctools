@@ -33,10 +33,8 @@ class Module extends TreeItem {
 
         }
 
-        const plugins = this.execPluginCallback('onAnalyze');
-
         return Promise.all(jobs)
-            .then(res => Promise.all(plugins))
+            .then(res => Promise.all(this.execPluginCallback('onAnalyze')))
             .then(res => this.map());
 
     }
@@ -58,11 +56,13 @@ class Module extends TreeItem {
         return {...this, config: undefined, runtime: undefined, package: this.package.resource, ...this.data};
     }
 
-    reset() {
+    patch(module) {
         delete this.data;
+        _.assign(this, module);
+        this.execPluginCallback('onPatch')
     }
 
-        /**
+    /**
      * maps the jsdoc list to a sorted structure
      * @param {*} all
      * @param {*} config
@@ -83,7 +83,7 @@ class Module extends TreeItem {
 
                 desc.description = el.description;
                 if (el.type) {
-                    desc.type = el.type.names[0];
+                    this.type = el.type.names[0];
                 } else if(el.ignore) {
                     desc.ignore = true;
                 }

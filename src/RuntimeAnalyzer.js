@@ -18,6 +18,12 @@ module.exports = class RuntimeAnalyzer extends EventEmitter {
 
     }
 
+    rebuild() {
+
+        this.watch && this.watch.invalidate();
+
+    }
+
     adaptConfig(files) {
 
         files = _.isArray(files) ? files : [files];
@@ -82,7 +88,7 @@ module.exports = class RuntimeAnalyzer extends EventEmitter {
             return Promise.resolve(this.cache[resource]);
         } else {
             return new Promise(resolve => {
-                this.once('change', resolve);
+                this.once('change', res => resolve(res[resource]));
             })
         }
 
@@ -98,7 +104,7 @@ module.exports = class RuntimeAnalyzer extends EventEmitter {
 
         console.log('watching package:', this.pack.name);
 
-        compiler.watch({ignored: '**/*'}, (err, res) => {
+        this.watch = compiler.watch({ignored: '**/*'}, (err, res) => {
             const resfname = Object.keys(res.compilation.assets)[0];
             const data = compiler.outputFileSystem.readFileSync(resfname ,'utf8');
             try {

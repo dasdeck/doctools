@@ -1,7 +1,7 @@
 
 const _ = require('lodash');
 const Runtime = require('./RuntimeAnalyzer');
-
+const util = require('./util');
 const {findPropDefaults} = require('./util');
 
 let base; //= 'module.exports';
@@ -95,6 +95,106 @@ module.exports = class ComponentPlugin extends Plugin {
         return this.runtimeService;
     }
 
+    onPatch() {
+        this.getRuntimeService().rebuild();
+    }
+
+    onSerialize(desc) {
+        if (desc.type === 'package' && desc.isRootPackage()) {
+            this.createLinks(desc);
+        }
+    }
+
+        //try s to match
+    findDefinitionName(desc, runtime) {
+        return ;
+    }
+
+    createLinks(desc) {
+
+        desc.config.types.forEach(type => {
+
+            const resources = desc.resources;
+
+            _.forEach(desc.resources, comp => {
+
+                const runtime = comp.runtime
+
+
+                if (runtime) {
+
+                    comp.extends =  runtime.extends && _.find(resources, {runtime: runtime.extends});
+
+                    if (runtime.extends && !comp.extends) {
+                        console.warn('could not link extend on: ' + comp.name);
+
+                        comp.extends = _.findKey(resources, {runtime: runtime.extends});
+
+                        if (!comp.extends) {
+                            console.warn('could not find extend on: ' + comp.name);
+                        }
+                    }
+
+                    comp.mixins = [];
+
+                    //resolve mixins
+                    _.forEach(runtime.mixins, (mixin, index) => {
+                        const definition = _.find(resources, res => {
+                            return res.runtime === mixin;
+                        });
+
+                        const name = definition && definition.resource;
+
+                        if(!name) {
+                            console.warn('could not find mixin ' + index + ' in: ' + comp.name);
+                        }
+                        if(!definition) {
+                            console.warn('could not link  mixin ' + (name || index) + ' for: ' + comp.name);
+                        }
+
+                        comp.mixins.push({name, linked: !!definition});
+
+                    });
+
+                    //merge inherited props, methods, computeds  to component
+                    ['props', 'methods', 'computed'].forEach(type => {
+
+                        const res = {};
+
+                        const inheritanceChain = comp.extends ? [comp.extends] : [];
+
+                        [...inheritanceChain, ...comp.mixins].forEach((desc) => {
+                            if (desc) {
+
+                                const def = resources[desc.name];
+                                if(def) {
+                                    _.assign(res, _.mapValues(def.data[type], member => ({...member, inherited: !!desc, _style : {...member._style, 'font-style': 'italic'}})));
+                                }
+                                if(desc.linked !== !!def) {
+                                    debugger
+                                }
+
+                            } else {
+                                debugger;
+                            }
+                        });
+
+                        _.assign(res, comp.data[type]);
+
+                        //find prop defaults again, as default may change in inherited type
+                        util.findPropDefaults(res, comp.runtime);
+
+                        comp.data[type] = res;
+
+                    });
+
+                }
+
+            });
+        });
+
+    }
+
     /**
      * helper function to load the runtime for a component or module
      * @param {*} config
@@ -110,7 +210,7 @@ module.exports = class ComponentPlugin extends Plugin {
 
                 const serv = this.getRuntimeService(desc);
                 return serv.getRuntime(desc.resource).then(runtime => {
-                    this.runtime = runtime;
+                    desc.runtime = runtime;
                 });
 
                 // return this.webpackFile(config, desc.path);
@@ -134,15 +234,17 @@ module.exports = class ComponentPlugin extends Plugin {
 
     }
 
-    map({data: desc}) {
+    map(desc) {
+        const data = desc.data;
 
-        if (!desc) debugger;
+        if (!data || !data.types) debugger;
 
-        const {documented: entries, runtime, types: {function: funcs}} = desc;
+        const {documented: entries, types: {function: funcs}} = data;
+        const runtime = desc.runtime;
 
         base = 'module.exports';
-        desc.all.forEach(entry => {
-            if ((entry.type && entry.type.names.includes(desc.type)) && entry.kind === 'constant') {
+        data.all.forEach(entry => {
+            if ((entry.type && entry.type.names.includes(data.type)) && entry.kind === 'constant') {
                 base = entry.longname;
             }
         });
@@ -164,7 +266,7 @@ module.exports = class ComponentPlugin extends Plugin {
 
             const members = simple ? findMembers(entries, name, runtime) : type[name](entries, runtime);
             if (_.size(members)) {
-                desc[name] = members;
+                data[name] = members;
 
                 //remove functions form the general function list
                 _.forEach(members, member => {
@@ -174,13 +276,13 @@ module.exports = class ComponentPlugin extends Plugin {
 
         });
 
-        entries.forEach(data => {
-            if (data.longname === base) {
-                desc.description = data.description;
+        entries.forEach(el => {
+            if (el.longname === base) {
+                data.description = el.description;
             }
         });
 
-        return desc;
+        return data;
     }
 
 };

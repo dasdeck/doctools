@@ -7,9 +7,7 @@ import Content from './app/Content.vue';
 
 Vue.use(VueRouter);
 
-
 let app;
-
 
 function setData(data) {
     window.$data = data;
@@ -34,7 +32,7 @@ function init() {
                 path: '/',
                 redirect(route) {
                     //redirect to topmost package
-                    return '/' + window.$data.resource;
+                    return '/' + window.$data.rootPackage;
                 }
             },
             {
