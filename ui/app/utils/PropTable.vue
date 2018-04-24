@@ -39,6 +39,7 @@
      * the table width will be determined by the header, so you need to provide one,
      */
     export default {
+
         props: {
             /**
              * header text, will be skipped if empty

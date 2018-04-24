@@ -1,7 +1,11 @@
 <template>
     <div>
         <h4>
-            <ModuleLink :data="data" tag="div"/>
+
+            <router-link :to="`/${data.resource}`">
+                {{data.name}}
+            </router-link>
+
             <ResourceList v-if="selectedPackage === data || $doc.settings.filter" :data="data"/>
 
             <ul uk-accordion v-if="data.subPackages && Object.keys(data.subPackages).length" class="uk-list">
@@ -17,15 +21,14 @@
 
 <script>
 
-    import ModuleLink from './utils/ModuleLink.vue';
     import ResourceList from './ResourceList.vue';
 
     /**
      * @type {VueComponent}
      */
     const PackageTree = {
+
         components: {
-            ModuleLink,
             ResourceList
         },
 

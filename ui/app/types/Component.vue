@@ -18,7 +18,11 @@
         <template v-if="data.mixins && data.mixins.length">
             <h2>mixins:</h2>
             <template v-for="(mixin, index) in data.mixins">
-                <ModuleLink v-if="mixin.linked" tag="span" :data="$doc.resources[mixin.name]"/>
+                <span v-if="mixin.linked">
+                    <router-link :to="`/${$doc.resources[mixin.name].resource}`">
+                        {{$doc.resources[mixin.name].name}}
+                    </router-link>
+                </span>
                 <span v-else>{{mixin.name || '?'}}</span>
                 <span v-if="index + 1 < data.mixins.length">, </span>
             </template>
@@ -92,7 +96,7 @@
 </template>
 
 <script>
-    import ModuleLink from '../utils/ModuleLink.vue';
+
     import PropTable from '../utils/PropTable.vue';
     import Function from '../utils/Function.vue';
     import _ from 'lodash';
@@ -100,7 +104,6 @@
     export default {
 
         components: {
-            ModuleLink,
             PropTable,
             Function
         },

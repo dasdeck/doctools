@@ -4,7 +4,9 @@
             <h4>{{title}}</h4>
             <ul class="uk-nav uk-nav-default">
                 <li v-for="(entry) in filteredData[category]" :style="{opacity: $doc.resources[entry].documented.length > 1 ? 1 : 0.2}">
-                    <ModuleLink :data="$doc.resources[entry]"/>
+                    <router-link :to="`/${$doc.resources[entry].resource}`">
+                        {{$doc.resources[entry].name}}
+                    </router-link>
                 </li>
             </ul>
         </template>
@@ -13,12 +15,7 @@
 
 <script>
 
-    import ModuleLink from './utils/ModuleLink.vue';
-
     export default {
-        components: {
-            ModuleLink
-        },
 
         inject: ['$doc'],
 
@@ -38,7 +35,6 @@
 
             categories() {
                 return {'VueComponent': 'Vue', 'UIkitComponent': 'UIkit', 'module': 'Modules'};
-
             },
 
             filteredCategories() {
