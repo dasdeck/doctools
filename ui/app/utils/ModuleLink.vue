@@ -8,18 +8,18 @@
 
 <script>
 
-/**
- * wraps link creation to modules
- */
-export default {
-    props: {
-        data: Object,
-        tag: {
-            type: String,
-            default: 'li'
+    /**
+     * wraps link creation to modules
+     */
+    export default {
+        props: {
+            data: Object,
+            tag: {
+                type: String,
+                default: 'li'
+            }
         }
     }
-}
 </script>
 
 <style>

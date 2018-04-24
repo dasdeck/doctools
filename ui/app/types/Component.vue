@@ -18,7 +18,7 @@
         <template v-if="data.mixins && data.mixins.length">
             <h2>mixins:</h2>
             <template v-for="(mixin, index) in data.mixins">
-                <ModuleLink v-if="mixin.linked"  tag="span" :data="$doc.resources[mixin.name]"/>
+                <ModuleLink v-if="mixin.linked" tag="span" :data="$doc.resources[mixin.name]"/>
                 <span v-else>{{mixin.name || '?'}}</span>
                 <span v-if="index + 1 < data.mixins.length">, </span>
             </template>
@@ -27,22 +27,22 @@
 
         <template v-if="data.props && Object.keys(data.props).length">
             <h2>props:</h2>
-            <PropTable :data="props" :annotations="['examples']" :headers="{name: 'name', type: 'type', defaultvalue: 'default', description: 'description'}" />
+            <PropTable :data="props" :annotations="['examples']" :headers="{name: 'name', type: 'type', defaultvalue: 'default', description: 'description'}"/>
         </template>
 
         <template v-if="methods.length">
             <h2>methods:</h2>
             <ul class="uk-list">
-            <li v-for="method in methods">
-                <Function :data="method"/>
-            <!-- <h3>{{method.name}}</h3>
-            <code>{{method.signature}}</code>
-            <p>
-                {{method.description}}
-            </p>
-            <PropTable v-for="(table, name) in method.tables" :name="name" :data="table.slice(1)" :headers="['name', 'type', 'description']" /> -->
-            <hr>
-            </li>
+                <li v-for="method in methods">
+                    <Function :data="method"/>
+                    <!-- <h3>{{method.name}}</h3>
+                    <code>{{method.signature}}</code>
+                    <p>
+                        {{method.description}}
+                    </p>
+                    <PropTable v-for="(table, name) in method.tables" :name="name" :data="table.slice(1)" :headers="['name', 'type', 'description']" /> -->
+                    <hr>
+                </li>
             </ul>
             <hr>
         </template>
@@ -92,43 +92,51 @@
 </template>
 
 <script>
-import ModuleLink from '../utils/ModuleLink.vue';
-import PropTable from '../utils/PropTable.vue';
-import Function from '../utils/Function.vue';
-import _ from 'lodash';
-export default {
+    import ModuleLink from '../utils/ModuleLink.vue';
+    import PropTable from '../utils/PropTable.vue';
+    import Function from '../utils/Function.vue';
+    import _ from 'lodash';
 
-    components: {
-        ModuleLink,
-        PropTable,
-        Function
-    },
+    export default {
 
-    props: {
-        data: Object
-    },
-
-    inject: ['$doc'],
-
-    computed: {
-        /**
-         * the filtered list of methods
-         */
-        methods() {
-            return _.filter(this.data.methods, method => this.$doc.settings.private || method.access !== 'private');
+        components: {
+            ModuleLink,
+            PropTable,
+            Function
         },
 
-        /**
-         * the lsit of props with added style information for rendering
-         */
-        props() {
+        props: {
+            data: Object
+        },
 
-            const props = this.data.props;
+        inject: ['$doc'],
 
-            _.forEach(props, prop => prop._style = {...prop._style, opacity: prop.optional ? 0.5 : 1, 'font-style':  prop.inherited ? 'italic' : undefined});
+        computed: {
+            /**
+             * the filtered list of methods
+             */
+            methods() {
+                return _.filter(this.data.methods, method => this.$doc.settings.private || method.access !== 'private');
+            },
 
-            return _.orderBy(_.mapValues(props, prop => ({...prop, type: prop.type && prop.type.names.join('|')})), ['inherited', 'name'], ['desc', 'asc']);
+            /**
+             * the lsit of props with added style information for rendering
+             */
+            props() {
+
+                const props = this.data.props;
+
+                _.forEach(props, prop => prop._style = {
+                    ...prop._style,
+                    opacity: prop.optional ? 0.5 : 1,
+                    'font-style': prop.inherited ? 'italic' : undefined
+                });
+
+                return _.orderBy(_.mapValues(props, prop => ({
+                    ...prop,
+                    type: prop.type && prop.type.names.join('|')
+                })), ['inherited', 'name'], ['desc', 'asc']);
+            }
         }
     }
-}
 </script>

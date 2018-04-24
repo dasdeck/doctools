@@ -1,9 +1,9 @@
 import Vue from 'vue';
-import Doc from './Doc.vue';
 import VueRouter from 'vue-router';
-import _ from 'lodash';
-import Content from './Content.vue';
 import SockJS from 'sockjs-client';
+
+import Doc from './app/Doc.vue';
+import Content from './app/Content.vue';
 
 Vue.use(VueRouter);
 
@@ -19,6 +19,7 @@ function setData(data) {
     }
 }
 
+// IE compatibility?
 fetch('data.json').then(res => res.json()).then(data => {
 
     setData(data);
@@ -26,7 +27,6 @@ fetch('data.json').then(res => res.json()).then(data => {
 });
 
 function init() {
-
 
     const router = new VueRouter({
         routes: [
@@ -40,7 +40,7 @@ function init() {
             {
                 path: '/:resource',
                 component: Content,
-                beforeEnter(route, to , next) {
+                beforeEnter(route, to, next) {
                     //redirect to root if packackage not found
                     next(window.$data.resources[route.params.resource] ? undefined : '/');
                 },
@@ -48,7 +48,7 @@ function init() {
             }
 
         ]
-        })
+    });
 
     const comp = Vue.extend(({...Doc}));
     app = new comp({propsData: {initialData: window.$data}, el: '#app', router});

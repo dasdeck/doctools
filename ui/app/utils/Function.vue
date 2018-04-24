@@ -1,13 +1,14 @@
 <template>
-  <div>
-      <h2 :id="data.simpleName">
-          {{data.simpleName}}
+    <div>
+        <h2 :id="data.simpleName">
+            {{data.simpleName}}
         </h2>
         <a v-if="data.reference" :href="`#${data.reference}`" uk-scroll>
             {{data.description}}
         </a>
         <template v-else>
-            <code v-if="data.memberof === 'module.exports'">import { {{data.simpleName}} } from '{{$parent.data.fileInPackage}}'</code>
+            <code v-if="data.memberof === 'module.exports'">import { {{data.simpleName}} } from
+                '{{$parent.data.fileInPackage}}'</code>
             <p>{{data.description}}</p>
             <h4><code>{{data.signature}}</code></h4>
             <PropTable v-for="(table, name) in data.tables" :name="name" :data="table" :headers="true"/>
@@ -23,20 +24,20 @@
 </template>
 
 <script>
-import PropTable from './PropTable.vue';
+    import PropTable from './PropTable.vue';
 
-/**
- * renders a function
- * can also be used to render objects with a function like signatures like `event` and `trigger`
- *
- */
-export default {
-    components: {
-        PropTable
-    },
+    /**
+     * renders a function
+     * can also be used to render objects with a function like signatures like `event` and `trigger`
+     *
+     */
+    export default {
+        components: {
+            PropTable
+        },
 
-    props: {
-        data: Object
+        props: {
+            data: Object
+        }
     }
-}
 </script>
