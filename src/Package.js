@@ -66,7 +66,7 @@ class Package extends TreeItem {
     analyzeSubPackages() {
 
         if (this.config.subPackages){
-            console.log('using subpackages:', this.config.subPackages);
+            // console.log('using subpackages:', this.config.subPackages);
 
             this.subPackages = this.subPackages || {};
 
@@ -167,6 +167,8 @@ class Package extends TreeItem {
 
     patch(module) {
 
+        this.execPluginCallback('onPatch')
+
         if (_.isString(module)) {
             this.addFile(module, true);
         } else {
@@ -215,23 +217,7 @@ class Package extends TreeItem {
      */
     serialize() {
 
-        // this.analyzeRuntime();
-        // _.forEach(this.resources, resource => delete resource.config);
-
-
-
         this.execPluginCallback('onSerialize');
-
-        // if (this.isRootPackage()) {
-
-        //     const resources = _.pickBy(_.mapValues(this.resources, resource => resource.serialize()), res => !res.ignore);
-        //     resources[this.resource] = {...this, config: undefined, ...this.data, resources: undefined};
-
-        //     return {
-        //         resources,
-        //         rootPackage: this.resource
-        //     }
-        // } else {
 
             const types = {};
             _.forEach(this.resources, resource => {
@@ -250,7 +236,6 @@ class Package extends TreeItem {
                 parent: this.parent && this.parent.resource,
                 ...this.data
             };
-        // }
 
     }
 

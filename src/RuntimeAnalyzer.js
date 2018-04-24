@@ -8,7 +8,7 @@ const MemFs = require('memory-fs');
 const requireFromString = require('require-from-string');
 const browser = require('./Browser');
 
-module.exports = class RuntimeAnalyzer extends EventEmitter {
+class RuntimeAnalyzer extends EventEmitter {
 
     constructor(pack) {
 
@@ -16,12 +16,19 @@ module.exports = class RuntimeAnalyzer extends EventEmitter {
         this.pack = pack;
         this.indexFile = tempfile('.js');
 
+        if (pack.config.watch) {
+            this.watch();
+            this.on('change', () => {
+                pack.getRootPackage().emit('change');
+            });
+        }
+
     }
 
     rebuild() {
 
         delete this.cache;
-        this.watch && this.watch.invalidate();
+        // this.watch && this.watch.invalidate();
 
     }
 
@@ -105,7 +112,8 @@ module.exports = class RuntimeAnalyzer extends EventEmitter {
 
         console.log('watching package:', this.pack.name);
 
-        this.watch = compiler.watch({ignored: '**/*'}, (err, res) => {
+        // ignored: '**/*'
+        this.watch = compiler.watch({}, (err, res) => {
             const resfname = Object.keys(res.compilation.assets)[0];
             const data = compiler.outputFileSystem.readFileSync(resfname ,'utf8');
             try {
@@ -158,3 +166,21 @@ module.exports = class RuntimeAnalyzer extends EventEmitter {
         }
     }
 }
+
+RuntimeAnalyzer.instances = {};
+
+RuntimeAnalyzer.getInstance = function(pack) {
+
+    if (!RuntimeAnalyzer.instances[pack.resource]) {
+
+        const ni = new RuntimeAnalyzer(pack);
+
+        RuntimeAnalyzer.instances[pack.resource] = ni;
+
+        
+    }
+
+    return RuntimeAnalyzer.instances[pack.resource];
+}
+
+module.exports = RuntimeAnalyzer; 

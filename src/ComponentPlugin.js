@@ -1,6 +1,6 @@
 
 const _ = require('lodash');
-const Runtime = require('./RuntimeAnalyzer');
+const RuntimeAnalyzer = require('./RuntimeAnalyzer');
 const util = require('./util');
 const {findPropDefaults} = require('./util');
 
@@ -84,18 +84,14 @@ module.exports = class ComponentPlugin extends Plugin {
 
     getRuntimeService(desc) {
         if (!this.runtimeService) {
-            this.runtimeService = new Runtime(desc.package.getRootPackage());
-            if (desc.config.watch) {
-                this.runtimeService.watch();
-                this.runtimeService.on('change', () => {
-                    desc.package.getRootPackage().emit('change');
-                });
-            }
+            this.runtimeService = RuntimeAnalyzer.getInstance(desc.package.getRootPackage());
+            
         }
         return this.runtimeService;
     }
 
     onPatch() {
+        // this.linked = false;
         this.getRuntimeService().rebuild();
     }
 
@@ -105,12 +101,11 @@ module.exports = class ComponentPlugin extends Plugin {
         }
     }
 
-        //try s to match
-    findDefinitionName(desc, runtime) {
-        return ;
-    }
-
     createLinks(desc) {
+
+        // if (this.linked) {
+        //     return;
+        // }
 
         desc.config.types.forEach(type => {
 
@@ -145,11 +140,11 @@ module.exports = class ComponentPlugin extends Plugin {
 
                         const name = definition && definition.resource;
 
-                        if(!name) {
-                            console.warn('could not find mixin ' + index + ' in: ' + comp.name);
-                        }
+                        // if(!name) {
+                        //     console.warn('could not find mixin ' + index + ' in: ' + comp.name);
+                        // }
                         if(!definition) {
-                            console.warn('could not link  mixin ' + (name || index) + ' for: ' + comp.name);
+                            console.warn('could not link/find  mixin ' + (name || index) + ' for: ' + comp.name);
                         }
 
                         comp.mixins.push({name, linked: !!definition});
@@ -192,7 +187,7 @@ module.exports = class ComponentPlugin extends Plugin {
 
             });
         });
-
+        // this.linked = true;
     }
 
     /**

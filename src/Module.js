@@ -57,7 +57,6 @@ class Module extends TreeItem {
     }
 
     patch(module) {
-        this.execPluginCallback('onPatch')
         delete this.data;
         _.assign(this, module);
     }

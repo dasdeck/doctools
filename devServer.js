@@ -11,8 +11,8 @@ module.exports = {
         index: 'ui/index.html',
     },
     contentBase: [__dirname, 'src'],
-    watchContentBase: true,
-    inline: true,
+    watchContentBase: false,
+    inline: false,
     before(app) {
 
         console.log('building docs...');
