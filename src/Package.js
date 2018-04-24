@@ -19,24 +19,18 @@ class Package extends TreeItem {
         this.resources = {};
         this.modules = {};
 
+        this.loadPackageFile();
         this.analyzeSubPackages();
-
+        this.loadFiles();
 
     }
 
-    loadFiles() {
+    loadPackageFile() {
 
         const packPath = path.join(this.path, 'package.json');
         if (fs.existsSync(packPath)) {
             this.packageJson = require(packPath);
         }
-
-        const files = Package.getIncludedFiles(this.config);
-        files.forEach(file => {
-
-            this.addFile(file);
-
-        });
 
     }
 
@@ -66,9 +60,6 @@ class Package extends TreeItem {
 
     analyze() {
 
-
-        this.loadFiles();
-
         return new Promise(res => {
 
             const jobs = [];
@@ -81,19 +72,23 @@ class Package extends TreeItem {
 
             Promise.all(jobs).then(all => {
 
-                try {
-
-                    this.createLinks();
-                    this.mapGlobals();
-
-                } catch (e) {
-
-                    debugger;
-                }
+                this.createLinks();
+                this.mapGlobals();
 
                 res(this);
 
             });
+
+        });
+
+    }
+
+    loadFiles() {
+
+        const files = Package.getIncludedFiles(this.config);
+        files.forEach(file => {
+
+            this.addFile(file);
 
         });
 
@@ -183,16 +178,12 @@ class Package extends TreeItem {
 
     //try s to match
     findDefinitionName(runtime) {
-        return _.findKey(this.resources, {runtime});
+        return _.findKey(this.resources, ['runtime', runtime]);
     }
-
-
 
     createLinks() {
 
-
         this.config.types.forEach(type => {
-
 
             const registry = _.cloneDeep(this.modules[type]);
 
@@ -201,11 +192,12 @@ class Package extends TreeItem {
                 const comp = this.resources[resource];
                 const runtime = comp.runtime
 
+                this[type] = this[type] || {};
+                this[type][comp.name] = resource;
 
                 if (this.packageJson && this.packageJson.main && path.resolve(path.join(this.path, this.packageJson.main)) === path.resolve(comp.path)) {
                     this.main = comp;
                 }
-
 
                 if (runtime) {
 
@@ -223,10 +215,9 @@ class Package extends TreeItem {
 
                     comp.mixins = [];
 
-
                     //resolve mixins
                     _.forEach(runtime.mixins, (mixin, index) => {
-                        const definition = mixin && _.find(registry, ['runtime', mixin]);
+                        const definition = mixin && _.find(this.resources, ['runtime', mixin]);
 
                         const name = mixin && this.findDefinitionName(mixin);
                         if(!name) {
@@ -240,14 +231,12 @@ class Package extends TreeItem {
 
                     });
 
-
                     //merge inherited props, methods, computeds  to component
                     ['props', 'methods', 'computed'].forEach(type => {
 
                         const res = {};
 
                         const inheritanceChain = comp.extends ? [comp.extends] : [];
-
 
                         [...inheritanceChain, ...comp.mixins].forEach((desc) => {
                             if (desc) {
@@ -272,7 +261,7 @@ class Package extends TreeItem {
 
                         comp[type] = res;
 
-                    })
+                    });
 
                 }
 

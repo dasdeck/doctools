@@ -3,9 +3,9 @@
  * HTTP transport tools
  * The following functions are to work with asynchronous tasks. They are used for executing code asynchronously.
  */
-import {on} from './event';
-import {Promise} from './promise';
-import {assign, noop} from './lang';
+// import {on} from './event';
+// import {Promise} from './promise';
+// import {assign, noop} from './lang';
 
 /**
  * Make asynchronous calls to a specific URL and pass it some data.

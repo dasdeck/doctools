@@ -1,9 +1,9 @@
-import {attr} from './attr';
-import {Promise} from './promise';
-import {once, trigger} from './event';
-import {css, propName} from './style';
-import {assign, startsWith, toNodes} from './lang';
-import {addClass, hasClass, removeClass, removeClasses} from './class';
+// import {attr} from './attr';
+// import {Promise} from './promise';
+// import {once, trigger} from './event';
+// import {css, propName} from './style';
+// import {assign, startsWith, toNodes} from './lang';
+// import {addClass, hasClass, removeClass, removeClasses} from './class';
 
 /* @file
     The following functions are to animate elements. They are either used to transition some CSS properties or

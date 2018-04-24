@@ -18,8 +18,8 @@
         <template v-if="data.mixins && data.mixins.length">
             <h2>mixins:</h2>
             <template v-for="(mixin, index) in data.mixins">
-                <ModuleLink v-if="mixin.linked"  tag="span" :data="$parent.$parent.data[data.type][mixin.name]"/>
-                <span v-else>{{mixin.name}}</span>
+                <ModuleLink v-if="mixin.linked"  tag="span" :data="$doc.resources[mixin.name]"/>
+                <span v-else>{{mixin.name || '?'}}</span>
                 <span v-if="index + 1 < data.mixins.length">, </span>
             </template>
             <hr>

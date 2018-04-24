@@ -3,6 +3,8 @@ const _ = require('lodash');
 const webpack = require('webpack');
 const MemFs = require('memory-fs');
 const requireFromString = require('require-from-string');
+const tempfile = require('tempfile');
+const fs = require('fs');
 
 const getTypesRaw = arr => arr ? arr.join(' | ') : '';
 
@@ -10,16 +12,11 @@ module.exports = {
 
     getTypesRaw,
 
-    /**
-     *
-     * @param {DoctoolsConfig} config
-     * @param {String} filename
-     * @returns {Promise} returns an object with the result of a webpacked require of the given file
-     */
-    webpackFile(config, filename) {
+    webPackConfig(config, filename) {
+
         console.log('webpacking... :', filename);
         const runtime = require(config.runtime);
-        const conf = {
+        return {
             ...runtime,
             entry: {
                 [filename]: filename
@@ -28,17 +25,81 @@ module.exports = {
                 libraryTarget: 'commonjs'
             }
         };
+
+    },
+
+    webPackCompiler(config, filename) {
+
+        const conf = this.webPackConfig(config, filename);
+        const compiler = webpack(conf);
+
+        compiler.outputFileSystem = new MemFs;
+
+        return compiler;
+
+    },
+
+    watchPack(config, pack, callback) {
+        const files = _.filter(pack.resources, res => res.type !== 'package');
+
+            const imports = files.map(desc => {
+                const file = desc.path;
+                const varName = file.replace(/\//g, '_').replace(/\./g, '_');
+                const importString = `import ${varName} from '${file}';`;
+                return importString;
+            }).join('\n');
+
+            const assigns = files.map(desc => {
+                const file = desc.path;
+                const varName = file.replace(/\//g, '_').replace(/\./g, '_');
+                const assignmentString = `exp['${desc.resource}'] = ${varName};`;
+                return assignmentString;
+            }).join('\n');
+
+            const res = [imports,'const exp = {};', assigns, 'export default exp;'].join('\n');
+
+            const indexFile = tempfile('.js'); 
+            fs.writeFileSync(indexFile, res);
+
+            const compiler = this.webPackCompiler(config, indexFile);
+
+            compiler.inputFileSystem = compiler.inputFileSystem;
+
+            compiler.run((err, res) => {
+                const resfname = Object.keys(res.compilation.assets)[0];
+                const data = compiler.outputFileSystem.readFileSync(resfname ,'utf8');
+                debugger;
+                const res2 = eval(data);
+                try {
+                    const rt = requireFromString(data);
+                    // resolve(rt.default ? rt.default : rt);
+                    debugger;
+                    console.log('webpacked:', filename);
+                } catch(e) {
+                    console.warn('could not load runtime for:', filename);
+                    // resolve({});
+                }
+                debugger;
+            });
+    },
+
+    /**
+     *
+     * @param {DoctoolsConfig} config
+     * @param {String} filename
+     * @returns {Promise} returns an object with the result of a webpacked require of the given file
+     */
+    webpackFile(config, filename) {
+
         try {
 
-            const compiler = webpack(conf);
-
-
-            compiler.outputFileSystem = new MemFs;
+            const compiler = this.webPackCompiler(config, filename);
 
             return new Promise(resolve => {
 
                 compiler.run((err, res) => {
-                    const data = compiler.outputFileSystem.readFileSync(Object.keys(res.compilation.assets)[0] ,'utf8');
+                    const resfname = Object.keys(res.compilation.assets)[0];
+                    const data = compiler.outputFileSystem.readFileSync(resfname ,'utf8');
                     try {
                         const rt = requireFromString(data);
                         resolve(rt.default ? rt.default : rt);

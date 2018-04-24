@@ -4,6 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const _ = require('lodash');
 const glob = require('glob');
+const util = require('./src/util');
 
 module.exports = {
 
@@ -20,10 +21,12 @@ module.exports = {
         const parser = require(__dirname + '/src/parser');
         const config = parser.prepareConfig(global.doctoolsConfig);
 
-        let pack;
+        let pack = parser.parse(config);
 
         if (config.watch) {
             const watchedFiles = Package.getIncludedFiles(config);
+
+            util.watchPack(config, pack);
 
             fs.watch(config.base, {recursive: true}, (eventType, filename) => {
                 filename = path.join(config.base, filename);

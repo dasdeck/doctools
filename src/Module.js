@@ -32,26 +32,35 @@ class Module extends TreeItem {
 
     analyze() {
 
-        if (!this.jsdoc) {
-            this.jsdoc = jsdoc.explainSync({source: this.script});
-            this.init(this.jsdoc, this.config);//this.init(entries);
-            this.map();
+        const jobs = [];
+
+        if (!this.all) {
+
+            jobs.push(new Promise(res => {
+                const self = this;
+                jsdoc.explain({source: this.script}).then(jsdoc => {
+                    self.all = jsdoc;
+                    self.init(jsdoc, self.config);
+                    self.map();
+                    res();
+                });
+               
+            }));
         }
 
-        return new Promise(res => {
-            if (this.runtime) {
-                res(this);
-            } else {
+        if(!this.runtime) {
+
+            jobs.push(new Promise(res => {
                 utils.findRuntime(this.config, this).then(runtime => {
                     this.runtime = runtime;
-
                     this.map();
-
                     res(this);
 
                 });
-            }
-        });
+            }));
+        }
+
+        return Promise.all(jobs);
 
     }
 
