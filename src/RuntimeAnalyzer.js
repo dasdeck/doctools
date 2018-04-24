@@ -20,6 +20,7 @@ module.exports = class RuntimeAnalyzer extends EventEmitter {
 
     rebuild() {
 
+        delete this.cache;
         this.watch && this.watch.invalidate();
 
     }
