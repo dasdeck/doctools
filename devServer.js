@@ -2,9 +2,8 @@
 const Package = require('./src/Package');
 const fs = require('fs');
 const path = require('path');
-const _ = require('lodash');
 const glob = require('glob');
-const util = require('./src/util');
+// const util = require('./src/util');
 
 module.exports = {
 
@@ -23,24 +22,36 @@ module.exports = {
 
         let pack = parser.parse(config);
 
+        //additionally watch add an remove of files
         if (config.watch) {
+
             const watchedFiles = Package.getIncludedFiles(config);
 
-            util.watchPack(config, pack);
+            // util.watchPack(config, pack);
 
             fs.watch(config.base, {recursive: true}, (eventType, filename) => {
+
+                // debugger;
                 filename = path.join(config.base, filename);
                 if (watchedFiles.includes(filename)) {
 
-                    pack && pack.patch && pack.patch(filename).then(res => {
-                        config.server.sockWrite(config.server.sockets, 'doc-changed', pack.serialize());
+                    pack && pack.patch && pack.patch(filename).then(data => {
+                        config.server.sockWrite(config.server.sockets, 'doc-changed', data);
                     }).catch(console.warn);
 
-                    console.log(filename, 'changed!!');
+                    // console.log(filename, 'changed!!');
 
                 }
             });
         }
+
+        pack.on('change', () => {
+
+            pack.analyze().then(() => {
+                config.server.sockWrite(config.server.sockets, 'doc-changed', pack.serialize());
+            });
+
+        });
 
         app.get('/data.json', (req, res, next) => {
 

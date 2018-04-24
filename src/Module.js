@@ -5,13 +5,12 @@ const jsdoc = require('jsdoc-api');
 const utils = require('./util');
 const TreeItem = require('./TreeItem');
 
-
 class Module extends TreeItem {
 
     constructor(config, desc, pack = null) {
 
         super(config);
-        this.package = pack && pack.resource;
+        this.package = pack;
 
         this.execPluginCallback('onLoad');
 
@@ -19,48 +18,26 @@ class Module extends TreeItem {
 
         _.assign(this, desc);
 
-
-    }
-
-    execPluginCallback(name) {
-        _.forEach(this.config.plugins, plugin => {
-            if (plugin[name] && plugin.matchesType(this)) {
-                plugin[name](this);
-            }
-        })
     }
 
     analyze() {
 
         const jobs = [];
 
-        if (!this.all) {
+        if (!this.data) {
 
-            jobs.push(new Promise(res => {
-                const self = this;
-                jsdoc.explain({source: this.script}).then(jsdoc => {
-                    self.all = jsdoc;
-                    self.init(jsdoc, self.config);
-                    self.map();
-                    res();
-                });
-               
+            const self = this;
+            jobs.push(jsdoc.explain({source: this.script}).then(jsdoc => {
+                self.init(jsdoc, self.config);
             }));
+
         }
 
-        if(!this.runtime) {
+        const plugins = this.execPluginCallback('onAnalyze');
 
-            jobs.push(new Promise(res => {
-                utils.findRuntime(this.config, this).then(runtime => {
-                    this.runtime = runtime;
-                    this.map();
-                    res(this);
-
-                });
-            }));
-        }
-
-        return Promise.all(jobs);
+        return Promise.all(jobs)
+            .then(res => Promise.all(plugins))
+            .then(res => this.map());
 
     }
 
@@ -74,12 +51,15 @@ class Module extends TreeItem {
     }
 
 
-
     /**
      * @override
      */
     serialize() {
-        return {...this, config: undefined, runtime: undefined};
+        return {...this, config: undefined, runtime: undefined, package: this.package.resource, ...this.data};
+    }
+
+    reset() {
+        delete this.data;
     }
 
         /**
@@ -98,6 +78,7 @@ class Module extends TreeItem {
                 this.analyseFunction(el, config);
 
             }
+
             if (el.kind === 'file') {
 
                 desc.description = el.description;
@@ -108,6 +89,7 @@ class Module extends TreeItem {
                 }
 
             }
+
             if (!el.undocumented) {
 
                 el.examples && el.examples.forEach(example => {
@@ -142,9 +124,11 @@ class Module extends TreeItem {
             }
         });
 
-        _.assign(this, desc);
+        this.data = desc;
 
-        return desc;
+        // _.assign(this, desc);
+
+        // return desc;
     }
 
     /**

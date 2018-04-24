@@ -86,12 +86,12 @@ module.exports = class VueComponentPlugin extends ComponentPlugin {
 
                         const key = subKeyMapping[kind] || kind;
                         currentParent[key] = currentParent[key] || [];
-                        currentParent[key].push(current);
+                        currentParent[key][current.name]= current;
                     }
                 } else if (parentKind.includes(kind)) {
                     currentParent = current;
-                    res[kind] = res[kind] || [];
-                    res[kind].push(current);
+                    res[kind] = res[kind] || {};
+                    res[kind][current.name]= current;
                 }
             }
 

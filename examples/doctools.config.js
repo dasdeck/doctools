@@ -7,7 +7,7 @@
 // uikitShim.clear();
 
 // runtime.UIkitComponent = {..._.mapValues(UIkit.components, comp => comp.options), ...UIkit.mixin};
-
+/* eslint-env node */
 module.exports = {
     base: __dirname,
     search: 'src/**/*.+(js|vue)',

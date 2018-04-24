@@ -10,9 +10,11 @@ const TreeItem = require('./TreeItem');
  */
 class Package extends TreeItem {
 
-    constructor(config) {
+    constructor(config, parent = null) {
 
-        super(config)
+        super(config);
+
+        this.parent = parent;
 
         this.type = 'package';
 
@@ -23,6 +25,14 @@ class Package extends TreeItem {
         this.analyzeSubPackages();
         this.loadFiles();
 
+    }
+
+    getRootPackage() {
+        if (this.parent) {
+            return this.parent.getRootPackage();
+        } else {
+            return this;
+        }
     }
 
     loadPackageFile() {
@@ -43,9 +53,7 @@ class Package extends TreeItem {
 
             glob.sync(path.join(this.path, this.config.subPackages)).forEach(subPackage => {
 
-                const parser = require('./parser');
-
-                const res = parser.parse({...this.config, base:subPackage});
+                const res = new Package({...this.config, base:subPackage}, this);// parser.parse();
 
                 this.resources[res.resource] = res;
                 this.subPackages[res.name] = res.resource;
@@ -60,24 +68,20 @@ class Package extends TreeItem {
 
     analyze() {
 
-        return new Promise(res => {
+        const jobs = [];
 
-            const jobs = [];
+        _.forEach(this.resources, desc => {
+            // if (desc.type !== 'package') {
+                jobs.push(desc.analyze());
+            // }
+        });
 
-            _.forEach(this.resources, desc => {
-                if (desc.type !== 'package') {
-                    jobs.push(desc.analyze());
-                }
-            });
+        return Promise.all(jobs).then(all => {
 
-            Promise.all(jobs).then(all => {
+            this.createLinks();
+            this.mapGlobals();
 
-                this.createLinks();
-                this.mapGlobals();
-
-                res(this);
-
-            });
+            return this;
 
         });
 
@@ -94,27 +98,33 @@ class Package extends TreeItem {
 
     }
 
-    addFile(file, replace = false) {
+    addFile(file, patch = false) {
 
         const parser = require('./parser');
         const res = parser.parse({...this.config, base:file, package: this});
-        if (!res.ignore) {
-            this.addModule(res, replace);
-        }
+        // if (!res.ignore) {
+        this.addModule(res, patch);
+        // }
 
     }
 
-    addModule(module, replace = false) {
+    addModule(module, patch = false) {
 
         const resource = module.resource;
 
-        if (!this.resources[resource] || replace) {
+        const existingModule = this.resources[resource];
 
+        if (!existingModule) {
 
             this.resources[resource] = module;
 
             this.modules[module.type] = this.modules[module.type] || {};
             this.modules[module.type][module.name] = resource;//module;
+
+        } else if (patch) {
+            existingModule.reset();
+        } else {
+            throw 'module already existing'
         }
 
     }
@@ -139,21 +149,17 @@ class Package extends TreeItem {
 
     patch(module) {
 
-        return new Promise(resolve => {
+        if (_.isString(module)) {
+            this.addFile(module, true);
+        } else {
+            this.addModule(module, true);
+        }
 
-            if (_.isString(module)) {
-                this.addFile(module, true);
-            } else {
-                this.addModule(module, true);
-            }
+        this.mapGlobals();
 
-            this.analyze().then(res => {
-                this.createLinks();
-                resolve(this.serialize());
-            })
-
-            this.mapGlobals();
-
+        return this.analyze().then(res => {
+            this.createLinks();
+            return this.serialize();
         });
 
     }
@@ -169,8 +175,10 @@ class Package extends TreeItem {
 
         const res = {
             ...this,
-            resources: _.mapValues(this.resources, resource => resource.serialize()),
+            resources: _.pickBy(_.mapValues(this.resources, resource => resource.serialize()), res => !res.ignore),
             config: undefined,
+            parent: this.parent && this.parent.resource,
+            ...this.data
         };
         return res;
 

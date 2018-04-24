@@ -1,10 +1,5 @@
 /* eslint-env node */
 const _ = require('lodash');
-const webpack = require('webpack');
-const MemFs = require('memory-fs');
-const requireFromString = require('require-from-string');
-const tempfile = require('tempfile');
-const fs = require('fs');
 
 const getTypesRaw = arr => arr ? arr.join(' | ') : '';
 
@@ -12,109 +7,11 @@ module.exports = {
 
     getTypesRaw,
 
-    webPackConfig(config, filename) {
-
-        console.log('webpacking... :', filename);
-        const runtime = require(config.runtime);
-        return {
-            ...runtime,
-            entry: {
-                [filename]: filename
-            },
-            output: {
-                libraryTarget: 'commonjs'
-            }
-        };
-
-    },
-
-    webPackCompiler(config, filename) {
-
-        const conf = this.webPackConfig(config, filename);
-        const compiler = webpack(conf);
-
-        compiler.outputFileSystem = new MemFs;
-
-        return compiler;
-
-    },
-
-    watchPack(config, pack, callback) {
-        const files = _.filter(pack.resources, res => res.type !== 'package');
-
-            const imports = files.map(desc => {
-                const file = desc.path;
-                const varName = file.replace(/\//g, '_').replace(/\./g, '_');
-                const importString = `import ${varName} from '${file}';`;
-                return importString;
-            }).join('\n');
-
-            const assigns = files.map(desc => {
-                const file = desc.path;
-                const varName = file.replace(/\//g, '_').replace(/\./g, '_');
-                const assignmentString = `exp['${desc.resource}'] = ${varName};`;
-                return assignmentString;
-            }).join('\n');
-
-            const res = [imports,'const exp = {};', assigns, 'export default exp;'].join('\n');
-
-            const indexFile = tempfile('.js'); 
-            fs.writeFileSync(indexFile, res);
-
-            const compiler = this.webPackCompiler(config, indexFile);
-
-            compiler.inputFileSystem = compiler.inputFileSystem;
-
-            compiler.run((err, res) => {
-                const resfname = Object.keys(res.compilation.assets)[0];
-                const data = compiler.outputFileSystem.readFileSync(resfname ,'utf8');
-                debugger;
-                const res2 = eval(data);
-                try {
-                    const rt = requireFromString(data);
-                    // resolve(rt.default ? rt.default : rt);
-                    debugger;
-                    console.log('webpacked:', filename);
-                } catch(e) {
-                    console.warn('could not load runtime for:', filename);
-                    // resolve({});
-                }
-                debugger;
-            });
-    },
-
-    /**
-     *
-     * @param {DoctoolsConfig} config
-     * @param {String} filename
-     * @returns {Promise} returns an object with the result of a webpacked require of the given file
+    /**e
+     * scapes a string to be a valid variable name
      */
-    webpackFile(config, filename) {
-
-        try {
-
-            const compiler = this.webPackCompiler(config, filename);
-
-            return new Promise(resolve => {
-
-                compiler.run((err, res) => {
-                    const resfname = Object.keys(res.compilation.assets)[0];
-                    const data = compiler.outputFileSystem.readFileSync(resfname ,'utf8');
-                    try {
-                        const rt = requireFromString(data);
-                        resolve(rt.default ? rt.default : rt);
-                        console.log('webpacked:', filename);
-                    } catch(e) {
-                        console.warn('could not load runtime for:', filename);
-                        resolve({});
-                    }
-                });
-            });
-
-        } catch(e) {
-            console.warn(e);
-            return Promise.reject(e);
-        }
+    escapeVariableName(name) {
+        return name.replace(/\//g, '_').replace(/\./g, '_').replace(/-/g, '_');
     },
 
     /**
@@ -211,45 +108,7 @@ module.exports = {
 
     },
 
-    /**
-     * helper function to load the runtime for a component or module
-     * @param {*} config
-     * @param {*} desc
-     */
-    findRuntime(config, desc) {
 
-        return new Promise(res => {
-
-            let runtime;
-
-            // const babel = require('babel-core');
-            // const res = babel.transform(desc.script);
-
-            if (config.runtime) {
-
-                if(_.isString(config.runtime)) {
-                    this.webpackFile(config, desc.path).then(res);
-                } else {
-                    runtime = _.get(config.runtime, `${desc.type}.${desc.name}`) || _.get(config.runtime, desc.name);
-                    res(runtime);
-                }
-            }
-
-
-            if (!runtime && config.crudeImport) {
-                try {
-                    runtime = this.crudeImport(desc.script);
-                } catch (e) {
-                    console.warn('could not import runtime for: ' + desc.name);
-                    console.warn(e);
-                }
-            }
-
-        })
-
-        return runtime;
-
-    },
 
     /**
      * primive runtime import

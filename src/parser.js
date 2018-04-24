@@ -113,18 +113,18 @@ module.exports = {
                 // el.tests = getTestCodes(name, el.longname);
 
 
-        } catch (e) {
-            console.warn('error while parsing: ' + file);
-            if (config.strict) {
-                throw e;
-            } else {
-                console.log(e.message);
-                console.log(e.stack);
+            } catch (e) {
+                console.warn('error while parsing: ' + file);
+                if (config.strict) {
+                    throw e;
+                } else {
+                    console.log(e.message);
+                    console.log(e.stack);
+                }
             }
-        }
 
             return desc;
 
         }
     }
-}
+};

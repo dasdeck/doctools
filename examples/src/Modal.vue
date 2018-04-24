@@ -20,7 +20,7 @@
     import UIkit from 'uikit';
 
     /**
-     * Reusable modal component using UIkit.modal and VUE.
+     * reusable modal component using UIkit.modal and VUE.
      * @example
      * <Modal><ChilComponent/></Modal>
      */
