@@ -3,8 +3,7 @@
  * @type {example}
  * @name config
  */
-const UIkitComponentPlugin = require('./UIkitComponentPlugin');
-const VueComponentPlugin = require('./VueComponentPlugin');
+
 
  /**
   * a sample config
@@ -71,7 +70,8 @@ module.exports = {
      * extra mapping plugins
      */
     plugins: [
-        new UIkitComponentPlugin,
-        new VueComponentPlugin
+        'RuntimeAnalyzer',
+        'UIkitComponentPlugin',
+        'VueComponentPlugin'
     ]
 };

@@ -33,8 +33,8 @@ let config = {};
 
 const configFile = argv.config ? argv.config : path.join(base || process.cwd(), 'doctools.config.js');
 if (fs.existsSync(configFile)) {
-    config = require(configFile);
     console.log('config file used: ', configFile);
+    config = require(path.resolve(configFile));
 }
 
 config.base = config.base || argv._[0] || process.cwd(); //set base default early, for webpack dev server
@@ -46,11 +46,28 @@ console.log('current config:', config);
 //easy transport into devserver
 global.doctoolsConfig = config;
 
-if (argv.explain) {
+if (process.mainModule.filename !== __filename) {
+
     const parser = require('../src/parser');
+
+    module.exports = parser.parse(config);
+
+} else if (argv.explain) {
+
+    const parser = require('../src/parser');
+
     const res = parser.parse(config);
+
+    res.analyze().then(res => {
+        console.log('finished');
+        // debugger;
+        // process.exit();
+    });
+
     console.log(res);
+
 } else {
+
     process.argv = [...process.argv.slice(0, 2), ...argv['--']];
     //force the dev-server to use local config
     const uiWPConfig = path.join(__dirname, '..', 'ui', 'webpack.config.js');
@@ -59,6 +76,7 @@ if (argv.explain) {
     // process.argv.push('--config');
     // process.argv.push(uiWPConfig);
     // require('webpack-dev-server/bin/webpack-dev-server');
+
 }
 
 function manualStart(cfg) {
@@ -96,4 +114,5 @@ function manualStart(cfg) {
             console.log(`http://${devServerConfig.host}:${devServerConfig.port}`);
         });
     });
+
 }

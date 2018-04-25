@@ -4,22 +4,22 @@ const path = require('path');
 const fs = require('fs');
 const glob = require('glob');
 const TreeItem = require('./TreeItem');
+const Module = require('./Module');
 
 /**
  * the Package parser
  */
-class Package extends TreeItem {
+module.exports = class Package extends TreeItem {
 
-    constructor(config, parent = null) {
+    constructor(config, file = config.base, parent = null) {
 
-        super(config);
 
-        this.parent = parent;
+        super(config, file, parent);
 
         this.type = 'package';
 
         this.resources = {};
-        this.modules = {};
+        // this.modules = {};
 
         this.loadPackageFile();
         this.analyzeSubPackages();
@@ -27,17 +27,6 @@ class Package extends TreeItem {
 
     }
 
-    getRootPackage() {
-        if (this.parent) {
-            return this.parent.getRootPackage();
-        } else {
-            return this;
-        }
-    }
-
-    isRootPackage() {
-        return this === this.getRootPackage();
-    }
 
     loadPackageFile() {
 
@@ -53,7 +42,7 @@ class Package extends TreeItem {
         if (this.packageJson && this.packageJson.main) {
 
             const pathToMain = path.resolve(path.join(this.path, this.packageJson.main));
-            _.forEach(this.getResurces(), res => {
+            this.getPackageModules().forEach(res => {
                 if (pathToMain === path.resolve(res.path)) {
 
                     this.main = res.resource;
@@ -72,7 +61,7 @@ class Package extends TreeItem {
 
             glob.sync(path.join(this.path, this.config.subPackages)).forEach(subPackage => {
 
-                const res = new Package({...this.config, base:subPackage}, this);// parser.parse();
+                const res = new Package(this.config, subPackage, this);// parser.parse();
                 this.subPackages[res.name] = res.resource;
                 this.resources[res.resource] = res;
 
@@ -85,29 +74,50 @@ class Package extends TreeItem {
 
     }
 
+    findPackageForFile(file) {
+
+
+        let res = file.includes(this.path) ? this : null;
+
+        _.forEach(this.subPackages, pack => {
+            pack =  this.resources[pack];
+            const sub = pack.findPackageForFile(file);
+            if(sub) {
+                res = sub;
+            }
+        })
+
+        return res;
+    }
+
+    getPackageModules() {
+        return Object.values(this.resources).filter(res => res instanceof Module);
+    }
+
+    getAllModules() {
+        let modules = this.getPackageModules();
+        _.forEach(this.subPackages, subPackage => {
+            modules = modules.concat(this.resources[subPackage].getAllModules());
+        })
+
+        return modules;
+    }
+
     analyze() {
 
-        const jobs = [];
-
-        _.forEach(this.resources, desc => {
-            if (desc.type !== 'package') {
-                jobs.push(desc.analyze());
-            }
-        });
-
-        return Promise.all(jobs).then(all => {
-
-            this.mapGlobals();
-
-            return this;
-
-        });
+        const mods = Object.values(this.resources).map(mod => mod.analyze());
+        return Promise.all(mods)
+        .then(res => this.execPluginCallback('onAnalyze'))
+        .then(all => this.map())
+        .catch(res => {
+            debugger;
+        })
 
     }
 
     loadFiles() {
 
-        const files = this.getIncludedFiles();
+        const files = this.getIncludedFiles(true);
         files.forEach(file => {
 
             this.addFile(file);
@@ -118,11 +128,8 @@ class Package extends TreeItem {
 
     addFile(file, patch = false) {
 
-        const parser = require('./parser');
-        const res = parser.parse({...this.config, base:file, package: this});
-        // if (!res.ignore) {
+        const res = new Module(this.config, file , this);// parser.parse();
         this.addModule(res, patch);
-        // }
 
     }
 
@@ -136,79 +143,88 @@ class Package extends TreeItem {
 
             this.resources[resource] = module;
 
-            this.modules[module.type] = this.modules[module.type] || {};
-            this.modules[module.type][module.name] = resource;//module;
+            // this.modules[module.type] = this.modules[module.type] || {};
+            // this.modules[module.type][module.name] = resource;//module;
 
         } else if (patch) {
+
             existingModule.patch(module);
+
         } else {
+
             throw 'module already existing'
+
         }
 
     }
 
-    mapGlobals() {
+    /**
+     *
+     */
+    map() {
 
         this.globals = {
             trigger: []
         };
 
+        const jobs = [];
+
         _.forEach(this.resources, module => {
-            _.forEach(module.trigger, trigger => {
-                trigger.source = module.name;
 
-                trigger.simpleName = trigger.name;
-                util.mapParams(trigger);
-                this.globals.trigger.push(trigger);
-            });
+            jobs.push(module.map().then(() => {
+
+                _.forEach(module.trigger, trigger => {
+
+                    trigger.source = module.name;
+
+                    trigger.simpleName = trigger.name;
+                    util.mapParams(trigger);
+                    this.globals.trigger.push(trigger);
+
+                });
+            }));
+
         });
+
+        return Promise.all(jobs)
+        .then(() => this.execPluginCallback('onMap'));
 
     }
 
-    patch(module) {
+    /**
+     * patches this package
+     * @param {*} module
+     */
+    patch(file) {
 
-        this.execPluginCallback('onPatch')
+        const pack = this.findPackageForFile(file);
 
-        if (_.isString(module)) {
-            this.addFile(module, true);
-        } else {
-            this.addModule(module, true);
-        }
-
-        this.mapGlobals();
-
-        return this.analyze().then(res => {
-            return this.getDataPackage();
-        });
-
-    }
-
-    getIncludedFiles() {
-        return glob.sync(path.join(this.config.base, this.config.search || '**/*.+(js|vue)'));
-    };
+        if(pack) {
 
 
-    getResurces() {
+            pack.execPluginCallback('onPatch');
 
-        const resources = {};
-        resources[this.resource] = this.serialize();
-
-        _.forEach(this.resources, resource => {
-            if (resource.type === 'package') {
-                _.merge(resources, resource.getResurces());
+            if (_.isString(file)) {
+                pack.addFile(file, true);
             } else {
-                resources[resource.resource] = resource.serialize();
+                pack.addModule(file, true);
             }
-        });
+        }
 
-        return resources;
     }
 
-    getDataPackage() {
-        return {
-            resources: this.getResurces(),
-            rootPackage: this.resource
+    /**
+     * returns a list of files inculed in this package
+     * @param {*} excludeSubPackageFiles
+     */
+    getIncludedFiles(excludeSubPackageFiles = false) {
+        const conf = {};
+
+        if(excludeSubPackageFiles && _.isString(this.config.subPackages)) {
+            conf.ignore = this.config.subPackages;
         }
+
+        return glob.sync(path.join(this.path, this.config.search), conf);
     }
 
     /**
@@ -231,7 +247,7 @@ class Package extends TreeItem {
                 ...this,
                 package: this.resource,
                 types,
-                resources: undefined,//_.pickBy(_.mapValues(this.resources, resource => resource.serialize()), res => !res.ignore),
+                resources: _.pickBy(_.mapValues(this.resources, resource => resource.resource), res => !res.ignore),
                 config: undefined,
                 parent: this.parent && this.parent.resource,
                 ...this.data
@@ -241,7 +257,31 @@ class Package extends TreeItem {
 
 
 
+    getResources() {
+
+        const resources = {};
+        resources[this.resource] = this.serialize();
+
+        _.forEach(this.resources, resource => {
+            if (resource.getResources) {
+                _.merge(resources, resource.getResources());
+            } else {
+                resources[resource.resource] = resource.serialize();
+            }
+        });
+
+        return resources;
+    }
+
+    getDataPackage() {
+        return {
+            resources: this.getResources(),
+            rootPackage: this.resource
+        }
+    }
+
+
+
+
+
 }
-
-
-module.exports = Package;

@@ -1,7 +1,5 @@
 /* eslint-env node */
-const Package = require('./src/Package');
-const fs = require('fs');
-const path = require('path');
+
 const glob = require('glob');
 // const util = require('./src/util');
 
@@ -18,40 +16,20 @@ module.exports = {
         console.log('building docs...');
 
         const parser = require(__dirname + '/src/parser');
-        const config = parser.prepareConfig(global.doctoolsConfig);
+        const config = global.doctoolsConfig;
 
         let pack = parser.parse(config);
 
-        //additionally watch add an remove of files
         if (config.watch) {
+            // pack.watch();
+            pack.on('change', () => {
 
-            const watchedFiles = pack.getIncludedFiles();
+                pack.analyze().then(() => {
+                    config.server.sockWrite(config.server.sockets, 'doc-changed', pack.getDataPackage());
+                });
 
-            // util.watchPack(config, pack);
-
-            fs.watch(config.base, {recursive: true}, (eventType, filename) => {
-
-                // debugger;
-                filename = path.join(config.base, filename);
-                if (watchedFiles.includes(filename)) {
-
-                    pack && pack.patch && pack.patch(filename).then(data => {
-                        config.server.sockWrite(config.server.sockets, 'doc-changed', data);
-                    }).catch(console.warn);
-
-                    // console.log(filename, 'changed!!');
-
-                }
             });
         }
-
-        pack.on('change', () => {
-
-            pack.analyze().then(() => {
-                config.server.sockWrite(config.server.sockets, 'doc-changed', pack.getDataPackage());
-            });
-
-        });
 
         app.get('/data.json', (req, res, next) => {
 
@@ -68,9 +46,6 @@ module.exports = {
                 }
                 pack = parser.parse(config);
             }
-
-            // console.log(app);
-            // console.log('serving data.json', config);
 
             pack.analyze().then(() => {
                 const data = pack.getDataPackage();

@@ -10,14 +10,9 @@ const {getTestCodes} = require('./testParser');
 
 const defaultConfig = require('./Config');
 
-const preProcess = {
-    vue(desc, file) {
-    },
-    js(desc, file) {
-        desc.script = fs.readFileSync(file, 'utf8');
-    }
-};
 
+// const UIkitComponentPlugin = require('./UIkitComponentPlugin');
+// const VueComponentPlugin = require('./VueComponentPlugin');
 
 /**
  * @mutates
@@ -27,6 +22,15 @@ function prepareConfig(config) {
     _.defaults(config, defaultConfig);
     //ests teh resourceBase e.g. the root package
     config.resourceBase = config.resourceBase || path.dirname(config.base);
+
+    config.plugins = config.plugins.map(plugin => {
+
+        if (_.isString(plugin)) {
+            const Pluigin = require('./plugins/' + plugin);
+            plugin = new Pluigin;
+        }
+        return plugin;
+    });
     return config;
 }
 
@@ -76,30 +80,17 @@ module.exports = {
 
         prepareConfig(config);
 
-        const file = config.base;
-
-        if (fs.lstatSync(file).isDirectory()) {
+        if (fs.lstatSync(config.base).isDirectory()) {
 
             const Package = require('./Package');
-            const res = new Package(config);
-            return res;
+            return new Package(config);
 
         } else {
-
-            let desc = {};
-
-            const extension = file.split('.').pop();
-
-            if (!preProcess[extension]) {
-                throw 'unknown extension: ' + extension;
-            } else {
-                preProcess[extension](desc, file);
-            }
 
             try {
 
                 const Module = require('./Module');
-                desc = new Module(config, desc, config.package);
+                return new Module(config);
 
                 //coverage
                 // const cover = require('./coverage/coverage.sum.json');
@@ -113,8 +104,9 @@ module.exports = {
                 // el.tests = getTestCodes(name, el.longname);
 
 
+
             } catch (e) {
-                console.warn('error while parsing: ' + file);
+                console.warn('error while parsing: ' + config.base);
                 if (config.strict) {
                     throw e;
                 } else {
@@ -123,7 +115,6 @@ module.exports = {
                 }
             }
 
-            return desc;
 
         }
     }

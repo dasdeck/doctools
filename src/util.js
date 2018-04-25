@@ -138,7 +138,7 @@ module.exports = {
                     prop.required = prop.required || prop.meta.code.value && ~prop.meta.code.value.indexOf('{"required":true}') || realProp && realProp.required;
 
                     if (!prop.type) {
-                        if (realProp.type && realProp.type instanceof Function) {
+                        if (realProp.type && (realProp.type instanceof Function)) {
                             prop.type = {names: [realProp.type.name]};
                         } else if(realProp instanceof Function) {
                             prop.type = {names: [realProp.name]};

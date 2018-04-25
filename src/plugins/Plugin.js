@@ -1,4 +1,6 @@
-module.exports = class Plugin {
+const {EventEmitter} = require('events');
+
+module.exports = class Plugin extends EventEmitter {
 
     /**
      *
@@ -13,15 +15,18 @@ module.exports = class Plugin {
      *
      * @param {Object} desc
      */
-    onLoad(desc) {
+    onConstruct(desc) {}
 
-    }
+    onAnalyze(desc) {}
 
     /**
      *
      * @param {Object} desc
      */
-    onMap(desc) {
+    onMap(desc) {}
 
-    }
-}
+    onPatch(desc) {}
+
+    onSerialize(desc) {}
+
+};

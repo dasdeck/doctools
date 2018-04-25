@@ -7,10 +7,4 @@ module.exports = class UIkitComponentPlugin extends ComponentPlugin {
         return desc.type === 'UIkitComponent';
     }
 
-    onMap(desc) {
-
-        this.map(desc);
-
-    }
-
 };

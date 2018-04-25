@@ -11,14 +11,14 @@ module.exports = class VueComponentPlugin extends ComponentPlugin {
      * @param {*} desc
      */
     matchesType(desc) {
-        return _.endsWith(desc.path, '.vue');
+        return desc.type === 'VueComponent' || _.endsWith(desc.path, '.vue');
     }
 
     /**
      *
      * @param {*} desc
      */
-    onLoad(desc) {
+    onConstruct(desc) {
 
         try {
             Object.assign(desc, this.unpack(desc.path));
@@ -30,7 +30,7 @@ module.exports = class VueComponentPlugin extends ComponentPlugin {
 
     onMap(desc) {
 
-        this.map(desc);
+        this.mapComponent(desc);
         this.parseTemplate(desc);
 
     }

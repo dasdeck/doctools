@@ -4,19 +4,19 @@ const _ = require('lodash');
 const jsdoc = require('jsdoc-api');
 const utils = require('./util');
 const TreeItem = require('./TreeItem');
+const fs = require('fs');
 
 class Module extends TreeItem {
 
-    constructor(config, desc, pack = null) {
+    constructor(config, file = config.base, pack = null) {
 
-        super(config);
-        this.package = pack;
+        super(config, file, pack);
 
-        this.execPluginCallback('onLoad');
+        if (!this.script) {
+            this.script = fs.readFileSync(this.path, 'utf8');
+        }
 
         this.type = this.type || 'module';
-
-        _.assign(this, desc);
 
     }
 
@@ -24,17 +24,16 @@ class Module extends TreeItem {
 
         const jobs = [];
 
-        if (!this.data) {
+        if (!this.jsdoc) {
 
             const self = this;
-            jobs.push(jsdoc.explain({source: this.script}).then(jsdoc => {
-                self.init(jsdoc, self.config);
-            }));
+            //changing context because of spawn?
+            jobs.push(jsdoc.explain({source: this.script}).then(all => self.init(all)));
 
         }
 
         return Promise.all(jobs)
-            .then(res => Promise.all(this.execPluginCallback('onAnalyze')))
+            .then(res => this.execPluginCallback('onAnalyze'))
             .then(res => this.map());
 
     }
@@ -43,11 +42,8 @@ class Module extends TreeItem {
      * applys custom mapping to module types
      */
     map() {
-
-       this.execPluginCallback('onMap');
-
+       return this.execPluginCallback('onMap');
     }
-
 
     /**
      * @override
@@ -57,7 +53,9 @@ class Module extends TreeItem {
     }
 
     patch(module) {
-        delete this.data;
+        delete this.jsdoc;
+        delete this.module;
+
         _.assign(this, module);
     }
 
@@ -66,8 +64,11 @@ class Module extends TreeItem {
      * @param {*} all
      * @param {*} config
      */
-    init(all, config) {
+    init(all) {
 
+        this.jsdoc = all;
+
+        const config = this.config;
         const desc = {all, documented: []};
 
         all.forEach(el => {
@@ -123,7 +124,7 @@ class Module extends TreeItem {
             }
         });
 
-        this.data = desc;
+        this.module = desc;
 
         // _.assign(this, desc);
 
@@ -134,11 +135,11 @@ class Module extends TreeItem {
      * "guesses" functions default parameters by parsing the code
      * @param {Object} el - the JSDoc function descriptor
      */
-    guessDefaultParamValues(el) {
+    guessDefaultParamValues(el, script) {
 
         //extract default values
         const regex = RegExp(/name\((.*?)\)\s*{/.source.replace('name', el.name));
-        const res = regex.exec(this.script);
+        const res = regex.exec(script);
         if (!res && !el.see) {
             debugger //why
         } else if (res) {
@@ -158,7 +159,7 @@ class Module extends TreeItem {
                 }
             });
 
-            const more = regex.exec(this.script);
+            const more = regex.exec(script);
             if (more && more.index !== res.index) {
                 throw 'could not find unique method definition for: ' + el.longname + ' in: ' + this.script;
             }
@@ -171,7 +172,7 @@ class Module extends TreeItem {
         el.simpleName = el.longname === `module.exports.${el.name}` ? el.name : el.longname;
 
         if (config.inferParameterDefaults) {
-            this.guessDefaultParamValues(el);
+            this.guessDefaultParamValues(el, this.script);
         }
 
         if (el.params) {
@@ -193,20 +194,5 @@ class Module extends TreeItem {
     }
 
 }
-
-Module.mapper = {
-    'VueComponent'(desc) {
-
-        const res = componentMappper.map(desc);
-        Object.assign(desc, res);
-        if (desc.template) {
-            componentMappper.parseTemplate(desc);
-        }
-    },
-    'UIkitComponent'(desc) {
-        const res = componentMappper.map(desc);
-        Object.assign(desc, res);
-    }
-};
 
 module.exports = Module;
