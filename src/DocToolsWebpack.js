@@ -12,6 +12,7 @@ module.exports = class DocToolsWebpack {
         });
 
         this.pack = require(__dirname + '/../bin/doctools');
+        this.pack.config.watch = false;
 
         this.initial = true;
     }
@@ -40,7 +41,6 @@ module.exports = class DocToolsWebpack {
 
                 if (info && info.rawRequest) {
 
-                    debugger;
                     try {
                         this.pack.patchFile(info.rawRequest);
 

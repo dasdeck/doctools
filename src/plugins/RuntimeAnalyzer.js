@@ -289,12 +289,13 @@ module.exports = class RuntimeAnalyzer extends Plugin {
 
         compiler.inputFileSystem = compiler.inputFileSystem;
 
-        console.log('watching package:', this.pack.name);
 
         // ignored: '**/*'
         if(this.pack.config.watch) {
+            console.log('watching package:', this.pack.name);
             this.watcher = compiler.watch({}, (...args) => this.onWebPack(...args));
         } else {
+            console.log('building package:', this.pack.name);
             this.watcher = compiler.run((...args) => this.onWebPack(...args));
         }
     }
