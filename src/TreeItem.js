@@ -18,8 +18,12 @@ module.exports = class TreeItem extends EventEmitter {
         this.name = this.path.split('/').pop().split('.').shift();
         this.resource = this.path.replace(config.resourceBase, '').replace(/\//g, '.').substr(1);
 
-        this.execPluginCallback('onConstruct');
 
+    }
+
+    init() {
+
+        this.execPluginCallback('onConstruct', true);
     }
 
     getRootPackage() {
@@ -34,22 +38,28 @@ module.exports = class TreeItem extends EventEmitter {
         return this === this.getRootPackage() && this.package === null;
     }
 
-    execPluginCallback(name, allowPromise = true) {
+    execPluginCallback(name, sync = false) {
+
         const jobs = [];
+
         _.forEach(this.config.plugins, plugin => {
-
-            if (plugin[name] && plugin.matchesType(this)) {
-                const res = plugin[name](this);
-                if (res instanceof Promise) {
-
-                    if (!allowPromise) {
-                        throw 'can not return promise in:' + name;
-                    }
-                    jobs.push(res);
-                }
-            }
+                jobs.push(() => {
+                        return plugin.matchesType(this) && plugin[name](this) || Promise.resolve();
+                });
         });
-        return Promise.all(jobs);
+
+        if (sync) {
+            jobs.forEach(job => {
+                job();
+            });
+        } else {
+            return jobs.reduce(function(p, fn) {
+                return p = p.then(fn);
+            }, Promise.resolve());
+
+        }
+
+        // return Promise.all(jobs);
     }
 
     serialize() {

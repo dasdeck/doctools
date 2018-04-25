@@ -32,6 +32,7 @@ module.exports = class VueComponentPlugin extends ComponentPlugin {
 
         this.mapComponent(desc);
         this.parseTemplate(desc);
+        return Promise.resolve();
 
     }
 

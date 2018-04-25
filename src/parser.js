@@ -18,12 +18,14 @@ const defaultConfig = require('./Config');
  * @mutates
  * @param {DoctoolsConfig} config
  */
-function prepareConfig(config) {
+function prepareConfig(input) {
+
+    const config = {...input};
     _.defaults(config, defaultConfig);
     //ests teh resourceBase e.g. the root package
     config.resourceBase = config.resourceBase || path.dirname(config.base);
 
-    config.plugins = config.plugins.map(plugin => {
+    config.plugins = ['ModulePlugin', ...config.plugins].map(plugin => {
 
         if (_.isString(plugin)) {
             const Pluigin = require('./plugins/' + plugin);
@@ -31,6 +33,7 @@ function prepareConfig(config) {
         }
         return plugin;
     });
+
     return config;
 }
 
@@ -78,7 +81,7 @@ module.exports = {
             config = {base: config};
         }
 
-        prepareConfig(config);
+        config = prepareConfig(config);
 
         if (fs.lstatSync(config.base).isDirectory()) {
 

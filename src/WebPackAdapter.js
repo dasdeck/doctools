@@ -2,21 +2,24 @@ module.exports = class WebpackAdapter {
 
     constructor(pack) {
         this.pack = pack;
+        this.initial = true;
     }
 
     apply(compiler) {
 
+        compiler.hooks.emit.tap(this.constructor.name, compilation => {
+            this.initial = false;
+        });
+
         compiler.hooks.compilation.tap(this.constructor.name, compilation => {
-
-            compilation.hooks.buildModule.tap(this.constructor.name, info => {
+            !this.initial && compilation.hooks.buildModule.tap(this.constructor.name, info => {
                 if (info && info.rawRequest) {
-
-                    const file = info.rawRequest;
-
-                    const pack = this.pack.findPackageForFile(file);
-                    pack && console.log(file);
+                    try {
+                        this.pack.patchFile(info.rawRequest);
+                    } catch (e) {
+                        console.log(e);
+                    }
                 }
-
             });
 
         });

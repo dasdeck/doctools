@@ -76,12 +76,15 @@ const Plugin = require('./Plugin');
 
 module.exports = class ComponentPlugin extends Plugin {
 
+
     onMap(desc) {
         this.mapComponent(desc);
     }
 
     mapComponent(desc) {
         const data = desc.module;
+
+        console.log('mapping component', desc.name);
 
         const component = {};
         if (!data || !data.types) debugger;

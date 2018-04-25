@@ -3,7 +3,7 @@
         <template v-for="(title, category) in filteredCategories">
             <h4>{{title}}</h4>
             <ul class="uk-nav uk-nav-default">
-                <li v-for="(entry) in filteredData.types[category]" :style="{opacity: $doc.resources[entry].documented.length > 1 ? 1 : 0.2}">
+                <li v-for="(entry) in filteredData.types[category]" :style="{opacity: $doc.resources[entry].module.documented.length > 1 ? 1 : 0.2}">
                     <router-link :to="`/${$doc.resources[entry].resource}`">
                         {{$doc.resources[entry].name}}
                     </router-link>

@@ -18,6 +18,8 @@ module.exports = class Package extends TreeItem {
 
         this.type = 'package';
 
+        this.init();
+
         this.resources = {};
         // this.modules = {};
 
@@ -109,9 +111,9 @@ module.exports = class Package extends TreeItem {
         return Promise.all(mods)
         .then(res => this.execPluginCallback('onAnalyze'))
         .then(all => this.map())
-        .catch(res => {
-            debugger;
-        })
+        // .catch(res => {
+        //     debugger;
+        // })
 
     }
 
@@ -192,23 +194,33 @@ module.exports = class Package extends TreeItem {
     }
 
     /**
+     * attempts to patch the package
+     * @param {*} file
+     */
+    patchFile(file) {
+        file = path.resolve(file);
+
+        if (this.getAllModules().some(module => module.path === file)) {
+            const pack = this.findPackageForFile(file);
+            if (pack) {
+                pack.patch(file);
+            }
+        }
+    }
+
+    /**
      * patches this package
      * @param {*} module
      */
     patch(file) {
 
-        const pack = this.findPackageForFile(file);
 
-        if(pack) {
+        this.execPluginCallback('onPatch');
 
-
-            pack.execPluginCallback('onPatch');
-
-            if (_.isString(file)) {
-                pack.addFile(file, true);
-            } else {
-                pack.addModule(file, true);
-            }
+        if (_.isString(file)) {
+            this.addFile(file, true);
+        } else {
+            this.addModule(file, true);
         }
 
     }

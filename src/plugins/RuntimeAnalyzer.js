@@ -52,9 +52,7 @@ module.exports = class RuntimeAnalyzer extends Plugin {
     onAnalyze(pack) {
 
         if(!this.cache) {
-
             this.run();
-
         }
 
         const jobs = pack.getAllModules().map(resource => this.analyzeRuntime(resource));
@@ -101,7 +99,6 @@ module.exports = class RuntimeAnalyzer extends Plugin {
      * @deprecated
      */
     onPatch() {
-
 
         // delete this.cache;
 

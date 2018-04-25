@@ -59,8 +59,9 @@ if (process.mainModule.filename !== __filename) {
     const res = parser.parse(config);
 
     res.analyze().then(res => {
+
         console.log('finished');
-        // debugger;
+        debugger;
         // process.exit();
     });
 

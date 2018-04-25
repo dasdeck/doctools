@@ -70,8 +70,8 @@ module.exports = {
      * extra mapping plugins
      */
     plugins: [
-        'RuntimeAnalyzer',
         'UIkitComponentPlugin',
-        'VueComponentPlugin'
+        'VueComponentPlugin',
+        'RuntimeAnalyzer'
     ]
 };
