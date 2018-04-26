@@ -139,6 +139,14 @@ module.exports = class RuntimeAnalyzer extends Plugin {
 
         const conf = this.adaptConfig(filename);
 
+
+        this.pack.logFile('webpack.config.js', 'module.exports = ' + JSON.stringify({
+            ...conf,
+            entry: {
+                'index': './index.js'
+            }
+        }, null, 2));
+
         const WebpackAdapter = require('../WebpackAdapter');
         const plugin = new WebpackAdapter(this.pack);
 
@@ -174,6 +182,7 @@ module.exports = class RuntimeAnalyzer extends Plugin {
         const res = [imports, 'const exp = {};', assigns, 'export default exp;'].join('\n');
 
         pack.log('writing index:', res);
+        pack.logFile('index.js', res);
         fs.writeFileSync(this.indexFile, res);
 
     }
@@ -220,10 +229,10 @@ module.exports = class RuntimeAnalyzer extends Plugin {
 
     onWebPack(err, res) {
 
-        debugger;
         const resfname = Object.keys(res.compilation.assets)[0];
         const script = this.outputFileSystem.readFileSync(resfname ,'utf8');
         
+        this.pack.logFile('index.min.js', script);
         try {
             browser.install();
             const rt = requireFromString(script);
@@ -254,7 +263,6 @@ module.exports = class RuntimeAnalyzer extends Plugin {
             return new Promise(resolve => {
 
                 compiler.run((err, res) => {
-                    debugger;
                     const resfname = Object.keys(res.compilation.assets)[0];
                     const data = compiler.outputFileSystem.readFileSync(resfname ,'utf8');
                     try {

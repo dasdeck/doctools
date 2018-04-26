@@ -1,0 +1,18 @@
+import _Users_jms_doctools_examples_packages_uikit_utils_src_ajax_js from '/Users/jms/doctools/examples/packages/uikit-utils/src/ajax.js';
+import _Users_jms_doctools_examples_src_Element_vue from '/Users/jms/doctools/examples/src/Element.vue';
+import _Users_jms_doctools_examples_src_Modal_vue from '/Users/jms/doctools/examples/src/Modal.vue';
+import _Users_jms_doctools_examples_src_accordion_js from '/Users/jms/doctools/examples/src/accordion.js';
+import _Users_jms_doctools_examples_src_animation_js from '/Users/jms/doctools/examples/src/animation.js';
+import _Users_jms_doctools_examples_src_togglable_js from '/Users/jms/doctools/examples/src/togglable.js';
+import _Users_jms_doctools_examples_packages_global_linking_src_config_js from '/Users/jms/doctools/examples/packages/global-linking/src/config.js';
+import _Users_jms_doctools_examples_packages_global_linking_src_test_js from '/Users/jms/doctools/examples/packages/global-linking/src/test.js';
+const exp = {};
+exp['examples.packages.uikit-utils.src.ajax.js'] = _Users_jms_doctools_examples_packages_uikit_utils_src_ajax_js;
+exp['examples.src.Element.vue'] = _Users_jms_doctools_examples_src_Element_vue;
+exp['examples.src.Modal.vue'] = _Users_jms_doctools_examples_src_Modal_vue;
+exp['examples.src.accordion.js'] = _Users_jms_doctools_examples_src_accordion_js;
+exp['examples.src.animation.js'] = _Users_jms_doctools_examples_src_animation_js;
+exp['examples.src.togglable.js'] = _Users_jms_doctools_examples_src_togglable_js;
+exp['examples.packages.global-linking.src.config.js'] = _Users_jms_doctools_examples_packages_global_linking_src_config_js;
+exp['examples.packages.global-linking.src.test.js'] = _Users_jms_doctools_examples_packages_global_linking_src_test_js;
+export default exp;

@@ -1,6 +1,7 @@
 const _ = require('lodash');
 const {EventEmitter} = require('events');
 const fs = require('fs');
+const path = require('path');
 /**
  * extracting some commong basics for the parsers
  */
@@ -22,7 +23,9 @@ module.exports = class TreeItem extends EventEmitter {
 
         if (config.developMode || config.log) {
             this.log = console.log;
-            // this.logFile = (data, name) => fs.writeFileSync()
+            const logDir = path.join(this.config.resourceBase, 'log');
+            try {fs.mkdirSync(logDir) } catch(e) {};
+            this.logFile = (name, data) => fs.writeFileSync(path.join(logDir, name), _.isString(data) ? data : JSON.stringify(data, null, 2));
         } else {
             this.log = x => x;
         }

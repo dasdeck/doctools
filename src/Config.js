@@ -67,6 +67,9 @@ module.exports = {
      */
     strict: false,
 
+    exclude: [/webpack\.config\.js/],
+    include: [/src\//, /packages\//],
+
     loaders: [
         'VueLoader'
     ],
@@ -74,7 +77,7 @@ module.exports = {
      * extra mapping plugins
      */
     plugins: [
-        // 'RuntimeAnalyzer',
+        'RuntimeAnalyzer',
         'UIkitComponentPlugin',
         'VueComponentPlugin',
         'ComponentLinker'

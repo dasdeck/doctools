@@ -109,7 +109,13 @@ module.exports = class Package extends TreeItem {
 
             } else {
                 if (this.config.loaders.some(loader => loader.canLoad(file))) {
-                    this.addFile(file);
+                    if(this.config.exclude.some(pat => pat.exec(file))) {
+                        debugger;
+                    } else if(this.config.include.some(pat => pat.exec(file))) {
+                        this.addFile(file);
+                    } else {
+                        debugger;
+                    }
                 }
             }
         })
