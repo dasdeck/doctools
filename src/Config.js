@@ -67,9 +67,19 @@ module.exports = {
      */
     strict: false,
 
-    exclude: [/webpack\.config\.js/],
+    /**
+     * 
+     */
+    exclude: [],
+
+    /**
+     * 
+     */
     include: [/src\//, /packages\//],
 
+    /**
+     * 
+     */
     loaders: [
         'VueLoader'
     ],

@@ -109,12 +109,10 @@ module.exports = class Package extends TreeItem {
 
             } else {
                 if (this.config.loaders.some(loader => loader.canLoad(file))) {
-                    if(this.config.exclude.some(pat => pat.exec(file))) {
-                        debugger;
-                    } else if(this.config.include.some(pat => pat.exec(file))) {
+                   if(!this.config.exclude.some(pat => pat.exec(file)) && this.config.include.some(pat => pat.exec(file))) {
                         this.addFile(file);
                     } else {
-                        debugger;
+                        this.log('skipping file:', file);
                     }
                 }
             }
@@ -215,6 +213,8 @@ module.exports = class Package extends TreeItem {
     }
 
     addFile(file, patch = false) {
+
+        this.log('adding file:', file, 'to:', this.name);
 
         const res = new Module(this.config, file , this);// parser.parse();
         this.addModule(res, patch);

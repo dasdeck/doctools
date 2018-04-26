@@ -181,7 +181,7 @@ module.exports = class RuntimeAnalyzer extends Plugin {
 
         const res = [imports, 'const exp = {};', assigns, 'export default exp;'].join('\n');
 
-        pack.log('writing index:', res);
+        pack.log('writing index:');
         pack.logFile('index.js', res);
         fs.writeFileSync(this.indexFile, res);
 
