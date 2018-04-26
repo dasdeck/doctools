@@ -2,6 +2,12 @@ const {EventEmitter} = require('events');
 
 module.exports = class Plugin extends EventEmitter {
 
+    constructor() {
+
+        super();
+        this.setMaxListeners(0);
+
+    }
     /**
      *
      * @param {Object} desc

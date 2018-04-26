@@ -1,5 +1,4 @@
 const fs = require('fs');
-const vueComiler = require('vue-template-compiler');
 const _ = require('lodash');
 const ComponentPlugin = require('./ComponentPlugin');
 
@@ -14,42 +13,12 @@ module.exports = class VueComponentPlugin extends ComponentPlugin {
         return desc.type === 'VueComponent' || _.endsWith(desc.path, '.vue');
     }
 
-    /**
-     *
-     * @param {*} desc
-     */
-    onConstruct(desc) {
-
-        try {
-            Object.assign(desc, this.unpack(desc.path));
-        } catch (e) {
-            console.warn('not a vue component', desc.path);
-        }
-
-    }
 
     onMap(desc) {
 
         this.mapComponent(desc);
         this.parseTemplate(desc);
         return Promise.resolve();
-
-    }
-
-    unpack(file) {
-
-        const text = fs.readFileSync(file, 'utf8');
-        const res = vueComiler.parseComponent(text);
-
-        const template = res.template && res.template.content;
-        const script = res.script && res.script.content;
-
-
-        return {
-            type: 'VueComponent',
-            template,
-            script,
-        };
 
     }
 

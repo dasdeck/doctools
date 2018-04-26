@@ -1,0 +1,60 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "examples",
+            "program": "${workspaceFolder}/bin/doctools.js",
+            "args": [
+                "${workspaceFolder}/examples"
+            ]
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "webpack plugin",
+            "program": "${workspaceFolder}/node_modules/.bin/webpack",
+            "cwd": "${workspaceFolder}/examples",
+            "args": [
+                "${workspaceFolder}/examples",
+                "--dev"
+            ]
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "jasmine",
+            "program": "${workspaceFolder}/node_modules/.bin/jasmine",
+            "args": [
+                "test/**/*.spec.js",
+                "--dev"
+            ]
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "examples (explain)",
+            "program": "${workspaceFolder}/bin/doctools.js",
+            "args": [
+                "${workspaceFolder}/examples",
+                "--explain",
+                "--dev"
+            ]
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "examples (dev)",
+            "program": "${workspaceFolder}/bin/doctools.js",
+            "args": [
+                "${workspaceFolder}/examples",
+                "--dev"
+            ]
+        }
+    ]
+}

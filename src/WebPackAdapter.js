@@ -7,7 +7,7 @@ module.exports = class WebpackAdapter {
 
     apply(compiler) {
 
-        compiler.hooks.emit.tap(this.constructor.name, compilation => {
+        compiler.hooks.done.tap(this.constructor.name, compilation => {
             this.initial = false;
         });
 

@@ -13,7 +13,6 @@ module.exports = class Package extends TreeItem {
 
     constructor(config, file = config.base, parent = null) {
 
-
         super(config, file, parent);
 
         this.type = 'package';
@@ -25,14 +24,16 @@ module.exports = class Package extends TreeItem {
 
         this.loadPackageFile();
         this.analyzeSubPackages();
-        this.loadFiles();
 
     }
 
+    getPackageJsonPath() {
+        return path.resolve(path.join(this.path, 'package.json'));
+    }
 
     loadPackageFile() {
 
-        const packPath = path.join(this.path, 'package.json');
+        const packPath = this.getPackageJsonPath();
         if (fs.existsSync(packPath)) {
             this.packageJson = require(packPath);
         }
@@ -54,26 +55,64 @@ module.exports = class Package extends TreeItem {
         }
     }
 
+    addPackage(pack) {
+
+        this.packages = this.packages || {};
+        this.packages[pack.name] = pack;
+        // this.resources[pack.resource] = pack;
+    }
+
     analyzeSubPackages() {
 
         if (this.config.subPackages){
-            // console.log('using subpackages:', this.config.subPackages);
 
-            this.subPackages = this.subPackages || {};
+            if (_.isString(this.config.subPackages)) {
 
-            glob.sync(path.join(this.path, this.config.subPackages)).forEach(subPackage => {
+                const packages = glob.sync(path.join(this.path, this.config.subPackages));
+                
+                packages.forEach(subPackage => {
 
-                const res = new Package(this.config, subPackage, this);// parser.parse();
-                this.subPackages[res.name] = res.resource;
-                this.resources[res.resource] = res;
+                    const res = new Package(this.config, subPackage, this);// parser.parse();
+                    this.addPackage(res);
+                    
+                });
 
-                // Object.assign(this.resources, res.resources);
-                // delete res.resources;
+                this.loadFiles();
 
-            });
+            } else {
+
+                this.scanDirectory(this.path);
+                
+            }
 
         }
 
+    }
+
+    scanDirectory(directory) {
+        fs.readdirSync(directory).forEach(file => {
+            file = path.resolve(path.join(directory, file));
+
+            const stats = fs.lstatSync(file);
+            if (stats.isDirectory()) {
+                //can now create packages
+                const packageJson = path.resolve(path.join(file, 'package.json'));
+
+                if(fs.existsSync(packageJson)) {
+                    const pack = new Package(this.config, file, this);
+    
+                    this.addPackage(pack);
+
+                } else {
+                    this.scanDirectory(file, true);
+                }
+
+            } else {
+                if (this.config.loaders.some(loader => loader.canLoad(file))) {
+                    this.addFile(file);
+                }
+            }
+        })
     }
 
     findPackageForFile(file) {
@@ -81,7 +120,7 @@ module.exports = class Package extends TreeItem {
 
         let res = file.includes(this.path) ? this : null;
 
-        _.forEach(this.subPackages, pack => {
+        _.forEach(this.packages, pack => {
             pack =  this.resources[pack];
             const sub = pack.findPackageForFile(file);
             if(sub) {
@@ -93,13 +132,18 @@ module.exports = class Package extends TreeItem {
     }
 
     getPackageModules() {
-        return Object.values(this.resources).filter(res => res instanceof Module);
+        const mods = Object.values(this.resources).filter(res => res instanceof Module);
+        return mods;
+    }
+
+    getTypes() {
+
     }
 
     getAllModules() {
         let modules = this.getPackageModules();
-        _.forEach(this.subPackages, subPackage => {
-            modules = modules.concat(this.resources[subPackage].getAllModules());
+        _.forEach(this.packages, subPackage => {
+            modules = modules.concat(subPackage.getAllModules());
         })
 
         return modules;
@@ -107,13 +151,49 @@ module.exports = class Package extends TreeItem {
 
     analyze() {
 
-        const mods = Object.values(this.resources).map(mod => mod.analyze());
-        return Promise.all(mods)
+
+        return Promise.all(_.map(this.packages, pack => pack.analyze()))
+        .then(res => Promise.all(this.getPackageModules().map(mod => mod.analyze())))
         .then(res => this.execPluginCallback('onAnalyze'))
+        
+        .then(res => Promise.all(_.map(this.packages, pack => pack.map())))
+        // .then(res => this.getPackageModules().map(mod => mod.map()))
         .then(all => this.map())
-        // .catch(res => {
-        //     debugger;
-        // })
+        .then(() => this)
+        .catch(this.log);
+
+    }
+
+        /**
+     *
+     */
+    map() {
+
+        this.globals = {
+            trigger: []
+        };
+
+        const jobs = [];
+
+        this.getPackageModules().forEach(module => {
+
+            jobs.push(module.map().then(() => {
+
+                _.forEach(module.trigger, trigger => {
+
+                    trigger.source = module.name;
+
+                    trigger.simpleName = trigger.name;
+                    util.mapParams(trigger);
+                    this.globals.trigger.push(trigger);
+
+                });
+            }));
+
+        });
+
+        return Promise.all(jobs)
+        .then(() => this.execPluginCallback('onMap'));
 
     }
 
@@ -145,9 +225,6 @@ module.exports = class Package extends TreeItem {
 
             this.resources[resource] = module;
 
-            // this.modules[module.type] = this.modules[module.type] || {};
-            // this.modules[module.type][module.name] = resource;//module;
-
         } else if (patch) {
 
             existingModule.patch(module);
@@ -160,38 +237,7 @@ module.exports = class Package extends TreeItem {
 
     }
 
-    /**
-     *
-     */
-    map() {
 
-        this.globals = {
-            trigger: []
-        };
-
-        const jobs = [];
-
-        _.forEach(this.resources, module => {
-
-            jobs.push(module.map().then(() => {
-
-                _.forEach(module.trigger, trigger => {
-
-                    trigger.source = module.name;
-
-                    trigger.simpleName = trigger.name;
-                    util.mapParams(trigger);
-                    this.globals.trigger.push(trigger);
-
-                });
-            }));
-
-        });
-
-        return Promise.all(jobs)
-        .then(() => this.execPluginCallback('onMap'));
-
-    }
 
     /**
      * attempts to patch the package
@@ -218,8 +264,10 @@ module.exports = class Package extends TreeItem {
         this.execPluginCallback('onPatch');
 
         if (_.isString(file)) {
+
             this.addFile(file, true);
         } else {
+
             this.addModule(file, true);
         }
 
@@ -230,13 +278,18 @@ module.exports = class Package extends TreeItem {
      * @param {*} excludeSubPackageFiles
      */
     getIncludedFiles(excludeSubPackageFiles = false) {
+
         const conf = {};
 
-        if(excludeSubPackageFiles && _.isString(this.config.subPackages)) {
-            conf.ignore = this.config.subPackages;
+        if(excludeSubPackageFiles ) {
+
+            if (_.isString(this.config.subPackages)) {
+                conf.ignore = this.config.subPackages;
+            }
         }
 
         return glob.sync(path.join(this.path, this.config.search), conf);
+
     }
 
     /**
@@ -291,9 +344,6 @@ module.exports = class Package extends TreeItem {
             rootPackage: this.resource
         }
     }
-
-
-
 
 
 }

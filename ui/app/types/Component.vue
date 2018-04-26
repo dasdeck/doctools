@@ -19,8 +19,8 @@
             <h2>mixins:</h2>
             <template v-for="(mixin, index) in component.mixins">
                 <span v-if="mixin.linked">
-                    <router-link :to="`/${$doc.resources[mixin.name].resource}`">
-                        {{$doc.resources[mixin.name].name}}
+                    <router-link :to="`/${$doc.resources[mixin.resource].resource}`">
+                        {{$doc.resources[mixin.resource].name}}
                     </router-link>
                 </span>
                 <span v-else>{{mixin.name || '?'}}</span>

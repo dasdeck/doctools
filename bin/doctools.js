@@ -56,16 +56,13 @@ if (process.mainModule.filename !== __filename) {
 
     const parser = require('../src/parser');
 
-    const res = parser.parse(config);
+    config.watch = false;
 
-    res.analyze().then(res => {
-
-        console.log('finished');
-        debugger;
-        // process.exit();
+    const pack = parser.parse(config);
+    pack.analyze().then(() => {
+        console.log(pack.getDataPackage());
     });
 
-    console.log(res);
 
 } else {
 

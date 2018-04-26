@@ -1,7 +1,7 @@
 // import {Class, Togglable} from '../mixin/index';
 // import {$, $$, attr, filter, getIndex, hasClass, includes, index, toggleClass, unwrap, wrapAll} from '../util/index';
 import Togglable from './togglable';
-const Class = {};
+const Class = Togglable;
 
 /**
  *

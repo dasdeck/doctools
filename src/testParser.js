@@ -8,7 +8,7 @@ const htmlText = fs.existsSync(htmlPath) && fs.readFileSync(htmlPath)
 const win = typeof window === 'undefined' ? (new (require('jsdom').JSDOM)(htmlText, 'utf8')).window : window;
 
 module.exports = {
-    getTestCodes(testFile, func) {
+    onMap_(testFile, func) {
 
         const codes = {};
         if (typeof cache[testFile] === 'undefined') {

@@ -15,13 +15,9 @@ class Module extends TreeItem {
 
         this.type = this.type || 'module';
 
-        if (!this.script) {
-            this.script = fs.readFileSync(this.path, 'utf8');
+        if (this.template && this.type !== 'VueComponent') {
+            debugger;
         }
-
-
-
-
     }
 
     analyze() {

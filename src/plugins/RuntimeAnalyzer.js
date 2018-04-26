@@ -19,17 +19,6 @@ module.exports = class RuntimeAnalyzer extends Plugin {
     }
 
     /**
-     *
-     * @param {Object} desc
-     * @returns {Boolean}
-     */
-    matchesType(desc) {
-        const isPackage = desc.type === 'package' || desc instanceof Package;
-        return isPackage && desc.isRootPackage();
-
-    }
-
-    /**
      *assozciate the package to build and watch
      * @param {Object} desc
      */
@@ -43,6 +32,19 @@ module.exports = class RuntimeAnalyzer extends Plugin {
             });
         }
     }
+
+    /**
+     *
+     * @param {Object} desc
+     * @returns {Boolean}
+     */
+    matchesType(desc) {
+        const isPackage = desc.type === 'package' || desc instanceof Package;
+        return desc.config.runtime && isPackage && desc.isRootPackage();
+
+    }
+
+
 
     /**
      * helper function to load the runtime for a component or module
@@ -132,91 +134,6 @@ module.exports = class RuntimeAnalyzer extends Plugin {
     //     }
     // }
 
-    onMap(desc) {
-
-        desc.config.types.forEach(type => {
-
-            const resources = desc.resources;
-
-            _.forEach(desc.resources, comp => {
-
-                const runtime = comp.runtime
-
-
-                if (runtime) {
-
-                    comp.extends =  runtime.extends && _.find(resources, {runtime: runtime.extends});
-
-                    if (runtime.extends && !comp.extends) {
-                        console.warn('could not link extend on: ' + comp.name);
-
-                        comp.extends = _.findKey(resources, {runtime: runtime.extends});
-
-                        if (!comp.extends) {
-                            console.warn('could not find extend on: ' + comp.name);
-                        }
-                    }
-
-                    comp.mixins = [];
-
-                    //resolve mixins
-                    _.forEach(runtime.mixins, (mixin, index) => {
-                        const definition = _.find(resources, res => {
-                            return res.runtime === mixin;
-                        });
-
-                        const name = definition && definition.resource;
-
-                        // if(!name) {
-                        //     console.warn('could not find mixin ' + index + ' in: ' + comp.name);
-                        // }
-                        if(!definition) {
-                            console.warn('could not link/find  mixin ' + (name || index) + ' for: ' + comp.name);
-                        }
-
-                        comp.mixins.push({name, linked: !!definition});
-
-                    });
-
-                    //merge inherited props, methods, computeds  to component
-                    ['props', 'methods', 'computed'].forEach(type => {
-
-                        const res = {};
-
-                        const inheritanceChain = comp.extends ? [comp.extends] : [];
-
-                        [...inheritanceChain, ...comp.mixins].forEach((desc) => {
-                            if (desc) {
-
-                                const def = resources[desc.name];
-                                if(def) {
-                                    _.assign(res, _.mapValues(def.component[type], member => ({...member, inherited: !!desc, _style : {...member._style, 'font-style': 'italic'}})));
-                                }
-                                if(desc.linked !== !!def) {
-                                    debugger
-                                }
-
-                            } else {
-                                debugger;
-                            }
-                        });
-
-                        _.assign(res, comp.component[type]);
-
-                        //find prop defaults again, as default may change in inherited type
-                        util.findPropDefaults(res, comp.runtime);
-
-                        comp.component[type] = res;
-
-                    });
-
-                }
-
-            });
-        });
-        // this.linked = true;
-    }
-
 
     createCompiler(filename = this.indexFile) {
 
@@ -256,6 +173,7 @@ module.exports = class RuntimeAnalyzer extends Plugin {
 
         const res = [imports, 'const exp = {};', assigns, 'export default exp;'].join('\n');
 
+        pack.log('writing index:', res);
         fs.writeFileSync(this.indexFile, res);
 
     }
@@ -296,13 +214,16 @@ module.exports = class RuntimeAnalyzer extends Plugin {
             this.watcher = compiler.watch({}, (...args) => this.onWebPack(...args));
         } else {
             console.log('building package:', this.pack.name);
-            this.watcher = compiler.run((...args) => this.onWebPack(...args));
+            compiler.run((...args) => this.onWebPack(...args));
         }
     }
 
     onWebPack(err, res) {
+
+        debugger;
         const resfname = Object.keys(res.compilation.assets)[0];
         const script = this.outputFileSystem.readFileSync(resfname ,'utf8');
+        
         try {
             browser.install();
             const rt = requireFromString(script);
@@ -333,6 +254,7 @@ module.exports = class RuntimeAnalyzer extends Plugin {
             return new Promise(resolve => {
 
                 compiler.run((err, res) => {
+                    debugger;
                     const resfname = Object.keys(res.compilation.assets)[0];
                     const data = compiler.outputFileSystem.readFileSync(resfname ,'utf8');
                     try {

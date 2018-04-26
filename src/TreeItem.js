@@ -1,5 +1,6 @@
 const _ = require('lodash');
 const {EventEmitter} = require('events');
+const fs = require('fs');
 /**
  * extracting some commong basics for the parsers
  */
@@ -19,10 +20,25 @@ module.exports = class TreeItem extends EventEmitter {
         this.resource = this.path.replace(config.resourceBase, '').replace(/\//g, '.').substr(1);
 
 
+        if (config.developMode || config.log) {
+            this.log = console.log;
+            // this.logFile = (data, name) => fs.writeFileSync()
+        } else {
+            this.log = x => x;
+        }
     }
 
     init() {
 
+        const desc = this.config.loaders.reduce((cur, loader) => {
+            if (loader.canLoad(this.path)) {
+                cur = loader.load(this.path);
+            } 
+            return cur;
+        }, {});
+
+        _.assign(this, desc);
+        
         this.execPluginCallback('onConstruct', true);
     }
 

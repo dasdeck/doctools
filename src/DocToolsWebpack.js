@@ -12,14 +12,17 @@ module.exports = class DocToolsWebpack {
         });
 
         this.pack = require(__dirname + '/../bin/doctools');
-        this.pack.config.watch = false;
+        if (this.pack.config) {
+
+            this.pack.config.watch = false;
+        }
 
         this.initial = true;
     }
 
     apply(compiler) {
 
-        if (!this.pack.type) return; //running inside devtools
+        if (!this.pack.config) return; //running inside devtools
 
         compiler.hooks.done.tap(this.constructor.name, compilation => {
 

@@ -1,7 +1,74 @@
 /* eslint-env node */
 
 const glob = require('glob');
-// const util = require('./src/util');
+const fs = require('fs');
+
+class DevServerTools {
+
+    constructor(config) {
+
+        this.config = config;
+
+        if (config.developMode) {
+
+            fs.watch(__dirname+ '/src', {}, res => {
+        
+                console.log('code changed');
+        
+                glob.sync(__dirname + '/src/*.js').forEach(file => {
+                    delete require.cache[require.resolve(file)];
+                });
+        
+                this.pack = null;
+                this.parser = null;
+        
+            });
+        
+        }
+
+    }
+
+    sendDataToClient(data) {
+
+        const server = this.config.server;
+        server.sockWrite(server.sockets, 'doc-changed', data);
+
+    }
+
+    getParser() {
+
+        if (!this.parser) {
+            this.parser = require('./src/parser');
+        }
+    
+        return this.parser;
+    }
+
+    getPack() {
+    
+        if (!this.pack) {
+    
+            const pack = this.getParser().parse(global.doctoolsConfig);
+    
+            if (this.config.watch) {
+                // pack.watch();
+                pack.on('change', () => {
+        
+                    pack.analyze().then(() => {
+                        this.sendDataToClient(pack.getDataPackage())
+                    });
+        
+                });
+            }
+
+            this.pack = pack;
+        }
+    
+        return this.pack;
+        
+    }
+}
+
 
 module.exports = {
 
@@ -13,45 +80,17 @@ module.exports = {
     inline: false,
     before(app) {
 
-        console.log('building docs...');
-
-        const parser = require(__dirname + '/src/parser');
-        const config = global.doctoolsConfig;
-
-        let pack = parser.parse(config);
-
-        if (config.watch) {
-            // pack.watch();
-            pack.on('change', () => {
-
-                pack.analyze().then(() => {
-                    config.server.sockWrite(config.server.sockets, 'doc-changed', pack.getDataPackage());
-                });
-
-            });
-        }
+        const server = new DevServerTools(global.doctoolsConfig);
 
         app.get('/data.json', (req, res, next) => {
 
-            if (!pack || config.developMode) {
-
-                if (config.developMode) {
-
-                    console.log('re-parsing whole docu');
-
-                    glob.sync(__dirname + '/src/*.js').forEach(file => {
-                        delete require.cache[require.resolve(file)];
-                    });
-
-                }
-                pack = parser.parse(config);
-            }
-
+            const pack = server.getPack();
+            
             pack.analyze().then(() => {
                 const data = pack.getDataPackage();
                 res.json(data);
                 next();
-            }).catch(console.warn);
+            });
 
         });
 

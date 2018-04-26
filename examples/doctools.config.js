@@ -13,7 +13,8 @@ module.exports = {
     search: 'src/**/*.+(js|vue)',
     developMode: false,
     runtime: __dirname + '/webpack.config.js',
-    subPackages: 'packages/*',
+    // subPackages: 'packages/*',
+    subPackages: true,
     watch: true
     // runtime
 };

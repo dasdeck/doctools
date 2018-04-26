@@ -17,14 +17,21 @@ module.exports = class ModulePlugin extends Plugin {
 
     onAnalyze(desc) {
 
-        return jsdoc.explain({source: desc.script}).then(all => {
-            desc.jsdoc = all;
-            console.log('jsdoc parsed:', desc.name, !!all);
-        });
+        if (desc.jsdoc) {
+            return Promise.resolve();
+        } else {
+            return jsdoc.explain({source: desc.script}).then(all => {
+                desc.jsdoc = all;
+                desc.log('jsdoc parsed:', desc.name, !!all);
+            }).catch(e => {
+                debugger;
+                desc.log('error whule jsdoc:', desc.path);
+            });
+        }
     }
 
     onPatch(desc) {
-        console.log('jsdoc cleared', desc.name, !!desc.all);
+        desc.log('jsdoc cleared', desc.name, !!desc.all);
         delete desc.jsdoc;
         delete desc.module;
     }
@@ -37,11 +44,12 @@ module.exports = class ModulePlugin extends Plugin {
     onMap(desc) {
 
         const all = desc.jsdoc;
-        console.log('mapping module', desc.name, !!all);
+        desc.log('mapping module', desc.name, !!all);
 
         const config = desc.config;
         const res = {all, documented: []};
 
+        if(!all) debugger;
         all.forEach(el => {
 
             if (el.kind === 'function' && !el.undocumented) {
@@ -106,13 +114,15 @@ module.exports = class ModulePlugin extends Plugin {
      * "guesses" functions default parameters by parsing the code
      * @param {Object} el - the JSDoc function descriptor
      */
-    guessDefaultParamValues(el, script) {
+    guessDefaultParamValues(el, desc) {
 
+        const script = desc.script;
         //extract default values
         const regex = RegExp(/name\((.*?)\)\s*{/.source.replace('name', el.name));
         const res = regex.exec(script);
         if (!res && !el.see) {
-            debugger //why
+            // debugger //why
+            desc.log('could not determine function name for:', el.name, 'in:', desc.path);
         } else if (res) {
             const args = res[1].split(',').map(v => v.trim());
 
@@ -143,7 +153,7 @@ module.exports = class ModulePlugin extends Plugin {
         el.simpleName = el.longname === `module.exports.${el.name}` ? el.name : el.longname;
 
         if (desc.config.inferParameterDefaults) {
-            this.guessDefaultParamValues(el, desc.script);
+            this.guessDefaultParamValues(el, desc);
         }
 
         if (el.params) {

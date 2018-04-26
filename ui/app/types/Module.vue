@@ -8,7 +8,7 @@
 
         <hr>
 
-        <template v-for="desc in data.documented" v-if="hasKind(desc.kind)">
+        <template v-for="desc in data.module.documented" v-if="hasKind(desc.kind)">
             <component :is="desc.kind" :data="desc"/>
             <hr>
         </template>

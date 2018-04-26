@@ -34,6 +34,15 @@ function prepareConfig(input) {
         return plugin;
     });
 
+    config.loaders = ['DefaultLoader', ...config.loaders].map(loader => {
+
+        if (_.isString(loader)) {
+            const Loader = require('./loaders/' + loader);
+            loader = new Loader;
+        }
+        return loader;
+    });
+
     return config;
 }
 

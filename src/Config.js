@@ -7,6 +7,7 @@
 
  /**
   * a sample config
+  * @typedef DoctoolsConfig
   */
 module.exports = {
 
@@ -66,12 +67,16 @@ module.exports = {
      */
     strict: false,
 
+    loaders: [
+        'VueLoader'
+    ],
     /**
      * extra mapping plugins
      */
     plugins: [
+        // 'RuntimeAnalyzer',
         'UIkitComponentPlugin',
         'VueComponentPlugin',
-        'RuntimeAnalyzer'
+        'ComponentLinker'
     ]
 };
