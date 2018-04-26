@@ -3,7 +3,7 @@ const fs = require('fs');
 
 module.exports = class DefaultLoader {
 
-    canLoad(file) {
+    match(file) {
         return _.endsWith(file, '.js');
     }
 

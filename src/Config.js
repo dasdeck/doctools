@@ -58,7 +58,7 @@ module.exports = {
      * a glob to search for subpackages (recursively) to be included, or false
      * @type {GlobString|Boolean}
      */
-    subPackages: false,
+    subPackages: true,
 
     /**
      * strict mode
@@ -68,17 +68,17 @@ module.exports = {
     strict: false,
 
     /**
-     * 
+     *
      */
-    exclude: [],
+    exclude: [/node_modules/],
 
     /**
-     * 
+     *
      */
-    include: [/src\//, /packages\//],
+    include: [/.*/],
 
     /**
-     * 
+     *
      */
     loaders: [
         'VueLoader'

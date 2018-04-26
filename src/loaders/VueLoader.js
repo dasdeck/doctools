@@ -4,7 +4,7 @@ const fs = require('fs');
 
 module.exports = class VueLoader {
 
-    canLoad(file) {
+    match(file) {
         return _.endsWith(file, '.vue');
     }
 

@@ -8,9 +8,9 @@
 
             <ResourceList v-if="selectedPackage === data || $doc.settings.filter" :data="data"/>
 
-            <ul uk-accordion v-if="data.subPackages && Object.keys(data.subPackages).length" class="uk-list">
+            <ul uk-accordion v-if="data.packages && Object.keys(data.packages).length" class="uk-list">
                 <li>
-                    <PackageTree v-for="subPackage in data.subPackages" :data="$doc.resources[subPackage]"/>
+                    <PackageTree v-for="subPackage in data.packages" :data="$doc.resources[subPackage]"/>
                 </li>
             </ul>
 
@@ -51,7 +51,7 @@
                 if (!resource) {
                     debugger;
                 }
-                return this.$doc.resources[resource.package || resource.resource];
+                return this.$doc.resources[resource.type === 'package' ? resource.resource : resource.package];
             }
         }
 

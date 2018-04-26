@@ -1,5 +1,5 @@
 module.exports = {
-  "context": "/Users/jms/doctools/examples",
+  "context": "/Users/jms/yootheme-doctools/examples",
   "entry": {
     "index": "./index.js"
   },
@@ -11,7 +11,7 @@ module.exports = {
   "plugins": [
     {
       "config": {
-        "path": "/Users/jms/doctools/docs.json"
+        "path": "/Users/jms/yootheme-doctools/docs.json"
       },
       "pack": {},
       "initial": true

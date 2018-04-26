@@ -19,8 +19,8 @@ module.exports = class ComponentLinker extends Plugin {
     }
 
     /**
-     * 
-     * @param {*} desc 
+     *
+     * @param {*} desc
      */
     onMap(pack) {
 
@@ -33,9 +33,9 @@ module.exports = class ComponentLinker extends Plugin {
                 const comp = desc.component;
                 const runtime = desc.runtime
 
-                if (runtime) {
+                if (runtime && comp) {
 
-                    comp.extends =  runtime.extends && _.find(resources, {runtime: runtime.extends});
+                    comp.extends = runtime.extends && _.find(resources, {runtime: runtime.extends});
 
                     if (runtime.extends && !comp.extends) {
                         console.warn('could not link extend on: ' + comp.name);

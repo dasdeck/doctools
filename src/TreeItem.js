@@ -2,6 +2,7 @@ const _ = require('lodash');
 const {EventEmitter} = require('events');
 const fs = require('fs');
 const path = require('path');
+const util = require('./util');
 /**
  * extracting some commong basics for the parsers
  */
@@ -34,14 +35,14 @@ module.exports = class TreeItem extends EventEmitter {
     init() {
 
         const desc = this.config.loaders.reduce((cur, loader) => {
-            if (loader.canLoad(this.path)) {
+            if (util.match(loader.match, this.path)) {
                 cur = loader.load(this.path);
-            } 
+            }
             return cur;
         }, {});
 
         _.assign(this, desc);
-        
+
         this.execPluginCallback('onConstruct', true);
     }
 

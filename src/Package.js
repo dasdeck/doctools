@@ -69,12 +69,12 @@ module.exports = class Package extends TreeItem {
             if (_.isString(this.config.subPackages)) {
 
                 const packages = glob.sync(path.join(this.path, this.config.subPackages));
-                
+
                 packages.forEach(subPackage => {
 
                     const res = new Package(this.config, subPackage, this);// parser.parse();
                     this.addPackage(res);
-                    
+
                 });
 
                 this.loadFiles();
@@ -82,7 +82,7 @@ module.exports = class Package extends TreeItem {
             } else {
 
                 this.scanDirectory(this.path);
-                
+
             }
 
         }
@@ -100,7 +100,7 @@ module.exports = class Package extends TreeItem {
 
                 if(fs.existsSync(packageJson)) {
                     const pack = new Package(this.config, file, this);
-    
+
                     this.addPackage(pack);
 
                 } else {
@@ -108,7 +108,7 @@ module.exports = class Package extends TreeItem {
                 }
 
             } else {
-                if (this.config.loaders.some(loader => loader.canLoad(file))) {
+                if (this.config.loaders.some(loader => util.match(loader.match, file))) {
                    if(!this.config.exclude.some(pat => pat.exec(file)) && this.config.include.some(pat => pat.exec(file))) {
                         this.addFile(file);
                     } else {
@@ -125,7 +125,7 @@ module.exports = class Package extends TreeItem {
         let res = file.includes(this.path) ? this : null;
 
         _.forEach(this.packages, pack => {
-            pack =  this.resources[pack];
+            // pack =  this.resources[pack];
             const sub = pack.findPackageForFile(file);
             if(sub) {
                 res = sub;
@@ -159,7 +159,7 @@ module.exports = class Package extends TreeItem {
         return Promise.all(_.map(this.packages, pack => pack.analyze()))
         .then(res => Promise.all(this.getPackageModules().map(mod => mod.analyze())))
         .then(res => this.execPluginCallback('onAnalyze'))
-        
+
         .then(res => Promise.all(_.map(this.packages, pack => pack.map())))
         // .then(res => this.getPackageModules().map(mod => mod.map()))
         .then(all => this.map())
@@ -316,7 +316,8 @@ module.exports = class Package extends TreeItem {
 
             return {
                 ...this,
-                package: this.resource,
+                package: this.package && this.package.resource,
+                packages: _.mapValues(this.packages, pack => pack.resource),
                 types,
                 resources: _.pickBy(_.mapValues(this.resources, resource => resource.resource), res => !res.ignore),
                 config: undefined,
@@ -333,7 +334,7 @@ module.exports = class Package extends TreeItem {
         const resources = {};
         resources[this.resource] = this.serialize();
 
-        _.forEach(this.resources, resource => {
+        _.forEach({...this.packages, ...this.resources}, resource => {
             if (resource.getResources) {
                 _.merge(resources, resource.getResources());
             } else {

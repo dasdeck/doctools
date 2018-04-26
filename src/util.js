@@ -7,6 +7,22 @@ module.exports = {
 
     getTypesRaw,
 
+    match(conf, file) {
+        conf = _.isArray(conf) ? conf : [conf];
+
+        return conf.some(matcher => {
+            if (matcher instanceof RegExp) {
+                return matcher.match(file)
+            } else if (typeof matcher === 'function') {
+                return matcher(file);
+            } else if (typeof matcher === 'string') {
+                return file.includes(matcher);
+            } else {
+                throw 'invalid matcher:' + matcher;
+            }
+        });
+    },
+
     /**e
      * scapes a string to be a valid variable name
      */
