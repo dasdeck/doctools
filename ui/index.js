@@ -1,11 +1,20 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 import SockJS from 'sockjs-client';
+// import VuePrism from 'vue-prism';
 
 import Doc from './app/Doc.vue';
 import Content from './app/Content.vue';
+//
+import 'prismjs'
+import 'prismjs/themes/prism.css'
+
+import Prism from 'vue-prism-component';
 
 Vue.use(VueRouter);
+// Vue.use(VuePrism);
+
+Vue.component('Code', Prism);
 
 let app;
 

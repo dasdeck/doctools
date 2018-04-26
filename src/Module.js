@@ -38,7 +38,17 @@ class Module extends TreeItem {
      * @override
      */
     serialize() {
-        return {...this, config: undefined, runtime: undefined, package: this.package.resource, ...this.data};
+
+        const data = {
+            ...this,
+            package: this.package.resource
+        };
+
+        delete data.config;
+
+        this.execPluginCallback('onSerialize', true, data);
+
+        return data;
     }
 
     patch(module) {

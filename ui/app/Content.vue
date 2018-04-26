@@ -1,5 +1,32 @@
 <template>
-    <component :is="data.type" :data="data"></component>
+<div>
+
+<!-- This is the nav containing the toggling elements -->
+<ul uk-switcher class="uk-subnav uk-subnav-pill">
+    <li><a href="">doc</a></li>
+    <li v-if="data.script"><a href="">code</a></li>
+    <li v-if="data.template"><a href="">code</a></li>
+    <li><a href="">test</a></li>
+</ul>
+
+<!-- This is the container of the content items -->
+<ul class="uk-switcher">
+    <li>
+        <component :is="data.type" :data="data"></component>
+    </li>
+    <li>
+        <Code language="javascript">{{data.script}}</Code>
+
+    </li>
+    <li>
+        <Code language="html">{{data.template}}</Code>
+
+    </li>
+    <li>
+        tests
+    </li>
+</ul>
+</div>
 </template>
 
 <script>

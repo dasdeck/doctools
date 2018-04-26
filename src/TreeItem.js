@@ -8,21 +8,21 @@ const util = require('./util');
  */
 module.exports = class TreeItem extends EventEmitter {
 
-    constructor(config, file = config.base, pack = null) {
+    constructor(config, file = config.base, parent = null) {
 
         super();
 
-        this.package = pack;
-
         this.config = config;
+
+        this.package = parent;
+
 
         this.path = file;
         this.fileInPackage = this.path.replace(this.config.resourceBase, '.');
         this.name = this.path.split('/').pop().split('.').shift();
         this.resource = this.path.replace(config.resourceBase, '').replace(/\//g, '.').substr(1);
 
-
-        if (config.developMode || config.log) {
+        if (config.dev || config.log) {
             this.log = console.log;
             const logDir = path.join(this.config.resourceBase, 'log');
             try {fs.mkdirSync(logDir) } catch(e) {};
@@ -34,7 +34,7 @@ module.exports = class TreeItem extends EventEmitter {
 
     init() {
 
-        const desc = this.config.loaders.reduce((cur, loader) => {
+        const desc = this.config._.loaders.reduce((cur, loader) => {
             if (util.match(loader.match, this.path)) {
                 cur = loader.load(this.path);
             }
@@ -45,6 +45,8 @@ module.exports = class TreeItem extends EventEmitter {
 
         this.execPluginCallback('onConstruct', true);
     }
+
+
 
     getRootPackage() {
         if (this.package) {
@@ -58,14 +60,10 @@ module.exports = class TreeItem extends EventEmitter {
         return this === this.getRootPackage() && this.package === null;
     }
 
-    execPluginCallback(name, sync = false) {
+    execPluginCallback(name, sync = false, data = null) {
 
-        const jobs = [];
-
-        _.forEach(this.config.plugins, plugin => {
-                jobs.push(() => {
-                        return plugin.matchesType(this) && plugin[name](this) || Promise.resolve();
-                });
+        const jobs = this.config._.plugins.map(plugin => {
+            return () => plugin.matchesType(this) && plugin[name](this, data) || Promise.resolve();
         });
 
         if (sync) {

@@ -1,8 +1,8 @@
 const fs = require('fs');
 const _ = require('lodash');
-const ComponentPlugin = require('./ComponentPlugin');
+const ComponentMapper = require('./ComponentMapper');
 
-module.exports = class VueComponentPlugin extends ComponentPlugin {
+module.exports = class VueComponentPlugin extends ComponentMapper {
 
 
     /**
@@ -22,9 +22,10 @@ module.exports = class VueComponentPlugin extends ComponentPlugin {
 
     }
 
-    parseTemplate(res) {
+    parseTemplate(desc) {
 
-        const template = res.template;
+        const template = desc.template;
+        const component = desc.component;
 
         const named = ['param', 'trigger', 'slot'];
         const subKind = ['param'];
@@ -60,8 +61,8 @@ module.exports = class VueComponentPlugin extends ComponentPlugin {
                     }
                 } else if (parentKind.includes(kind)) {
                     currentParent = current;
-                    res[kind] = res[kind] || {};
-                    res[kind][current.name]= current;
+                    component[kind] = component[kind] || {};
+                    component[kind][current.name]= current;
                 }
             }
 

@@ -78,6 +78,9 @@ module.exports = class RuntimeAnalyzer extends Plugin {
 
                 // return this.webpackFile(config, desc.path);
 
+            } else if(config.runtime === true) {
+                throw 'unimplemented';
+
             } else {
                 const runtime = _.get(config.runtime, `${desc.type}.${desc.name}`) || _.get(config.runtime, desc.name);
                 return Promise.resolve(runtime || {});
@@ -128,24 +131,20 @@ module.exports = class RuntimeAnalyzer extends Plugin {
 
     }
 
-    // onSerialize(desc) {
-    //     if (desc.type === 'package' && desc.isRootPackage()) {
-    //         this.createLinks(desc);
-    //     }
+    // onSerialize(desc, data) {
+    //     delete data.runtime;
     // }
-
 
     createCompiler(filename = this.indexFile) {
 
         const conf = this.adaptConfig(filename);
 
-
-        this.pack.logFile('webpack.config.js', 'module.exports = ' + JSON.stringify({
-            ...conf,
-            entry: {
-                'index': './index.js'
-            }
-        }, null, 2));
+        // this.pack.logFile('webpack.config.js', 'module.exports = ' + JSON.stringify({
+        //     ...conf,
+        //     entry: {
+        //         'index': './index.js'
+        //     }
+        // }, null, 2));
 
         const WebpackAdapter = require('../WebpackAdapter');
         const plugin = new WebpackAdapter(this.pack);
@@ -231,7 +230,7 @@ module.exports = class RuntimeAnalyzer extends Plugin {
 
         const resfname = Object.keys(res.compilation.assets)[0];
         const script = this.outputFileSystem.readFileSync(resfname ,'utf8');
-        
+
         this.pack.logFile('index.min.js', script);
         try {
             browser.install();
@@ -241,9 +240,10 @@ module.exports = class RuntimeAnalyzer extends Plugin {
             this.cache = rt.default ? rt.default : rt;
             this.emit('change', this.cache);
             // resolve(rt.default ? rt.default : rt);
-            console.log('webpack built');
+            this.pack.log('webpack built');
         } catch(e) {
-            console.warn('could not load runtime');
+            this.pack.log('could not load runtime');
+            this.pack.log(e);
             // resolve({});
         }
     }

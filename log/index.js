@@ -1,18 +1,4 @@
-import _Users_jms_yootheme_doctools_examples_packages_uikit_utils_src_ajax_js from '/Users/jms/yootheme-doctools/examples/packages/uikit-utils/src/ajax.js';
-import _Users_jms_yootheme_doctools_examples_src_uikit_accordion_js from '/Users/jms/yootheme-doctools/examples/src/uikit/accordion.js';
-import _Users_jms_yootheme_doctools_examples_src_uikit_togglable_js from '/Users/jms/yootheme-doctools/examples/src/uikit/togglable.js';
-import _Users_jms_yootheme_doctools_examples_src_utils_animation_js from '/Users/jms/yootheme-doctools/examples/src/utils/animation.js';
-import _Users_jms_yootheme_doctools_examples_src_vue_Element_vue from '/Users/jms/yootheme-doctools/examples/src/vue/Element.vue';
-import _Users_jms_yootheme_doctools_examples_src_vue_Modal_vue from '/Users/jms/yootheme-doctools/examples/src/vue/Modal.vue';
-import _Users_jms_yootheme_doctools_examples_packages_global_linking_src_config_js from '/Users/jms/yootheme-doctools/examples/packages/global-linking/src/config.js';
-import _Users_jms_yootheme_doctools_examples_packages_global_linking_src_test_js from '/Users/jms/yootheme-doctools/examples/packages/global-linking/src/test.js';
+
 const exp = {};
-exp['examples.packages.uikit-utils.src.ajax.js'] = _Users_jms_yootheme_doctools_examples_packages_uikit_utils_src_ajax_js;
-exp['examples.src.uikit.accordion.js'] = _Users_jms_yootheme_doctools_examples_src_uikit_accordion_js;
-exp['examples.src.uikit.togglable.js'] = _Users_jms_yootheme_doctools_examples_src_uikit_togglable_js;
-exp['examples.src.utils.animation.js'] = _Users_jms_yootheme_doctools_examples_src_utils_animation_js;
-exp['examples.src.vue.Element.vue'] = _Users_jms_yootheme_doctools_examples_src_vue_Element_vue;
-exp['examples.src.vue.Modal.vue'] = _Users_jms_yootheme_doctools_examples_src_vue_Modal_vue;
-exp['examples.packages.global-linking.src.config.js'] = _Users_jms_yootheme_doctools_examples_packages_global_linking_src_config_js;
-exp['examples.packages.global-linking.src.test.js'] = _Users_jms_yootheme_doctools_examples_packages_global_linking_src_test_js;
+
 export default exp;

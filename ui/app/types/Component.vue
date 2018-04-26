@@ -1,28 +1,40 @@
 <template>
     <div>
-        <h1>{{data.name}}</h1>
+        <h1>
+            {{data.name}}
+            <template v-if="component.extends">
+                <code>
+                <span>extends</span>
+                <ModuleLink :resource="component.extends.resource"/>
+                </code>
+            </template>
+        </h1>
 
         {{data.module.description}}
 
         <hr>
 
+        <template v-if="component.components">
+            <h2>components:</h2>
+            <div v-for="comp in component.components">
+                 <ModuleLink :resource="comp.resource"/>
+            </div>
+            <hr>
+        </template>
+
         <template v-if="component.slot">
             <h2>slots:</h2>
-            <div v-for="slot in data.slot">
+            <div v-for="slot in component.slot">
                 <h4>{{slot.name}}</h4>
                 {{slot.description}}
             </div>
             <hr>
         </template>
 
-        <template v-if="component.mixins && component.mixins.length">
+        <template v-if="component.mixins">
             <h2>mixins:</h2>
             <template v-for="(mixin, index) in component.mixins">
-                <span v-if="mixin.linked">
-                    <router-link :to="`/${$doc.resources[mixin.resource].resource}`">
-                        {{$doc.resources[mixin.resource].name}}
-                    </router-link>
-                </span>
+                <ModuleLink v-if="mixin.resource" :resource="mixin.resource"/>
                 <span v-else>{{mixin.name || '?'}}</span>
                 <span v-if="index + 1 < component.mixins.length">, </span>
             </template>
@@ -38,7 +50,7 @@
             <h2>methods:</h2>
             <ul class="uk-list">
                 <li v-for="method in methods">
-                    <Function :data="method"/>
+                    <Function :data="method" :module="data"/>
                     <hr>
                 </li>
             </ul>
@@ -48,7 +60,14 @@
         <template v-if="component.computed">
             <h2>computed:</h2>
             <li v-for="computed in component.computed">
-                <h3>{{computed.name}}{{computed.type && (' : ' + computed.type.names.join('|'))}}</h3>
+
+                <h3>
+                    {{computed.name}}{{computed.type && (' : ' + computed.type.names.join('|'))}}
+                    <code v-if="computed.inherited">inherited from: <ModuleLink :resource="computed.inherited"/></code>
+                    </h3>
+
+
+
                 {{computed.description}}
             </li>
         </template>
@@ -93,13 +112,16 @@
 
     import PropTable from '../utils/PropTable.vue';
     import Function from '../utils/Function.vue';
+    import ModuleLink from '../utils/ModuleLink.vue';
+
     import _ from 'lodash';
 
     export default {
 
         components: {
             PropTable,
-            Function
+            Function,
+            ModuleLink
         },
 
         props: {

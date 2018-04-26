@@ -14,18 +14,14 @@ const defaultConfig = require('./Config');
 // const UIkitComponentPlugin = require('./UIkitComponentPlugin');
 // const VueComponentPlugin = require('./VueComponentPlugin');
 
-/**
- * @mutates
- * @param {DoctoolsConfig} config
- */
-function prepareConfig(input) {
 
-    const config = {...input};
-    _.defaults(config, defaultConfig);
-    //ests teh resourceBase e.g. the root package
-    config.resourceBase = config.resourceBase || path.dirname(config.base);
+function loadPlugins(config) {
 
-    config.plugins = ['ModulePlugin', ...config.plugins].map(plugin => {
+    if (config._) return;
+
+    config._ = {};
+
+    config._.plugins = ['ModulePlugin', ...config.plugins].map(plugin => {
 
         if (_.isString(plugin)) {
             const Pluigin = require('./plugins/' + plugin);
@@ -34,7 +30,7 @@ function prepareConfig(input) {
         return plugin;
     });
 
-    config.loaders = ['DefaultLoader', ...config.loaders].map(loader => {
+    config._.loaders = ['DefaultLoader', ...config.loaders].map(loader => {
 
         if (_.isString(loader)) {
             const Loader = require('./loaders/' + loader);
@@ -42,9 +38,43 @@ function prepareConfig(input) {
         }
         return loader;
     });
+}
+
+ /**
+* @mutates
+* @param {DoctoolsConfig} config
+*/
+function prepareConfig(config) {
+
+    if (!config.resourceBase) {
+
+        config = {...config};
+
+        //ests teh resourceBase e.g. the root package
+
+        config.resourceBase = config.resourceBase || path.dirname(config.base);
+
+        const configFile = path.join(config.base || process.cwd(), 'doctools.config.js');
+
+        if (fs.existsSync(configFile)) {
+            console.log('config file used: ', configFile);
+            const confFromFile = require(path.resolve(configFile));
+            if (confFromFile.config) {
+                throw 'use config option only on cli';
+            }
+            _.defaults(config, confFromFile);
+        }
+
+        _.defaults(config, defaultConfig);
+
+
+    }
+
+    loadPlugins(config);
 
     return config;
 }
+
 
 /**
  * @file
@@ -74,10 +104,6 @@ parser.parse();
 module.exports = {
 
     prepareConfig,
-
-    builtinPlugins: [
-
-    ],
 
     /**
      * Parses the data defined in config and returns an object containing the parsed structure

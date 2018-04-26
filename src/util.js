@@ -12,7 +12,7 @@ module.exports = {
 
         return conf.some(matcher => {
             if (matcher instanceof RegExp) {
-                return matcher.match(file)
+                return matcher.exec(file);
             } else if (typeof matcher === 'function') {
                 return matcher(file);
             } else if (typeof matcher === 'string') {

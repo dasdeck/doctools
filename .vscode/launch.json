@@ -38,6 +38,16 @@
         {
             "type": "node",
             "request": "launch",
+            "name": "uikit-utils",
+            "program": "${workspaceFolder}/bin/doctools.js",
+            "args": [
+                "/Users/jms/uikit-utils",
+                "--dev"
+            ]
+        },
+        {
+            "type": "node",
+            "request": "launch",
             "name": "examples (explain)",
             "program": "${workspaceFolder}/bin/doctools.js",
             "args": [

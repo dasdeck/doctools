@@ -18,13 +18,35 @@ module.exports = class ComponentLinker extends Plugin {
 
     }
 
+    onConstruct(pack) {
+        this.pack = pack;
+    }
+
+
+    getLink(runtime, warning = null) {
+
+        if (runtime !== undefined) {
+
+            const resources = _.keyBy(this.pack.getAllModules(), 'resource');
+            const res = _.find(resources, res => res.runtime === runtime);
+
+            if(res && res.runtime !== runtime) {
+                debugger
+            }
+
+            if(!res && warning) {
+                this.pack.log(warning);
+            }
+
+            return {resource: res && res.resource};
+        }
+    }
+
     /**
      *
      * @param {*} desc
      */
     onMap(pack) {
-
-        pack.config.types.forEach(type => {
 
             const resources = _.keyBy(pack.getAllModules(), 'resource');
 
@@ -35,55 +57,48 @@ module.exports = class ComponentLinker extends Plugin {
 
                 if (runtime && comp) {
 
-                    comp.extends = runtime.extends && _.find(resources, {runtime: runtime.extends});
+                    comp.extends = this.getLink(runtime.extends, 'could not link extend on: ' + desc.path);
 
-                    if (runtime.extends && !comp.extends) {
-                        console.warn('could not link extend on: ' + comp.name);
+                    ['mixins', 'components'].forEach(name => {
 
-                        comp.extends = _.findKey(resources, {runtime: runtime.extends});
 
-                        if (!comp.extends) {
-                            console.warn('could not find extend on: ' + comp.name);
+                        if(runtime[name]) {
+                            comp[name] = _.map(runtime[name], (mixin, index) => {
+                                return this.getLink(mixin, 'could not link/find  mixin ' + index + ' for: ' + desc.path);
+                            });
+                            // debugger;
                         }
-                    }
-
-                    comp.mixins = [];
-
-                    //resolve mixins
-                    _.forEach(runtime.mixins, (mixin, index) => {
-                        const definition = _.find(resources, res => {
-                            return res.runtime === mixin;
-                        });
-
-                        const resource = definition && definition.resource;
-
-                        // if(!name) {
-                        //     console.warn('could not find mixin ' + index + ' in: ' + comp.name);
-                        // }
-                        if(!definition) {
-                            console.warn('could not link/find  mixin ' + (name || index) + ' for: ' + comp.name);
-                        }
-
-                        comp.mixins.push({resource, linked: !!definition});
 
                     });
 
+
+                    // debugger;
                     //merge inherited props, methods, computeds  to component
                     ['props', 'methods', 'computed'].forEach(type => {
 
                         const res = {};
 
-                        const inheritanceChain = comp.extends ? [comp.extends] : [];
+                        // if (comp.mixins || comp.extends) {
+                        //     debugger;
+                        // }
 
-                        [...inheritanceChain, ...comp.mixins].forEach(desc => {
+                        let inheritanceChain = comp.extends ? [comp.extends] : [];
+                        if (comp.mixins) {
+                            inheritanceChain = inheritanceChain.concat(comp.mixins);
+                        }
+
+                        inheritanceChain.forEach(desc => {
                             if (desc) {
 
                                 const def = resources[desc.resource];
                                 if(def) {
+                                    if(!def.component) {
+                                        debugger;
+                                    }
                                     const props = _.mapValues(def.component[type], member => {
                                         return {
                                             ...member,
-                                            inherited: !!desc,
+                                            inherited: desc.resource,
                                             _style : {
                                                 ...member._style,
                                                 'font-style': 'italic'
@@ -92,7 +107,8 @@ module.exports = class ComponentLinker extends Plugin {
                                     });
                                     _.assign(res, props);
                                 }
-                                if(desc.linked !== !!def) {
+
+                                if(!!desc.resource !== !!def) {
                                     debugger
                                 }
 
@@ -112,8 +128,9 @@ module.exports = class ComponentLinker extends Plugin {
 
                 }
 
+                desc.component = _.pickBy(comp, type => _.size(type));
+
             });
-        });
         // this.linked = true;
     }
 

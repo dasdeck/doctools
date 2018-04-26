@@ -93,6 +93,11 @@ module.exports = class Package extends TreeItem {
         fs.readdirSync(directory).forEach(file => {
             file = path.resolve(path.join(directory, file));
 
+            if(util.match(this.config.exclude, file) || !util.match(this.config.include, file)) {
+                this.log('skipping file:', file);
+                return;
+            }
+
             const stats = fs.lstatSync(file);
             if (stats.isDirectory()) {
                 //can now create packages
@@ -108,12 +113,9 @@ module.exports = class Package extends TreeItem {
                 }
 
             } else {
-                if (this.config.loaders.some(loader => util.match(loader.match, file))) {
-                   if(!this.config.exclude.some(pat => pat.exec(file)) && this.config.include.some(pat => pat.exec(file))) {
+                if (this.config._.loaders.some(loader => util.match(loader.match, file))) {
                         this.addFile(file);
-                    } else {
-                        this.log('skipping file:', file);
-                    }
+
                 }
             }
         })
@@ -304,29 +306,30 @@ module.exports = class Package extends TreeItem {
      */
     serialize() {
 
-        this.execPluginCallback('onSerialize');
+        // const types = {};
+        // _.forEach(this.resources, resource => {
+        //     const type = resource.type;
+        //     types[type] = types[type] || {};
+        //     types[type][resource.name] = resource.resource;
 
-            const types = {};
-            _.forEach(this.resources, resource => {
-                const type = resource.type;
-                types[type] = types[type] || {};
-                types[type][resource.name] = resource.resource;
+        // });
 
-            });
+        const data = {
+            ...this,
+            package: this.package && this.package.resource,
+            packages: _.mapValues(this.packages, pack => pack.resource),
+            // types,
+            resources: _.pickBy(_.mapValues(this.resources, resource => resource.resource), res => !res.ignore),
+            parent: this.parent && this.parent.resource
+        };
 
-            return {
-                ...this,
-                package: this.package && this.package.resource,
-                packages: _.mapValues(this.packages, pack => pack.resource),
-                types,
-                resources: _.pickBy(_.mapValues(this.resources, resource => resource.resource), res => !res.ignore),
-                config: undefined,
-                parent: this.parent && this.parent.resource,
-                ...this.data
-            };
+        delete data.config;
+
+        this.execPluginCallback('onSerialize', true , data);
+
+        return data;
 
     }
-
 
 
     getResources() {

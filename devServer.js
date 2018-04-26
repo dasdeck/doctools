@@ -9,21 +9,24 @@ class DevServerTools {
 
         this.config = config;
 
-        if (config.developMode) {
+        if (config.dev) {
 
-            fs.watch(__dirname+ '/src', {}, res => {
-        
+            fs.watch(__dirname+ '/src', {recursive: true}, res => {
+
                 console.log('code changed');
-        
-                glob.sync(__dirname + '/src/*.js').forEach(file => {
+
+                glob.sync(__dirname + '/src/**/*.js').forEach(file => {
                     delete require.cache[require.resolve(file)];
                 });
-        
+
                 this.pack = null;
                 this.parser = null;
-        
+                this.config._ = null;
+
+                this.getPack();
+
             });
-        
+
         }
 
     }
@@ -40,32 +43,32 @@ class DevServerTools {
         if (!this.parser) {
             this.parser = require('./src/parser');
         }
-    
+
         return this.parser;
     }
 
     getPack() {
-    
+
         if (!this.pack) {
-    
+
             const pack = this.getParser().parse(global.doctoolsConfig);
-    
+
             if (this.config.watch) {
                 // pack.watch();
                 pack.on('change', () => {
-        
+
                     pack.analyze().then(() => {
                         this.sendDataToClient(pack.getDataPackage())
                     });
-        
+
                 });
             }
 
             this.pack = pack;
         }
-    
+
         return this.pack;
-        
+
     }
 }
 
@@ -85,7 +88,7 @@ module.exports = {
         app.get('/data.json', (req, res, next) => {
 
             const pack = server.getPack();
-            
+
             pack.analyze().then(() => {
                 const data = pack.getDataPackage();
                 res.json(data);

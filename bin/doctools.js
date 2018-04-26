@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 /* eslint-env node */
 const path = require('path');
-const fs = require('fs');
 const webpack = require('webpack');
 const devServer = require('webpack-dev-server');
+const parser = require('../src/parser');
 
 const argv = require('minimist')(process.argv.slice(2), {
     '--': true,
@@ -27,42 +27,30 @@ const argv = require('minimist')(process.argv.slice(2), {
  *
  */
 
-const base = argv._[0];
-
 let config = {};
+config.base = argv._[0] || process.cwd(); //set base default early, for webpack dev server
+config.search = argv.search;
+config.dev = argv.dev;
+config.config = argv.config;
 
-const configFile = argv.config ? argv.config : path.join(base || process.cwd(), 'doctools.config.js');
-if (fs.existsSync(configFile)) {
-    console.log('config file used: ', configFile);
-    config = require(path.resolve(configFile));
-}
-
-config.base = config.base || argv._[0] || process.cwd(); //set base default early, for webpack dev server
-config.search = config.search || argv.search;
-config.developMode = config.developMode || argv.dev;
-
-console.log('current config:', config);
+config = parser.prepareConfig(config);
 
 //easy transport into devserver
 global.doctoolsConfig = config;
 
 if (process.mainModule.filename !== __filename) {
 
-    const parser = require('../src/parser');
-
     module.exports = parser.parse(config);
 
 } else if (argv.explain) {
-
-    const parser = require('../src/parser');
 
     config.watch = false;
 
     const pack = parser.parse(config);
     pack.analyze().then(() => {
-        console.log(pack.getDataPackage());
+        const data = pack.getDataPackage();
+        console.log(data);
     });
-
 
 } else {
 

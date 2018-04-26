@@ -28,6 +28,10 @@ module.exports = {
     module: {
         rules: [
             {
+                test: /\.css$/,
+                use: [ 'style-loader', 'css-loader' ]
+            },
+            {
                 test: /\.vue$/,
                 use: {
                     loader: 'vue-loader'
@@ -35,6 +39,7 @@ module.exports = {
             },
             {
                 test: /\.js$/,
+                exclude: /node_modules/,
                 use: {
                     loader: 'babel-loader'
                 }

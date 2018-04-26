@@ -10,4 +10,4 @@ module.exports = {
      * @type {String}
      */
     configKey1: 'default'
-}
+};

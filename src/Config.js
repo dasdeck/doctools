@@ -17,12 +17,6 @@ module.exports = {
     base: process.cwd(),
 
     /**
-     * a glob to search for files to be included
-     * @type {GlobString}
-     */
-    search: 'src/**/*.+(js|vue)',
-
-    /**
      * enables 'hot reload' for the parser code
      * usefule wehn working on the actual parser code
      * @type {Boolean}
@@ -38,15 +32,10 @@ module.exports = {
     /**
      * provide a hash for the doctools to introspect on the actual code
      * or a path to a webpack config to build modules on the fly
-     * @type {Object|String}
+     * if set to true, doctools will attempt to autoload your webpack config
+     * @type {Object|String|Boolean}
      */
-    runtime: undefined,
-
-    /**
-     * a list of file types to recognize
-     * @type {String[]}
-     */
-    types: ['UIkitComponent', 'VueComponent', 'module'],
+    runtime: true,
 
     /**
      * weather to watch and patch the documentation on changes (much faster then complete rebuilds)
@@ -55,22 +44,9 @@ module.exports = {
     watch: true,
 
     /**
-     * a glob to search for subpackages (recursively) to be included, or false
-     * @type {GlobString|Boolean}
-     */
-    subPackages: true,
-
-    /**
-     * strict mode
-     * throw exceptions instead of warnings
-     * @type {Boolean}
-     */
-    strict: false,
-
-    /**
      *
      */
-    exclude: [/node_modules/],
+    exclude: [/node_modules/, /\/\./],
 
     /**
      *
@@ -91,5 +67,24 @@ module.exports = {
         'UIkitComponentPlugin',
         'VueComponentPlugin',
         'ComponentLinker'
-    ]
+    ],
+
+    /**
+     * strict mode
+     * throw exceptions instead of warnings
+     * @type {Boolean}
+     */
+    strict: false,
+
+     /**
+     * a glob to search for subpackages (recursively) to be included, or false
+     * @type {GlobString|Boolean}
+     */
+    subPackages: true,
+
+        /**
+     * a glob to search for files to be included
+     * @type {GlobString}
+     */
+    search: 'src/**/*.+(js|vue)'
 };

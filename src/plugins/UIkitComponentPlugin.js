@@ -1,6 +1,6 @@
-const ComponentPlugin = require('./ComponentPlugin');
+const ComponentMapper = require('./ComponentMapper');
 
-module.exports = class UIkitComponentPlugin extends ComponentPlugin {
+module.exports = class UIkitComponentPlugin extends ComponentMapper {
 
     matchesType(desc) {
 

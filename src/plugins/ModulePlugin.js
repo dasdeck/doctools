@@ -30,6 +30,10 @@ module.exports = class ModulePlugin extends Plugin {
         }
     }
 
+    onSerialize(desc, data) {
+        delete data.jsdoc;
+    }
+
     onPatch(desc) {
         desc.log('jsdoc cleared', desc.name, !!desc.all);
         delete desc.jsdoc;
@@ -43,7 +47,7 @@ module.exports = class ModulePlugin extends Plugin {
      */
     onMap(desc) {
 
-        const all = desc.jsdoc;
+        const all = _.cloneDeep(desc.jsdoc);
         desc.log('mapping module', desc.name, !!all);
 
         const config = desc.config;
@@ -53,9 +57,7 @@ module.exports = class ModulePlugin extends Plugin {
         all.forEach(el => {
 
             if (el.kind === 'function' && !el.undocumented) {
-
                 this.analyseFunction(el, desc);
-
             }
 
             if (el.kind === 'file') {
@@ -65,6 +67,27 @@ module.exports = class ModulePlugin extends Plugin {
                     desc.type = el.type.names[0];
                 } else if(el.ignore) {
                     res.ignore = true;
+                }
+
+            }
+
+            if(el.kind === 'typedef') {
+
+                const pack = desc.package;
+
+                // debugger
+                pack.types = pack.types || {};
+
+                const name = el.type && el.type.names[0] || el.longname;
+
+                if(pack.types[name]) {
+                    // debugger;
+                    desc.log('type already defined in package:', name);
+                } else {
+
+                    desc.log('found type:', name);
+                    pack.types[name] = desc.resource;
+
                 }
 
             }
@@ -149,6 +172,10 @@ module.exports = class ModulePlugin extends Plugin {
     }
 
     analyseFunction(el, desc) {
+
+        if(el.simpleName) {
+            debugger;
+        }
 
         el.simpleName = el.longname === `module.exports.${el.name}` ? el.name : el.longname;
 

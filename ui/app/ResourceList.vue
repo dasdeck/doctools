@@ -3,8 +3,8 @@
         <template v-for="(title, category) in filteredCategories">
             <h4>{{title}}</h4>
             <ul class="uk-nav uk-nav-default">
-                <li v-for="(entry) in filteredData.types[category]" :style="{opacity: $doc.resources[entry].module.documented.length > 1 ? 1 : 0.2}">
-                    <router-link :to="`/${$doc.resources[entry].resource}`">
+                <li v-for="(entry) in types[category]" :style="{opacity: $doc.resources[entry].module.documented.length > 1 ? 1 : 0.2}">
+                    <router-link :to="`/${entry}`">
                         {{$doc.resources[entry].name}}
                     </router-link>
                 </li>
@@ -38,29 +38,30 @@
             },
 
             filteredCategories() {
-                return _.pickBy(this.categories, (cat, name) => _.size(this.filteredData.types[name]));
+                return _.pickBy(this.categories, (cat, name) => _.size(this.types[name]));
             },
 
-            filteredData() {
+            types() {
 
-                if (this.filter) {
+                const types = _.reduce(this.data.resources, (acc, val, key) => {
 
-                    const data = {};
+                    const entry = this.$doc.resources[val];
 
-                    _.forEach(this.categories, (cat, name) => {
-                        _.forEach(this.data.types[name], (resource, key) => {
-                            const entry = this.$docData.resources[resource];
-                            if (entry.name.includes(this.filter)) {
-                                data[name] = data[name] || {};
-                                data[name][key] = resource;
-                            }
-                        })
-                    });
-                    return data;
-                } else {
-                    return this.data;
-                }
-            }
+                    if (!this.filter || entry.name.includes(this.filter)) {
+
+                        if (!acc[entry.type]) {
+                            acc[entry.type] = {};
+                        }
+                        acc[entry.type][val] = val;
+
+                    }
+                    return acc;
+
+                }, {});
+
+                return types;
+            },
+
 
         }
 

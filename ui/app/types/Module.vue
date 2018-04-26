@@ -9,11 +9,11 @@
         <hr>
 
         <template v-for="desc in data.module.documented" v-if="hasKind(desc.kind)">
-            <component :is="desc.kind" :data="desc"/>
+            <component :is="desc.kind" :data="desc" :module="data"/>
             <hr>
         </template>
 
-
+        <!-- <Code language="javascript">{{data.script}}</Code> -->
     </div>
 </template>
 
@@ -21,6 +21,7 @@
     import PropTable from '../utils/PropTable.vue';
     import Function from '../utils/Function.vue';
     import Constant from '../utils/Constant.vue';
+    import Typedef from '../utils/Typedef.vue';
     import _ from 'lodash';
 
     /**
@@ -31,7 +32,9 @@
         components: {
             PropTable,
             Function,
-            Constant
+            Constant,
+            Member: Constant,
+            Typedef
         },
         props: {
             data: Object

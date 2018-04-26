@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div :class="data.inherited ? 'inherited' : ''">
         <h2 :id="data.simpleName">
             {{data.simpleName}}
         </h2>
@@ -10,7 +10,16 @@
             <code v-if="data.memberof === 'module.exports'">import { {{data.simpleName}} } from
                 '{{$parent.data.fileInPackage}}'</code>
             <p>{{data.description}}</p>
-            <h4><code>{{data.signature}}</code></h4>
+
+            <h4><code>{{data.simpleName}}(
+                <template v-for="(param, index) in data.params">
+                    <Param :param="param" :module="module"/>
+                    <span v-if="index < data.params.length - 1">, </span>
+                </template>
+                )</code></h4>
+
+
+
             <PropTable v-for="(table, name) in data.tables" :name="name" :data="table" :headers="true"/>
             <template v-if="data.returns && data.returns.length">
                 <h4>returns:</h4>
@@ -25,6 +34,8 @@
 
 <script>
     import PropTable from './PropTable.vue';
+    import ModuleLink from './ModuleLink.vue';
+    import Param from './Param.vue';
 
     /**
      * renders a function
@@ -33,11 +44,14 @@
      */
     export default {
         components: {
-            PropTable
+            PropTable,
+            ModuleLink,
+            Param
         },
 
         props: {
-            data: Object
+            data: Object,
+            module: Object
         }
     }
 </script>

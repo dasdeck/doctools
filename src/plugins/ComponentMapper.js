@@ -38,6 +38,8 @@ function findProps(data, runtime) {
 
 }
 
+
+
 function findData(data) {
     const res = {};
     data.forEach(el => {
@@ -74,8 +76,11 @@ function findMethods(data) {
 
 const Plugin = require('./Plugin');
 
-module.exports = class ComponentPlugin extends Plugin {
+module.exports = class ComponentMapper extends Plugin {
 
+    onSerialize(desc, data) {
+        delete data.runtime;
+    }
 
     onMap(desc) {
         this.mapComponent(desc);
@@ -84,7 +89,11 @@ module.exports = class ComponentPlugin extends Plugin {
     mapComponent(desc) {
         const data = desc.module;
 
-        console.log('mapping component', desc.name);
+        desc.log('mapping component', desc.name);
+
+        if (!desc.jsdoc) {
+            throw 'can not use Component mapper without the Module Mapper first';
+        }
 
         const component = {};
         if (!data || !data.types) debugger;
@@ -107,7 +116,12 @@ module.exports = class ComponentPlugin extends Plugin {
             'events',
             {emit: findEvents},
             {trigger: data => data.filter(el => el.kind === 'trigger')},
-            {components: (data, runtime) => ['test']}
+
+            // {components: (data, runtime) => {
+            //     if (runtime) {
+            //         debugger
+            //     }
+            // }}
         ].forEach(type => {
 
             const simple = typeof type === 'string';
@@ -132,7 +146,7 @@ module.exports = class ComponentPlugin extends Plugin {
             }
         });
 
-        desc.component = component;
+        desc.component = _.pickBy(component, type => _.size(type));
     }
 
 };
