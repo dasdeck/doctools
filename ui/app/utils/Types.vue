@@ -1,32 +1,29 @@
 <template>
     <span v-if="type">
-        <template v-for="t in type.names">
-            <ModuleLink :resource="types[t]" :name="t"/>
-        </template>
+        <Type :type="t" v-for="t in type.names"/>
     </span>
 </template>
 
 <script>
 
-import ModuleLink from './ModuleLink.vue';
+import Type from './Type.vue';
 
 export default {
     components : {
-        ModuleLink
-    },
-
-    props: {
-        module: Object,
-        type: Object
+        Type
     },
 
     inject: ['$doc'],
-
-    computed: {
-        types() {
-            return this.$doc.resources[this.module.package || this.module.resource].types;
-        }
-    }
+    
+    props: {
+        module: {
+            type: Object,
+            default() {
+                return this.$doc.selectedModule;
+            }
+        },
+        type: Object
+    },
 
 }
 </script>

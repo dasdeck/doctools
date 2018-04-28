@@ -6,13 +6,9 @@ const _ = require('lodash');
 const path = require('path');
 
 const util = require('./util');
-const {getTestCodes} = require('./testParser');
+// const {getTestCodes} = require('./testParser');
 
 const defaultConfig = require('./Config');
-
-
-// const UIkitComponentPlugin = require('./UIkitComponentPlugin');
-// const VueComponentPlugin = require('./VueComponentPlugin');
 
 
 function loadPlugins(config) {
@@ -21,7 +17,7 @@ function loadPlugins(config) {
 
     config._ = {};
 
-    config._.plugins = ['ModulePlugin', ...config.plugins].map(plugin => {
+    config._.plugins = ['ModuleMapper', ...config.plugins].map(plugin => {
 
         if (_.isString(plugin)) {
             const Pluigin = require('./plugins/' + plugin);
@@ -46,15 +42,15 @@ function loadPlugins(config) {
 */
 function prepareConfig(config) {
 
-    if (!config.resourceBase) {
+    if (!config._) {
 
         config = {...config};
 
+        const base = config.base || defaultConfig.base;
         //ests teh resourceBase e.g. the root package
+        // config.resourceBase = config.resourceBase || fs.lstatSync(base).isDirectory() ? base : path.dirname(base);
 
-        config.resourceBase = config.resourceBase || path.dirname(config.base);
-
-        const configFile = path.join(config.base || process.cwd(), 'doctools.config.js');
+        const configFile = path.join(base, 'doctools.config.js');
 
         if (fs.existsSync(configFile)) {
             console.log('config file used: ', configFile);

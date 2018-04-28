@@ -2,7 +2,7 @@
 <template>
     <span>
         {{param.name}} :
-        <Types :type="param.type" :module="module"/>
+        <Types :type="param.type"/>
     </span>
 </template>
 

@@ -10,11 +10,42 @@ import 'prismjs'
 import 'prismjs/themes/prism.css'
 
 import Prism from 'vue-prism-component';
+import Turndown from 'turndown';
+import {gfm} from 'turndown-plugin-gfm';
+import UIkit from 'uikit';
+
+const turndown = new Turndown({
+    codeBlockStyle: 'fenced'
+});
+turndown.use(gfm);
 
 Vue.use(VueRouter);
 // Vue.use(VuePrism);
 
 Vue.component('Code', Prism);
+
+Vue.mixin({
+
+    created() {
+
+        if (this.$options.ref) {
+            window[this.$options.ref] = this;
+        }
+
+    },
+
+    methods: {
+        markdown() {
+
+            const toMD = this.$el.cloneNode(true);
+            UIkit.util.remove($$('.nomd', toMD));
+            
+            const res = turndown.turndown(toMD.outerHTML);
+            console.log(res);
+            
+        }
+    }
+})
 
 let app;
 

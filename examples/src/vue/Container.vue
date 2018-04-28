@@ -12,6 +12,17 @@ export default {
 
     components: {
         Modal
+    },
+
+    created() {
+        
+        /**
+         * @event test
+         * @kind Trigger
+         * @param {String} a - parameter a
+         * 
+         **/
+        this.$trigger('test', ['a', 'b']);
     }
 
 }

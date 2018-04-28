@@ -1,7 +1,5 @@
 <template>
     <div>
-        <h1>{{data.name}}</h1>
-
         <p>
             {{data.description}}
         </p>
@@ -9,7 +7,7 @@
         <hr>
 
         <template v-for="desc in data.module.documented" v-if="hasKind(desc.kind)">
-            <component :is="desc.kind" :data="desc" :module="data"/>
+            <component :is="desc.template || desc.kind" :data="desc" :module="data"/>
             <hr>
         </template>
 

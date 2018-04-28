@@ -84,6 +84,7 @@ module.exports = class ComponentMapper extends Plugin {
 
     onMap(desc) {
         this.mapComponent(desc);
+
     }
 
     mapComponent(desc) {

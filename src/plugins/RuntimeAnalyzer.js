@@ -9,6 +9,10 @@ const requireFromString = require('require-from-string');
 const browser = require('./Browser');
 const Package = require('../Package');
 
+/**
+ * attemts to load the described class
+ * mark module for runtime analysis by setting a member runtime = true
+ */
 module.exports = class RuntimeAnalyzer extends Plugin {
 
     constructor() {
@@ -197,8 +201,6 @@ module.exports = class RuntimeAnalyzer extends Plugin {
         }
 
     }
-
-
 
     run() {
 

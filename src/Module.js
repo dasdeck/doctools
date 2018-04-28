@@ -22,7 +22,7 @@ class Module extends TreeItem {
 
     analyze() {
 
-        return this.execPluginCallback('onAnalyze')
+        return this.execPluginCallback('onAnalyze');
             // .then(res => this.map());
 
     }

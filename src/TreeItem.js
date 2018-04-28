@@ -18,13 +18,16 @@ module.exports = class TreeItem extends EventEmitter {
 
 
         this.path = file;
-        this.fileInPackage = this.path.replace(this.config.resourceBase, '.');
+        this.fileInPackage = this.path.replace(this.config.base, '.');
+        if (this.fileInPackage === '.') {
+            this.fileInPackage += '/';
+        }
         this.name = this.path.split('/').pop().split('.').shift();
-        this.resource = this.path.replace(config.resourceBase, '').replace(/\//g, '.').substr(1);
+        this.resource = this.name + this.fileInPackage.substr(1).replace(/\//g, '.').substr(1);
 
         if (config.dev || config.log) {
             this.log = console.log;
-            const logDir = path.join(this.config.resourceBase, 'log');
+            const logDir = path.join(this.config.base, 'log');
             try {fs.mkdirSync(logDir) } catch(e) {};
             this.logFile = (name, data) => fs.writeFileSync(path.join(logDir, name), _.isString(data) ? data : JSON.stringify(data, null, 2));
         } else {

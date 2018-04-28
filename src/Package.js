@@ -15,12 +15,13 @@ module.exports = class Package extends TreeItem {
 
         super(config, file, parent);
 
+
         this.type = 'package';
 
         this.init();
 
         this.resources = {};
-        // this.modules = {};
+        this.globals = {};
 
         this.loadPackageFile();
         this.analyzeSubPackages();
@@ -35,7 +36,8 @@ module.exports = class Package extends TreeItem {
 
         const packPath = this.getPackageJsonPath();
         if (fs.existsSync(packPath)) {
-            this.packageJson = require(packPath);
+            this.script = fs.readFileSync(packPath, 'utf8');
+            this.packageJson = JSON.parse(this.script);
         }
 
     }
@@ -158,16 +160,20 @@ module.exports = class Package extends TreeItem {
     analyze() {
 
 
-        return Promise.all(_.map(this.packages, pack => pack.analyze()))
-        .then(res => Promise.all(this.getPackageModules().map(mod => mod.analyze())))
+        return this.doRecursively('analyze')
         .then(res => this.execPluginCallback('onAnalyze'))
 
-        .then(res => Promise.all(_.map(this.packages, pack => pack.map())))
         // .then(res => this.getPackageModules().map(mod => mod.map()))
         .then(all => this.map())
         .then(() => this)
-        .catch(this.log);
+        .catch(err => {throw err});
 
+    }
+
+
+    doRecursively(method) {
+        return Promise.all(_.map(this.packages, pack => pack[method]()))
+        .then(res => Promise.all(this.getPackageModules().map(mod => mod[method]())))
     }
 
         /**
@@ -175,31 +181,24 @@ module.exports = class Package extends TreeItem {
      */
     map() {
 
-        this.globals = {
-            trigger: []
-        };
+        this.globals = {};
+         const jobs = this.getPackageModules().map(module => {
 
-        const jobs = [];
-
-        this.getPackageModules().forEach(module => {
-
-            jobs.push(module.map().then(() => {
+            return module.map().then(() => {
 
                 _.forEach(module.trigger, trigger => {
 
-                    trigger.source = module.name;
-
-                    trigger.simpleName = trigger.name;
-                    util.mapParams(trigger);
-                    this.globals.trigger.push(trigger);
 
                 });
-            }));
+            });
 
         });
 
-        return Promise.all(jobs)
-        .then(() => this.execPluginCallback('onMap'));
+        return Promise.all(_.map(this.packages, pack => pack.map()))
+        .then(res => Promise.all(jobs))
+        .then(() => this.execPluginCallback('onMap'))
+        .catch(err => {throw err});
+
 
     }
 
@@ -207,9 +206,7 @@ module.exports = class Package extends TreeItem {
 
         const files = this.getIncludedFiles(true);
         files.forEach(file => {
-
             this.addFile(file);
-
         });
 
     }
@@ -272,10 +269,8 @@ module.exports = class Package extends TreeItem {
         this.execPluginCallback('onPatch');
 
         if (_.isString(file)) {
-
             this.addFile(file, true);
         } else {
-
             this.addModule(file, true);
         }
 
@@ -348,8 +343,13 @@ module.exports = class Package extends TreeItem {
         return resources;
     }
 
+
+
     getDataPackage() {
+
+        ;
         return {
+            globals: Object.getOwnPropertyNames(global),
             resources: this.getResources(),
             rootPackage: this.resource
         }

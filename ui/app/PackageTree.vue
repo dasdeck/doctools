@@ -6,7 +6,7 @@
                 {{data.name}}
             </router-link>
 
-            <ResourceList v-if="selectedPackage === data || $doc.settings.filter" :data="data"/>
+            <ResourceList v-if="$doc.selectedPackage === data || $doc.settings.filter" :data="data"/>
 
             <ul uk-accordion v-if="data.packages && Object.keys(data.packages).length" class="uk-list">
                 <li>
@@ -45,15 +45,7 @@
 
         },
 
-        computed: {
-            selectedPackage() {
-                const resource = this.$doc.resources[this.$route.params.resource];
-                if (!resource) {
-                    debugger;
-                }
-                return this.$doc.resources[resource.type === 'package' ? resource.resource : resource.package];
-            }
-        }
+
 
     };
 

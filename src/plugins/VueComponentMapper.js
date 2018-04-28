@@ -1,8 +1,9 @@
 const fs = require('fs');
 const _ = require('lodash');
 const ComponentMapper = require('./ComponentMapper');
+const util = require('../util');
 
-module.exports = class VueComponentPlugin extends ComponentMapper {
+module.exports = class VueComponentMapper extends ComponentMapper {
 
 
     /**
@@ -18,13 +19,29 @@ module.exports = class VueComponentPlugin extends ComponentMapper {
 
         this.mapComponent(desc);
         this.parseTemplate(desc);
+
+        if(desc.component.trigger) {
+
+            _.forEach(desc.component.trigger, trigger => {
+                
+                trigger.resource = desc.resource;
+                trigger.template = 'function';
+                trigger.simpleName = trigger.name;
+                util.mapParams(trigger);
+                desc.package.globals.trigger = desc.package.globals.trigger || [];
+                desc.package.globals.trigger.push(trigger);
+                
+            });
+
+        }
+
         return Promise.resolve();
 
     }
 
     parseTemplate(desc) {
 
-        const template = desc.template;
+        const {template} = desc.template;
         const component = desc.component;
 
         const named = ['param', 'trigger', 'slot'];
@@ -35,7 +52,7 @@ module.exports = class VueComponentPlugin extends ComponentMapper {
         let currentParent = null;
 
         let templateComment = null;
-        const regex =  /<!--\s*@(\w+)\s*(?:{([^}]*)})?\s*(\w*)?(?: - )?\s*(.*?)\s*-->/gs;
+        const regex = /<!--\s*@(\w+)\s*(?:{([^}]*)})?\s*(\w*)?(?: - )?\s*(.*?)\s*-->/gs;
         do {
             templateComment = regex.exec(template);
             if (templateComment) {

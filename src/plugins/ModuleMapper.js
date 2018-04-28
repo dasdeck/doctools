@@ -4,7 +4,7 @@ const jsdoc = require('jsdoc-api');
 const Plugin = require('./Plugin');
 const util = require('../util');
 
-module.exports = class ModulePlugin extends Plugin {
+module.exports = class ModuleMapper extends Plugin {
 
     /**
      *
@@ -47,11 +47,13 @@ module.exports = class ModulePlugin extends Plugin {
      */
     onMap(desc) {
 
+        
         const all = _.cloneDeep(desc.jsdoc);
         desc.log('mapping module', desc.name, !!all);
 
         const config = desc.config;
-        const res = {all, documented: []};
+        const documented = all.filter(el => !el.undocumented);
+        const res = {all, documented};
 
         if(!all) debugger;
         all.forEach(el => {
@@ -92,7 +94,38 @@ module.exports = class ModulePlugin extends Plugin {
 
             }
 
+
+            let code;
+            if (el.meta && el.meta.range) {
+
+                code = desc.script.substr(el.meta.range[0], el.meta.range[1]);
+                el.code = code;
+            }
+
+            //analyse eports
+            let exporter;
+            if (['module', 'module.exports'].includes(el.memberof) || code && code.match(/\bexport\b/)) {
+
+                const mainExport = el.memberof === 'module' || code && code.match(/\bexport\b\s+\bdefault\b/);
+                exporter = {
+                    mainExport
+                };
+
+                if(!mainExport && /\bthis\b/.exec(code)) {
+                    exporter.thisReferer = true;
+                }
+            
+            }
+
             if (!el.undocumented) {
+
+                if(!['module', 'module.exports'].includes(el.memberof)) {
+                    const parent = _.find(documented, els => els.longname === el.memberof);
+                    if (parent) {
+                        // debugger;
+
+                    }
+                }
 
                 el.examples && el.examples.forEach(example => {
                     const marked = require('marked');
@@ -119,10 +152,11 @@ module.exports = class ModulePlugin extends Plugin {
                     debugger
                 }
                 res.types = res.types || {};
+                
                 res.types[el.kind] = res.types[el.kind] || [];
                 res.types[el.kind].push(el);
 
-                res.documented.push(el);
+                // res.documented.push(el);
             }
         });
 

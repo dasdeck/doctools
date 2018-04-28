@@ -7,9 +7,24 @@
                     <input class="uk-checkbox" type="checkbox" v-model="settings.private">
                 </label>
 
-                <input type="text" v-model="settings.filter">
+                <label>
+                    filter:
+                    <input type="text" v-model="settings.filter">
+                </label>
 
-                <PackageTree :data="resources[data.rootPackage]"/>
+                <ul uk-switcher class="uk-subnav uk-subnav-pill">
+                    <li><a href="">packages</a></li>
+                    <li><a href="">files</a></li>
+                </ul>
+                <ul class="uk-switcher">
+                    <li>
+                        <PackageTree :data="resources[data.rootPackage]"/>
+
+                    </li>
+                    <li>
+                        <FileTree :resources="resources"/>
+                    </li>
+                </ul>
             </div>
             <router-view class="uk-width-3-4"/>
         </div>
@@ -22,6 +37,7 @@
 <script>
 
     import PackageTree from './PackageTree.vue';
+    import FileTree from './FileTree.vue';
 
     /**
      * Container Component for the doctools app ui
@@ -29,10 +45,12 @@
     export default {
 
         components: {
-            PackageTree
+            PackageTree,
+            FileTree
         },
 
         props: {
+
             /**
              * the main data returned from the doctool parser
              * currently ony supporting packages!
@@ -41,6 +59,7 @@
                 required: false,
                 type: Object
             }
+
         },
 
         provide() {
@@ -65,11 +84,28 @@
             };
         },
 
+        ref: '$doc',
+
         computed: {
+
             resources() {
                 return this.data && this.data.resources || {};
+            },
+            
+            selectedPackage() {
+                const resource = this.selectedModule;
+                if (!resource) {
+                    debugger;
+                }
+                return resource && this.resources[resource.type === 'package' ? resource.resource : resource.package];
+            },
+
+            selectedModule() {
+                return this.resources[this.$route.params.resource];
             }
+
         }
+
 
     }
 </script>

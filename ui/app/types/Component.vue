@@ -1,23 +1,11 @@
 <template>
     <div>
-        <h1>
-            {{data.name}}
-            <template v-if="component.extends">
-                <code>
-                <span>extends</span>
-                <ModuleLink :resource="component.extends.resource"/>
-                </code>
-            </template>
-        </h1>
-
         {{data.module.description}}
-
         <hr>
-
         <template v-if="component.components">
             <h2>components:</h2>
             <div v-for="comp in component.components">
-                 <ModuleLink :resource="comp.resource"/>
+                <ModuleLink :resource="comp.resource"/>
             </div>
             <hr>
         </template>
@@ -48,50 +36,45 @@
 
         <template v-if="methods.length">
             <h2>methods:</h2>
-            <ul class="uk-list">
-                <li v-for="method in methods">
-                    <Function :data="method" :module="data"/>
-                    <hr>
-                </li>
-            </ul>
-            <hr>
+            <div v-for="method in methods">
+                <Function :data="method" :module="data"/>
+                <hr>
+            </div>
         </template>
 
         <template v-if="component.computed">
             <h2>computed:</h2>
+
             <li v-for="computed in component.computed">
 
                 <h3>
                     {{computed.name}}{{computed.type && (' : ' + computed.type.names.join('|'))}}
                     <code v-if="computed.inherited">inherited from: <ModuleLink :resource="computed.inherited"/></code>
-                    </h3>
-
-
+                </h3>
 
                 {{computed.description}}
             </li>
+
         </template>
 
         <template v-if="component.events">
             <h2>events:</h2>
 
-            <ul class="uk-list">
-                <li v-for="event in component.events">
-                    <h3>{{event.name}}</h3>
-                    {{event.description}}
-                </li>
-            </ul>
+            <div v-for="event in component.events">
+                <h3>{{event.name}}</h3>
+                {{event.description}}
+            </div>
+
         </template>
 
         <template v-if="component.emit">
             <h2>emits:</h2>
 
-            <ul class="uk-list">
-                <li v-for="event in component.emit">
-                    <h3>{{event.name}}</h3>
-                    {{event.description}}
-                </li>
-            </ul>
+            <div v-for="event in component.emit">
+                <h3>{{event.name}}</h3>
+                {{event.description}}
+            </div>
+
         </template>
 
         <template v-if="component.trigger">
@@ -102,8 +85,8 @@
                     <h3>{{trigger.name}}</h3>
                     {{trigger.description}}
                 </li>
-
             </ul>
+
         </template>
     </div>
 </template>

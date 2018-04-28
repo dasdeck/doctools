@@ -10,6 +10,6 @@
 
 /* eslint-env node */
 module.exports = {
-    include: [/src\//, /packages\//],
+    include: [/src/, /packages/],
     runtime: __dirname + '/webpack.config.js'
 };

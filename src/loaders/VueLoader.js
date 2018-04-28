@@ -23,8 +23,8 @@ module.exports = class VueLoader {
         const text = fs.readFileSync(file, 'utf8');
         const res = vueComiler.parseComponent(text);
 
-        const template = res.template && res.template.content;
-        const script = res.script && res.script.content;
+        const template = res.template && res.template.content.trim() !== '' && {template: res.template.content.trim()};
+        const script = res.script && res.script.content.trim();
 
         return {
             type: 'VueComponent',

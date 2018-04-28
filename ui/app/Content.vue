@@ -1,32 +1,47 @@
 <template>
-<div>
+    <div>
 
-<!-- This is the nav containing the toggling elements -->
-<ul uk-switcher class="uk-subnav uk-subnav-pill">
-    <li><a href="">doc</a></li>
-    <li v-if="data.script"><a href="">code</a></li>
-    <li v-if="data.template"><a href="">code</a></li>
-    <li><a href="">test</a></li>
-</ul>
+        <h1>
+            {{data.name}}
+            <template v-if="data.component && data.component.extends">
+                <code>
+                    <span>extends</span>
+                    <ModuleLink :resource="data.component.extends.resource"/>
+                </code>
+            </template>
+        </h1>
 
-<!-- This is the container of the content items -->
-<ul class="uk-switcher">
-    <li>
-        <component :is="data.type" :data="data"></component>
-    </li>
-    <li>
-        <Code language="javascript">{{data.script}}</Code>
+        <!-- This is the nav containing the toggling elements -->
+        <ul uk-switcher class="uk-subnav uk-subnav-pill nomd">
+            <li><a href="">api</a></li>
+            <li v-if="data.globals"><a href="">globals</a></li>
+            <li v-if="data.script"><a href="">code</a></li>
+            <li v-if="data.template"><a href="">template</a></li>
+            <li v-if="data.tests"><a href="">test</a></li>
+        </ul>
 
-    </li>
-    <li>
-        <Code language="html">{{data.template}}</Code>
-
-    </li>
-    <li>
-        tests
-    </li>
-</ul>
-</div>
+        <!-- This is the container of the content items -->
+        <div class="uk-switcher">
+            <div>
+                <component :is="data.type" :data="data"></component>
+            </div>
+            <div v-if="data.globals">
+                <Globals :data="data.globals"/>
+            </div>
+            <div v-if="data.script">
+                <Code language="javascript">{{data.script}}</Code>
+            </div>
+            <div v-if="data.template">
+                <template v-if="data.template.inherited">
+                    inherited from: <ModuleLink :resource="data.template.inherited"/>
+                </template>
+                <Code :class="data.template.inherited && 'inherited'" language="html">{{data.template.template}}</Code>
+            </div>
+            <div v-if="data.tests">
+                tests
+            </div>
+        </div>
+    </div>
 </template>
 
 <script>
@@ -34,6 +49,8 @@
     import Component from './types/Component.vue';
     import Module from './types/Module.vue';
     import Package from './types/Package.vue';
+    import ModuleLink from './utils/ModuleLink.vue';
+    import Globals from './utils/Globals.vue';
 
     /**
      * component wrapper for the vue-router
@@ -45,8 +62,12 @@
             UIkitComponent: Component,
             VueComponent: Component,
             Module: Module,
-            Package
+            Package,
+            ModuleLink,
+            Globals
         },
+
+        ref: '$content',
 
         inject: ['$doc'],
 

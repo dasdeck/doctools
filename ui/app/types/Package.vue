@@ -1,7 +1,5 @@
 <template>
     <div>
-        <h1>{{data.name}}</h1>
-
         <template v-if="data.packageJson">
 
             <p>{{data.packageJson.description}}</p>
@@ -38,10 +36,10 @@
             </template>
         </template>
 
-        <template v-if="data.globals.trigger.length">
+        <!-- <template v-if="data.globals.trigger.length">
             <h2>trigger:</h2>
             <Function v-for="trigger in data.globals.trigger" :key="trigger.longname" :data="trigger"/>
-        </template>
+        </template> -->
 
     </div>
 </template>

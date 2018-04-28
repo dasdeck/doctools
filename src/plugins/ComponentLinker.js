@@ -59,6 +59,16 @@ module.exports = class ComponentLinker extends Plugin {
 
                     comp.extends = this.getLink(runtime.extends, 'could not link extend on: ' + desc.path);
 
+                    if (comp.extends && !desc.template) {
+                        const linked = resources[comp.extends.resource];
+                        if (linked && linked.template) {
+                            desc.template = {
+                                ...linked.template,
+                                inherited: linked.resource
+                            }
+                        }
+                    }
+
                     ['mixins', 'components'].forEach(name => {
 
 

@@ -4,6 +4,7 @@ const path = require('path');
 const webpack = require('webpack');
 const devServer = require('webpack-dev-server');
 const parser = require('../src/parser');
+const _ = require('lodash');
 
 const argv = require('minimist')(process.argv.slice(2), {
     '--': true,
@@ -16,6 +17,19 @@ const argv = require('minimist')(process.argv.slice(2), {
         explain: ['e', '--explain']
     }
 });
+
+
+// const object = {};
+
+// const flat = (ns, k, nso) => {
+
+//     debugger;
+//     // console.log(ns, k, nso);
+// }
+
+// _.setWith(object, 'examples.sub', 'b', flat);
+// _.setWith(object, 'examples', {name: 'test'}, flat);
+
 
 /**
  *
