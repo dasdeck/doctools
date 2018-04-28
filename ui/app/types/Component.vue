@@ -80,12 +80,10 @@
         <template v-if="component.trigger">
             <h2>trigger:</h2>
 
-            <ul class="uk-list">
-                <li v-for="trigger in component.trigger">
-                    <h3>{{trigger.name}}</h3>
-                    {{trigger.description}}
-                </li>
-            </ul>
+            <div v-for="trigger in component.trigger">
+                <h3>{{trigger.name}}</h3>
+                {{trigger.description}}
+            </div>
 
         </template>
     </div>

@@ -17,7 +17,7 @@ module.exports = class WebpackAdapter {
                     try {
                         this.pack.patchFile(info.rawRequest);
                     } catch (e) {
-                        console.log(e);
+                        console.warn(this.constructor.name, ':', e);
                     }
                 }
             });

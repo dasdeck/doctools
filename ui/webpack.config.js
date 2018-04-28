@@ -1,6 +1,37 @@
 /* eslint-env node */
 
-module.exports = {
+const rules = [
+    {
+        test: /\.css$/,
+        use: [ 'style-loader', 'css-loader' ]
+    },
+    {
+        test: /\.vue$/,
+        use: ['vue-loader']
+    },
+    {
+        test: /\.js$/,
+        exclude: /node_modules/,
+        use: ['babel-loader']
+    }
+];
+
+const externals = {
+    'vue': 'Vue',
+    'uikit': 'UIkit'
+};
+
+const output = {
+    path: __dirname,
+    filename: '[name].min.js',
+    publicPath: '/',
+    hotUpdateChunkFilename: 'hot/[hash].hot-update.js', // fix ids with slashes
+    hotUpdateMainFilename: 'hot/[hash].hot-update.json'
+};
+
+const devServer = require('../devServer');
+
+const base = {
 
     context: __dirname,
 
@@ -8,42 +39,31 @@ module.exports = {
         'index': './index.js'
     },
 
-    output: {
-        path: __dirname,
-        filename: '[name].min.js',
-        publicPath: '/',
-        hotUpdateChunkFilename: 'hot/[hash].hot-update.js', // fix ids with slashes
-        hotUpdateMainFilename: 'hot/[hash].hot-update.json'
-    },
+    output,
 
-    devServer: require('../devServer'),
+    devServer,
 
-    mode: 'development',
+    // mode: 'development',
 
-    externals: {
-        'vue': 'Vue',
-        'uikit': 'UIkit'
-    },
+    externals,
 
     module: {
-        rules: [
-            {
-                test: /\.css$/,
-                use: [ 'style-loader', 'css-loader' ]
-            },
-            {
-                test: /\.vue$/,
-                use: {
-                    loader: 'vue-loader'
-                }
-            },
-            {
-                test: /\.js$/,
-                exclude: /node_modules/,
-                use: {
-                    loader: 'babel-loader'
-                }
-            }
-        ]
+        rules
     }
 };
+
+const MarkdownExporter = {
+    ...base,
+    output: {
+        ...output,
+        libraryTarget: 'commonjs'
+    },
+
+    entry: {
+        'MarkdownExporter': './MarkdownExporter.js'
+    },
+
+    externals: undefined
+}
+
+module.exports = [base, MarkdownExporter];

@@ -18,6 +18,7 @@
             <li v-if="data.script"><a href="">code</a></li>
             <li v-if="data.template"><a href="">template</a></li>
             <li v-if="data.tests"><a href="">test</a></li>
+            <li><a href="">markdown</a></li>
         </ul>
 
         <!-- This is the container of the content items -->
@@ -39,6 +40,8 @@
             </div>
             <div v-if="data.tests">
                 tests
+            </div>
+            <div v-html="markdown">
             </div>
         </div>
     </div>
@@ -77,6 +80,16 @@
              * will be set by vue router
              */
             resource: String
+        },
+
+        watch: {
+            data() {
+                this.createMarkdown();
+            }
+        },
+
+        mounted() {
+            this.createMarkdown();
         },
 
         computed: {

@@ -1,9 +1,7 @@
 <template>
 <div>
     <template v-for="(group, name) in data">
-        <h2>
-            {{name}}
-        </h2>
+        <h2>{{name}}</h2>
         <component :is="el.template" v-for="el in group" :data="el"/>
     </template>
 </div>

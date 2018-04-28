@@ -220,10 +220,10 @@ module.exports = class RuntimeAnalyzer extends Plugin {
 
         // ignored: '**/*'
         if(this.pack.config.watch) {
-            console.log('watching package:', this.pack.name);
+            this.pack.log('watching package:', this.pack.name);
             this.watcher = compiler.watch({}, (...args) => this.onWebPack(...args));
         } else {
-            console.log('building package:', this.pack.name);
+            this.pack.log('building package:', this.pack.name);
             compiler.run((...args) => this.onWebPack(...args));
         }
     }
@@ -270,9 +270,9 @@ module.exports = class RuntimeAnalyzer extends Plugin {
                     try {
                         const rt = requireFromString(data);
                         resolve(rt.default ? rt.default : rt);
-                        console.log('webpacked:', filename);
+                        this.pack.log('webpacked:', filename);
                     } catch(e) {
-                        console.warn('could not load runtime for:', filename);
+                        this.pack.warn('could not load runtime for:', filename);
                         resolve({});
                     }
                 });

@@ -144,8 +144,8 @@ module.exports = {
                 if (config.strict) {
                     throw e;
                 } else {
-                    console.log(e.message);
-                    console.log(e.stack);
+                    console.warn(e.message);
+                    console.warn(e.stack);
                 }
             }
 
