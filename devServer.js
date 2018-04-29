@@ -58,7 +58,9 @@ class DevServerTools {
                 pack.on('change', () => {
 
                     pack.analyze().then(() => {
-                        this.sendDataToClient(pack.getDataPackage())
+                        pack.write().then(data => {
+                            this.sendDataToClient()
+                        });
                     });
 
                 });
@@ -90,9 +92,10 @@ module.exports = {
             const pack = server.getPack();
 
             pack.analyze().then(() => {
-                const data = pack.getDataPackage();
-                res.json(data);
-                next();
+                pack.write().then(data => {
+                    res.json(data);
+                    next();
+                });
             });
 
         });

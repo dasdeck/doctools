@@ -28,12 +28,14 @@ module.exports = class DocToolsWebpack {
 
             this.pack.analyze().then(res => {
 
-                const data = this.pack.getDataPackage();
-                fs.writeFileSync(this.config.path, JSON.stringify(data, null, 2));
-                console.log(this.constructor.name, 'json written to:', this.config.path);
+                const data = this.pack.write().then(data => {
 
+                    fs.writeFileSync(this.config.path, JSON.stringify(data, null, 2));
+                    console.log(this.constructor.name, 'json written to:', this.config.path);
+                    
+                });
+                
                 this.initial = false;
-
             });
 
         });

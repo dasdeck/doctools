@@ -6,7 +6,6 @@ const _ = require('lodash');
 const webpack = require('webpack');
 const MemFs = require('memory-fs');
 const requireFromString = require('require-from-string');
-const browser = require('./Browser');
 const Package = require('../Package');
 
 /**
@@ -235,9 +234,9 @@ module.exports = class RuntimeAnalyzer extends Plugin {
 
         this.pack.logFile('index.min.js', script);
         try {
-            browser.install();
+            const clear = require('jsdom-global')();
             const rt = requireFromString(script);
-            browser.clear();
+            clear();
 
             this.cache = rt.default ? rt.default : rt;
             this.emit('change', this.cache);

@@ -43,7 +43,9 @@ const base = {
 
     devServer,
 
-    // mode: 'development',
+    mode: 'development',
+    
+    devtool: 'inline-sourcemap',
 
     externals,
 
@@ -60,7 +62,7 @@ const MarkdownExporter = {
     },
 
     entry: {
-        'MarkdownExporter': './MarkdownExporter.js'
+        'MarkdownAdapter': './MarkdownAdapter.js'
     },
 
     externals: undefined

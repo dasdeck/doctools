@@ -343,16 +343,26 @@ module.exports = class Package extends TreeItem {
         return resources;
     }
 
+    getAllTypes() {
+        const types = {...this.types};
 
+        _.forEach(this.packages, pack => {
+            _.assign(types, pack.types);
+        });
 
-    getDataPackage() {
+        return types;
+    }
 
-        ;
-        return {
+    write() {
+
+        const data = {
+            types: this.getAllTypes(),
             globals: Object.getOwnPropertyNames(global),
             resources: this.getResources(),
             rootPackage: this.resource
-        }
+        };
+
+        return this.execPluginCallback('onWrite', false, data).then(res => data);
     }
 
 

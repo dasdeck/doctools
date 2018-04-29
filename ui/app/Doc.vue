@@ -27,6 +27,9 @@
                 </ul>
             </div>
             <router-view class="uk-width-3-4"/>
+
+            <Content style="display:none;" :resource="res.resource" v-for="res in resources" ref="markdown"/>
+
         </div>
         <div v-else>
             waiting for data...
@@ -38,6 +41,8 @@
 
     import PackageTree from './PackageTree.vue';
     import FileTree from './FileTree.vue';
+    import {getShallowContet} from '../MarkdownExporter';
+    import Content from './Content.vue';
 
     /**
      * Container Component for the doctools app ui
@@ -46,7 +51,8 @@
 
         components: {
             PackageTree,
-            FileTree
+            FileTree,
+            Content
         },
 
         props: {
@@ -84,10 +90,35 @@
             };
         },
 
+        created() {
+            debugger;
+        },
+
         ref: '$doc',
+        
+        methods: {
+
+            allMarkdown() {
+
+                console.log('test')
+
+                const res = _.map(this.$refs.markdown, comp => {
+
+                    return comp.markdown;
+
+                });
+
+                // debugger;
+            }
+
+        },
 
         computed: {
 
+            types() {
+                return this.data && this.data.types || {};
+            },
+            
             resources() {
                 return this.data && this.data.resources || {};
             },

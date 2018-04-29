@@ -32,7 +32,11 @@ const Type = {
     computed: {
         
         types() {
-            return this.$doc.resources[this.module.package || this.module.resource].types;
+            // const res = this.$doc.types[this.module.type === 'package' ? this.module.resource : this.module.package];
+            // if (!res) {
+            //     debugger;
+            // }
+            return this.$doc.types || {};
         },
 
         subTypes() {

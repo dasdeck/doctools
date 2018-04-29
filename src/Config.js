@@ -66,7 +66,8 @@ module.exports = {
         // 'RuntimeAnalyzer',
         'UIkitComponentMapper',
         'VueComponentMapper',
-        'ComponentLinker'
+        'ComponentLinker',
+        'MarkdownExporter'
         // 'ESDocMapper'
     ],
 

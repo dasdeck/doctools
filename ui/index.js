@@ -9,6 +9,7 @@ import 'prismjs'
 import 'prismjs/themes/prism.css'
 
 import Prism from 'vue-prism-component';
+
 import MarkdownMixin from './MarkdownMixin';
 
 Vue.use(VueRouter);

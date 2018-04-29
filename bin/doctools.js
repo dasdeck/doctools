@@ -62,8 +62,7 @@ if (process.mainModule.filename !== __filename) {
 
     const pack = parser.parse(config);
     pack.analyze().then(() => {
-        const data = pack.getDataPackage();
-        console.log(data);
+        const data = pack.write().then(console.log);
     });
 
 } else {

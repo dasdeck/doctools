@@ -34,3 +34,4 @@ module.exports = {
     runtime: __dirname + '/webpack.config.js'
 };
 ```
+

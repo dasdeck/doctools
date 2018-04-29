@@ -31,8 +31,8 @@ export default {
 
             const toMD = this.$el.cloneNode(true);
             UIkit.util.remove(UIkit.util.$$('.nomd', toMD));
-            const reHtml = marked(turndown.turndown(toMD.outerHTML));
-            this.markdown = reHtml;
+            this.markdown = turndown.turndown(toMD.outerHTML);
+            this.reHtml = marked(this.markdown);
 
         }
     }

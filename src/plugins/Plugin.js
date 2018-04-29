@@ -14,7 +14,7 @@ module.exports = class Plugin extends EventEmitter {
      * @returns {Boolean}
      */
     matchesType(desc) {
-        throw 'unimplemented';
+        return true;
     }
 
     /**
@@ -34,5 +34,7 @@ module.exports = class Plugin extends EventEmitter {
     onPatch(desc) {}
 
     onSerialize(desc) {}
+
+    onWrite(data) {}
 
 };

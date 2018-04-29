@@ -15,7 +15,9 @@ module.exports = class  extends Plugin {
             // if (watchedFiles.includes(filename)) {
 
                 pack.analyze().then(() => {
-                    config.server.sockWrite(config.server.sockets, 'doc-changed', pack.getDataPackage());
+                    pack.write().then(data => {
+                        config.server.sockWrite(config.server.sockets, 'doc-changed', data);
+                    })
                 });
 
                 pack && pack.patch && pack.patch(filename).then(data => {

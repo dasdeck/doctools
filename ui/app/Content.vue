@@ -98,6 +98,7 @@
              * the fata is dereferenced from the current's routes resource paremter
              */
             data() {
+                // debugger
                 return this.$doc.resources[this.resource];
             }
         }

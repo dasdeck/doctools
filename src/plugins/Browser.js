@@ -1,7 +1,7 @@
-const jsdom = require('jsdom');
 
-const store = {};
-const dom = new jsdom.JSDOM();
+
+// const store = {};
+// const dom = new jsdom.JSDOM();
 
 /**
  * uikit tools
@@ -13,31 +13,33 @@ module.exports = {
      */
     install() {
 
-        /**
-         * turns the node environment into a limited browser environment
-         */
-        Object.getOwnPropertyNames(dom.window).forEach(name => {
+        this.clear = require('jsdom-global')();
 
-            const value = dom.window[name];
+        // /**
+        //  * turns the node environment into a limited browser environment
+        //  */
+        // Object.getOwnPropertyNames(dom.window).forEach(name => {
 
-            if (!global[name]) {
-                global[name] = value;
-            }
+        //     const value = dom.window[name];
 
-            store[name] = global[name];
+        //     if (!global[name]) {
+        //         global[name] = value;
+        //     }
 
-        });
+        //     store[name] = global[name];
+
+        // });
 
     },
 
-    /**
-     * resets the global variables to their initial state
-     */
-    clear() {
+    // /**
+    //  * resets the global variables to their initial state
+    //  */
+    // clear() {
 
-        Object.getOwnPropertyNames(store).forEach(name => {
-            global[name] = store[name];
-        });
-    }
+    //     Object.getOwnPropertyNames(store).forEach(name => {
+    //         global[name] = store[name];
+    //     });
+    // }
 };
 
