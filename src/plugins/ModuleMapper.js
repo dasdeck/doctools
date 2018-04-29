@@ -1,7 +1,7 @@
 
 const _ = require('lodash');
 const jsdoc = require('jsdoc-api');
-const Plugin = require('./Plugin');
+const Plugin = require('../Plugin');
 const util = require('../util');
 
 module.exports = class ModuleMapper extends Plugin {

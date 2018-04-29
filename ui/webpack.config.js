@@ -7,7 +7,12 @@ const rules = [
     },
     {
         test: /\.vue$/,
-        use: ['vue-loader']
+        loader: 'vue-loader',
+        options: {
+            loaders: {
+              js: "babel-loader"
+            }
+          }
     },
     {
         test: /\.js$/,

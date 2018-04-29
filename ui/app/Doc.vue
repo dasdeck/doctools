@@ -28,7 +28,7 @@
             </div>
             <router-view class="uk-width-3-4"/>
 
-            <Content style="display:none;" :resource="res.resource" v-for="res in resources" ref="markdown"/>
+            <Content style="display:none;" :resource="res.resource" v-for="res in resources" :key="res.resource" ref="markdown"/>
 
         </div>
         <div v-else>
@@ -41,7 +41,6 @@
 
     import PackageTree from './PackageTree.vue';
     import FileTree from './FileTree.vue';
-    import {getShallowContet} from '../MarkdownExporter';
     import Content from './Content.vue';
 
     /**
@@ -90,10 +89,6 @@
             };
         },
 
-        created() {
-            debugger;
-        },
-
         ref: '$doc',
         
         methods: {
@@ -108,7 +103,6 @@
 
                 });
 
-                // debugger;
             }
 
         },
@@ -118,7 +112,7 @@
             types() {
                 return this.data && this.data.types || {};
             },
-            
+
             resources() {
                 return this.data && this.data.resources || {};
             },

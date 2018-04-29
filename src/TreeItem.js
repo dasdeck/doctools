@@ -23,7 +23,8 @@ module.exports = class TreeItem extends EventEmitter {
             this.fileInPackage += '/';
         }
         this.name = this.path.split('/').pop().split('.').shift();
-        this.resource = this.name + this.fileInPackage.substr(1).replace(/\//g, '.').substr(1);
+        const res = this.fileInPackage.substr(1).replace(/\//g, '.').substr(1);
+        this.resource = res || this.name;
 
         if (config.dev || config.log) {
             this.log = console.log;
@@ -46,7 +47,7 @@ module.exports = class TreeItem extends EventEmitter {
 
         _.assign(this, desc);
 
-        this.execPluginCallback('onConstruct', true);
+        this.execPluginCallback('onConstruct', {}, true);
     }
 
 
@@ -63,7 +64,7 @@ module.exports = class TreeItem extends EventEmitter {
         return this === this.getRootPackage() && this.package === null;
     }
 
-    execPluginCallback(name, sync = false, data = null) {
+    execPluginCallback(name, data = null, sync = false,) {
 
         const jobs = this.config._.plugins.map(plugin => {
             return () => plugin.matchesType(this) && plugin[name](this, data) || Promise.resolve();

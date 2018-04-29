@@ -4,7 +4,7 @@
       <template v-if="hasChilren">
         <span @click="open=!open">{{open ? '-' : '+'}}</span>
         <ul v-show="open">
-            <FileTreeItem v-for="(data, name) in children" :data="data" :name="name"/>
+            <FileTreeItem v-for="(data, name) in children" :key="name" :data="data" :name="name"/>
         </ul>
       </template>
   </div>

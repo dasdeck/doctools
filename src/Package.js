@@ -320,7 +320,7 @@ module.exports = class Package extends TreeItem {
 
         delete data.config;
 
-        this.execPluginCallback('onSerialize', true , data);
+        this.execPluginCallback('onSerialize', data, true );
 
         return data;
 
@@ -362,7 +362,8 @@ module.exports = class Package extends TreeItem {
             rootPackage: this.resource
         };
 
-        return this.execPluginCallback('onWrite', false, data).then(res => data);
+        const p = this.execPluginCallback('onWrite', data);
+        return p.then(res => data);
     }
 
 

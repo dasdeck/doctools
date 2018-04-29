@@ -7,11 +7,10 @@
         <hr>
 
         <template v-for="desc in data.module.documented" v-if="hasKind(desc.kind)">
-            <component :is="desc.template || desc.kind" :data="desc" :module="data"/>
+            <component :is="desc.template || desc.kind" :data="desc" :module="data" headline="h2"/>
             <hr>
         </template>
 
-        <!-- <Code language="javascript">{{data.script}}</Code> -->
     </div>
 </template>
 

@@ -1,8 +1,8 @@
 <template>
     <div :class="data.inherited ? 'inherited' : ''">
-        <h2 :id="data.simpleName">
-            {{data.simpleName}}
-        </h2>
+        <component :is="headline" :id="data.simpleName">
+            {{data.simpleName}}:
+        </component>
         <a v-if="data.reference" :href="`#${data.reference}`" uk-scroll>
             {{data.description}}
         </a>
@@ -11,13 +11,13 @@
             <p>{{data.description}}</p>
 
             <h4 class="signature">{{data.simpleName}}(
-                <template v-for="(param, index) in data.params">
-                    <Param :param="param" :module="module"/>
+                <template v-for="(param, index) in data.params" >
+                    <Param :param="param" :module="module" />
                     <span v-if="index < data.params.length - 1">, </span>
                 </template>
                 )</h4>
 
-            <PropTable v-for="(table, name) in data.tables" :name="name" :data="table" :headers="true"/>
+            <PropTable :key="name" v-for="(table, name) in data.tables" :name="name" :data="table" :headers="true"/>
             <template v-if="data.returns && data.returns.length">
                 <h4>returns:</h4>
                 <template v-for="ret in data.returns">
@@ -53,6 +53,10 @@
 
 
         props: {
+            headline: {
+                type: String,
+                default: "h3"
+            },
             data: Object,
             module: {
                 type: Object,

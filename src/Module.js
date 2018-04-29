@@ -46,7 +46,7 @@ class Module extends TreeItem {
 
         delete data.config;
 
-        this.execPluginCallback('onSerialize', true, data);
+        this.execPluginCallback('onSerialize', data, true);
 
         return data;
     }

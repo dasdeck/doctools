@@ -2,7 +2,7 @@
 // const _ = require('lodash');
 const fs = require('fs');
 const path = require('path');
-const Plugin = require('./Plugin');
+const Plugin = require('../Plugin');
 
 module.exports = class  extends Plugin {
 

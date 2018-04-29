@@ -1,7 +1,8 @@
 
 -type linker
-    -link to [global] types
     - check double types
+
+-grouped log
 
 -runtime
     -split runtime analyzer back to normal mappers

@@ -58,12 +58,25 @@ if (process.mainModule.filename !== __filename) {
 
 } else if (argv.explain) {
 
-    config.watch = false;
+    // config.watch = false;
 
     const pack = parser.parse(config);
-    pack.analyze().then(() => {
-        const data = pack.write().then(console.log);
-    });
+
+    if (config.watch) {
+
+        pack.on('change', res => {
+            pack.analyze().then(() => {
+                pack.write().then(console.log);
+            });
+        });
+        pack.emit('change');
+
+    } else {
+
+        pack.analyze().then(() => {
+            pack.write().then(console.log);
+        });
+    }
 
 } else {
 

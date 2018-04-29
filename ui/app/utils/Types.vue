@@ -1,6 +1,6 @@
 <template>
     <span v-if="type">
-        <Type :type="t" v-for="t in type.names"/>
+        <Type :type="t" v-for="(t, key) in type.names" :key="key"/>
     </span>
 </template>
 

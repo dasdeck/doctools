@@ -1,4 +1,4 @@
-const Plugin = require('./Plugin');
+const Plugin = require('../Plugin');
 const Package = require('../Package');
 const path = require('path');
 const fs = require('fs');
@@ -58,13 +58,20 @@ module.exports = class MarkdownExporter extends Plugin {
 
       Vue.mixin(MarkdownMixin);
       Vue.component('RouterLink', {
-        template: '<a :href="to"><slot/></a>',
+        template: '<a :href="`${to}.md`"><slot/></a>',
         props:['to']
       });
       Vue.component('Code', {
-        template: '<pre><code><slot/></code></pre>',
+        template: '<pre ><code :class="`language-${language}`"><slot/></code></pre>',
         props:['language']
       });
+
+      const dir = path.join(pack.config.base, 'markdown');
+      try {
+        fs.mkdirSync(dir)
+
+      } catch (e) {
+      }
 
       _.forEach(data.resources ,resource => {
 
@@ -75,14 +82,26 @@ module.exports = class MarkdownExporter extends Plugin {
         const markdown = vm.markdown;
         vm.$destroy();
 
-        const dir = path.join(pack.config.base, 'markdown');
-        try {
-          fs.mkdirSync(dir)
-        } catch (e) {
-        }
+
         fs.writeFileSync(path.join(dir, resource.resource + '.md'), markdown);
    
       });
+
+
+      const vuePressDir = path.join(dir, '.vuepress');
+      try {
+        fs.mkdirSync(vuePressDir);
+        
+      } catch (e) {}
+
+      fs.writeFileSync(path.join(vuePressDir, 'config.js'), `module.exports = ${JSON.stringify({
+        title: pack.name,
+    
+        themeConfig: {
+            sidebar: _.map(data.resources, res => [res.resource + '.md', res.name])
+            
+        }
+      })}`)
 
       setImmediate(clear);
     }

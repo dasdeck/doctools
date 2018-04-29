@@ -1,4 +1,4 @@
-const Plugin = require('./Plugin');
+const Plugin = require('../Plugin');
 const util = require('../util');
 const _ = require('lodash');
 const Package = require('../Package');

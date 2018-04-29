@@ -14,7 +14,8 @@ export default {
 
     data() {
         return {
-            markdown: ''
+            markdown: '',
+            reHtml: ''
         }
     },
 

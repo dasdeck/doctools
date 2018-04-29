@@ -30,9 +30,11 @@
                 <Globals :data="data.globals"/>
             </div>
             <div v-if="data.script">
-                <Code language="javascript">{{data.script}}</Code>
+                <h2>code:</h2>
+                <Code language="javascript">{{data.script.replace(/`/g, '(`)')}}</Code>
             </div>
             <div v-if="data.template">
+                <h2>template:</h2>
                 <template v-if="data.template.inherited">
                     inherited from: <ModuleLink :resource="data.template.inherited"/>
                 </template>
@@ -40,6 +42,8 @@
             </div>
             <div v-if="data.tests">
                 tests
+            </div>
+            <div v-html="reHtml">
             </div>
             <div v-html="markdown">
             </div>
@@ -98,7 +102,6 @@
              * the fata is dereferenced from the current's routes resource paremter
              */
             data() {
-                // debugger
                 return this.$doc.resources[this.resource];
             }
         }

@@ -74,7 +74,7 @@ function findMethods(data) {
     return res;
 }
 
-const Plugin = require('./Plugin');
+const Plugin = require('../Plugin');
 
 module.exports = class ComponentMapper extends Plugin {
 

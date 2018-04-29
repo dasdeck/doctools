@@ -1,6 +1,6 @@
 <template>
     <div>
-        <h2>{{data.longname}}</h2>
+        <h2>{{data.longname}}:</h2>
         <Types v-if="data.type" :type="data.type"/>
         <p>
             {{data.description}}

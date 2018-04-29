@@ -59,7 +59,7 @@ class DevServerTools {
 
                     pack.analyze().then(() => {
                         pack.write().then(data => {
-                            this.sendDataToClient()
+                            this.sendDataToClient(data)
                         });
                     });
 

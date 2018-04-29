@@ -10,7 +10,7 @@
 
             <ul uk-accordion v-if="data.packages && Object.keys(data.packages).length" class="uk-list">
                 <li>
-                    <PackageTree v-for="subPackage in data.packages" :data="$doc.resources[subPackage]"/>
+                    <PackageTree :key="subPackage.resource" v-for="subPackage in data.packages" :data="$doc.resources[subPackage]"/>
                 </li>
             </ul>
 

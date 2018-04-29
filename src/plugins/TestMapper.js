@@ -11,7 +11,7 @@ let base; //= 'module.exports';
  */
 
 
-const Plugin = require('./Plugin');
+const Plugin = require('../Plugin');
 
 module.exports = class ComponentMapper extends Plugin {
 
