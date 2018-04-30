@@ -7,6 +7,7 @@
 
 import marked from 'marked';
 import Prism from 'prismjs';
+import Vue from 'vue';
 
 import ExampleRunner from '../ExampleRunner.vue';
 

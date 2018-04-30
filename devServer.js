@@ -110,6 +110,14 @@ module.exports = {
 
         });
 
+        app.get('/data', (req, res, next) => {
+
+            const pack = server.getPack();
+            pack.emit('change');
+            next();
+
+        });
+
         app.get('/:resource/:tab?', function(request, response, next) {
 
             const pack = server.getPack();

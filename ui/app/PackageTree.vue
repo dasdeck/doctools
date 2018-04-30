@@ -2,9 +2,7 @@
     <div>
         <h4>
 
-            <router-link :to="`/${data.resource}`">
-                {{data.name}}
-            </router-link>
+            <ModuleLink :resource="data.resource"/>
 
             <ResourceList v-if="$doc.selectedPackage === data || $doc.settings.filter" :data="data"/>
 
@@ -22,14 +20,15 @@
 <script>
 
     import ResourceList from './ResourceList.vue';
-
+    import ModuleLink from './utils/ModuleLink.vue';
     /**
      * @type {VueComponent}
      */
     const PackageTree = {
 
         components: {
-            ResourceList
+            ResourceList,
+            ModuleLink
         },
 
         inject: ['$doc'],

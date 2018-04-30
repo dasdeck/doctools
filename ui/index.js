@@ -39,6 +39,8 @@ fetch('data.json').then(res => res.json()).then(data => {
     init();
 });
 
+
+
 function init() {
 
     const router = new VueRouter({

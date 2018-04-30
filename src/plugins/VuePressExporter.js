@@ -10,26 +10,56 @@ const _ = require('lodash');
  */
 class MarkdownExporter extends Plugin {
 
-    onConstruct(config = MarkdownExporter.defaultConfig) {
+    constructor(config = MarkdownExporter.defaultConfig) {
+        super();
         this.config = config;
     }
 
-    getResourceSidebarEntry(res, write = true) {
+    getResourcFileName(res) {
+
+        const filename = this.getResourceMDName(res);
         const dir = this.getDir();
-        const filename = res.resource.replace(/\./g, '-') + '.md';
         const file = path.join(dir, filename);
+        return file;
+    }
 
-        let changed;
-        try {
-            changed = fs.readFileSync(file, 'utf8') !== res.markdown;
-        } catch(e) {
-            changed = true;
-        } finally {
-            if (changed) {
-                fs.writeFileSync(file, res.markdown);
+    getResourceMDName(res) {
+
+        const filename = res.resource.replace(/\./g, '-') + '.md';
+        return filename;
+    }
+
+    writeMarkdown() {
+
+        _.forEach(this.pack.getResources(), res => {
+
+            //cleanup links
+            const file = this.getResourcFileName(res);
+            let markdown = res.markdown;
+
+            _.forEach(this.pack.getResources(), res => {
+                
+                const file = this.getResourceMDName(res);
+                markdown = markdown.replace(new RegExp(`href="${file}"`, 'g'), `href="${file.replace('.md', '.html')}"`);           
+            });
+            
+            let changed;
+            try {
+                changed = fs.readFileSync(file, 'utf8') !== markdown
+            } catch(e) {
+                changed = true;
+            } finally {
+                if (changed) {
+                    fs.writeFileSync(file, markdown);
+                }
             }
-        }
+        })
+            
+    }
 
+    getResourceSidebarEntry(res) {
+
+        const filename = this.getResourceMDName(res);
         return [filename, res.name];
     }
     /**
@@ -38,18 +68,35 @@ class MarkdownExporter extends Plugin {
      */
     getSideBar() {
 
-        const packages = _.filter(this.pack.getResources(), res => res.type === 'package');
+        const menu = this.pack.createMenu();
+        if (menu) {
 
-        return _.map(packages, pack => {
+            const resources = this.pack.getResources();
+            
+            return menu.map(entry => {
+                return {
+                    title: entry.label,
+                    children: entry.items.map(res => {
+                        return this.getResourceSidebarEntry(resources[res]);
+                    })
+                }
+            });
 
-            const resources = _.filter(pack.getPackageModules(), res => res.markdown);
-            return {
+        } else {
 
-                title: pack.name,
-                children: _.map(resources, res => this.getResourceSidebarEntry(res))
-            };
+            const packages = _.filter(this.pack.getResources(), res => res.type === 'package');
+            
+            return _.map(packages, pack => {
+                
+                const resources = _.filter(pack.getPackageModules(), res => res.markdown);
+                return {
+                    title: pack.name,
+                    children: _.map(resources, res => this.getResourceSidebarEntry(res))
+                };
+                
+            });
 
-        });
+        }
 
     }
 
@@ -70,16 +117,18 @@ class MarkdownExporter extends Plugin {
         const dir = this.getDir();
 
         const confDir = path.join(dir, '.vuepress');
-
-        mkpath.sync(confDir);
+        
 
         //TODO write toc on front page
         if (this.config.subdir) {
-
+            
+            mkpath.sync(dir);
             const sidebar = this.getSideBar();
-            fs.writeFileSync(path.join(this.getDir(), 'index.js'), `export const sidebar = ${JSON.stringify(sidebar, null, 2)};`);
-
+            fs.writeFileSync(path.join(this.getDir(), 'index.js'), `module.exports = ${JSON.stringify(sidebar, null, 2)};`);
+            
         } else {
+
+            mkpath.sync(confDir);
             const config = {
                 title: pack.name,
 
@@ -90,9 +139,10 @@ class MarkdownExporter extends Plugin {
                 }
             };
 
-
             fs.writeFileSync(path.join(confDir, 'config.js'), `module.exports = ${JSON.stringify(config, null, 2)}`);
         }
+
+        this.writeMarkdown();
 
     }
 

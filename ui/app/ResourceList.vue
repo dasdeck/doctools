@@ -4,9 +4,7 @@
             <h4>{{title}}</h4>
             <ul class="uk-nav uk-nav-default">
                 <li v-for="(entry) in types[category]" :style="{opacity: $doc.resources[entry].module.documented.length > 1 ? 1 : 0.2}">
-                    <router-link :to="`/${entry}`">
-                        {{$doc.resources[entry].name}}
-                    </router-link>
+                    <ModuleLink :resource="entry"/>
                 </li>
             </ul>
         </template>
@@ -15,8 +13,14 @@
 
 <script>
 
+    import ModuleLink from './utils/ModuleLink.vue';
+
     export default {
 
+        components: {
+            ModuleLink
+        },
+        
         inject: ['$doc'],
 
         props: {

@@ -76,7 +76,8 @@ class MarkdownExporter extends Plugin {
       return comp;
     };
 
-    onMap(desc) {
+    convertPath(path) {
+
 
 
     }
@@ -92,11 +93,14 @@ class MarkdownExporter extends Plugin {
 
       const Vue = require('vue/dist/vue');
 
-
-
       Vue.component('RouterLink', {
-        template: '<a :href="`${to}.md`"><slot/></a>',
-        props:['to']
+        template: '<a :href="`${toClean}.md`"><slot/></a>',
+        props:['to'],
+        computed: {
+          toClean() {
+            return this.to.replace(/\./g, '-');
+          }
+        }
       });
       Vue.component('Code', {
         template: '<pre ><code :class="`language-${language}`"><slot/></code></pre>',

@@ -1,13 +1,11 @@
 
-
 vuepress only subdirecties (index with menus, etc.)
 menu => vuepress
 default menu from config
 
 custom css => file or source
 
-config-mapper
-
+config-mapper (for runtime , e.g. default values)
 
 -cutom menu structure
     -define entry point for vuepress
