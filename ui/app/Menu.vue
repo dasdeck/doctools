@@ -1,10 +1,10 @@
 <template>
     <div>
-        <ul>
+        <ul class="uk-list">
             <li v-for="entry in menu">
                 {{entry.label}}
-                <ModuleLink :resource="entry"/>
                 <Menu v-if="entry.items && entry.items.length" :menu="entry.items"/>
+                <ModuleLink v-else :resource="entry"/>
             </li>
         </ul>
     </div>

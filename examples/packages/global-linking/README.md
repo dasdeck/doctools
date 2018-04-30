@@ -1,0 +1,1 @@
+# test for global links to types etc.

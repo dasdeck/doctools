@@ -3,7 +3,6 @@
 
         <h1>
             {{data.name}}
-
         </h1>
 
          <template v-if="data.component && data.component.extends">
@@ -45,6 +44,8 @@
             <Markdown class="nomd" v-if="data.markdown" :text="data.markdown"/>
         </div>
 
+
+        <i>package: <ModuleLink :resource="data.package"/></i>
     </div>
 </template>
 
