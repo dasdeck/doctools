@@ -13,7 +13,8 @@ const markdownAdapterSource = '../../ui/MarkdownAdapter.min.js';
 
 const turndown = new Turndown({
     codeBlockStyle: 'fenced',
-    fence: '~~~'
+    fence: '~~~',
+    headingStyle: 'atx'
 });
 // turndown.use(gfm);
 turndown.keep(['table']);

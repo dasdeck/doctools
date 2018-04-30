@@ -1,20 +1,21 @@
 
-vuepress only subdirecties (index with menus, etc.)
-menu => vuepress
-default menu from config
+-vuepress only subdirecties (index with menus, etc.)
+-default menu from config (recursive with functions)
 
-custom css => file or source
+-write meaningful index file for MD
 
-config-mapper (for runtime , e.g. default values)
+-example executer
 
--cutom menu structure
-    -define entry point for vuepress
+-custom css => file or source
 
+-config-mapper (for runtime , e.g. default values)
 
 -type linker
-    - check double types
+    -check double types
 
 -grouped log
+
+-improve/review plugin flow -> pipeline
 
 -runtime
     -split runtime analyzer back to normal mappers
@@ -41,7 +42,6 @@ config-mapper (for runtime , e.g. default values)
 
 -move binary to cli package
 -move server to server package
-
 
 -component
     -directives
