@@ -8,9 +8,10 @@ const _ = require('lodash');
  * attemts to load the described class
  * mark module for runtime analysis by setting a member runtime = true
  */
-module.exports = class MarkdownExporter extends Plugin {
+class MarkdownExporter extends Plugin {
 
-    onConstruct(pack) {
+    onConstruct(config = MarkdownExporter.defaultConfig) {
+        this.config = config;
     }
 
     getResourceSidebarEntry(res, write = true) {
@@ -52,8 +53,10 @@ module.exports = class MarkdownExporter extends Plugin {
 
     }
 
-    getDir(pack) {
-        return path.join(this.pack.config.base, 'vuepress');
+    getDir() {
+        const dir = path.join(this.pack.config.base, 'vuepress');
+        const subDir = this.config.subdir === true ? this.pack.name : this.config.subdir;
+        return subDir ? path.join(dir, subDir) : dir;
     }
     /**
      * helper function to load the runtime for a component or module
@@ -71,18 +74,35 @@ module.exports = class MarkdownExporter extends Plugin {
         mkpath.sync(confDir);
 
         //TODO write toc on front page
-        const config = {
-            title: pack.name,
+        if (this.config.subdir) {
 
-            editLinks: false,
-            themeConfig: {
-                repo: _.get(pack, 'packageJson.repository.url'),
-                sidebar: this.getSideBar()
-            }
-        };
+            const sidebar = this.getSideBar();
+            fs.writeFileSync(path.join(this.getDir(), 'index.js'), `export const sidebar = ${JSON.stringify(sidebar, null, 2)};`);
 
-        fs.writeFileSync(path.join(confDir, 'config.js'), `module.exports = ${JSON.stringify(config, null, 2)}`);
+        } else {
+            const config = {
+                title: pack.name,
+
+                editLinks: false,
+                themeConfig: {
+                    repo: _.get(pack, 'packageJson.repository.url'),
+                    sidebar: this.getSideBar()
+                }
+            };
+
+
+            fs.writeFileSync(path.join(confDir, 'config.js'), `module.exports = ${JSON.stringify(config, null, 2)}`);
+        }
 
     }
 
+}
+
+MarkdownExporter.defaultConfig = {
+    /**
+     * if you only want
+     */
+    subdir: true
 };
+
+module.exports = MarkdownExporter;

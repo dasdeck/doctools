@@ -24,12 +24,10 @@
       "example": "runs the dev-server showing the example documentation"
     }
   },
-
   "repository": {
     "type": "git",
     "url": "github:dasdeck/doctools"
   },
-
   "author": "",
   "license": "MIT",
   "dependencies": {
@@ -45,6 +43,7 @@
     "jsdom-global": "^3.0.2",
     "lodash": "^4.17.5",
     "marked": "^0.3.19",
+    "minimatch": "^3.0.4",
     "minimist": "^1.2.0",
     "mkpath": "^1.0.0",
     "portfinder": "^1.0.13",

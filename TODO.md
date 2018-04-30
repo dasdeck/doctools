@@ -1,12 +1,10 @@
 
+match + minimatch
+menu => minimatch from groups
+vuepress only subdirecties (index with menus, etc.)
+
 -cutom menu structure
     -define entry point for vuepress
-
--more extra docu
-    -(multiple) vue docs
-    <!-- -modul ename .md -->
-
--show memeber hierarchy in UI
 
 
 -type linker
@@ -24,9 +22,6 @@
     -request runtime form other plugins, runtime = true ...
     -onBeforeAnalyze => desc.runtime = true
 
-
-
--file browser
 
 -TestMapper
 

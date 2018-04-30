@@ -374,9 +374,29 @@ module.exports = class Package extends TreeItem {
         return types;
     }
 
+    createMenu(children = this.config.menu) {
+        const res = [];
+
+        return children.map(child => {
+
+            if (child.match) {
+                return {
+                    ...child,
+                    items: _.map(_.filter(this.getResources(), res => {
+                        return util.match(child.match, res.path, res);
+                    }), res => res.resource)
+                }
+            }
+
+        });
+    }
+
     write() {
 
+        const menu = this.config.menu ? this.createMenu() : null;
+
         const data = {
+            menu,
             types: this.getAllTypes(),
             globals: Object.getOwnPropertyNames(global),
             resources: _.mapValues(this.getResources(), res => res.serialize()),

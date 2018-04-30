@@ -1,5 +1,6 @@
 /* eslint-env node */
 const _ = require('lodash');
+const minimatch = require('minimatch');
 
 const getTypesRaw = arr => arr ? arr.join(' | ') : '';
 
@@ -7,16 +8,16 @@ module.exports = {
 
     getTypesRaw,
 
-    match(conf, file) {
+    match(conf, file, desc) {
         conf = _.isArray(conf) ? conf : [conf];
 
         return conf.some(matcher => {
             if (matcher instanceof RegExp) {
                 return matcher.exec(file);
             } else if (typeof matcher === 'function') {
-                return matcher(file);
+                return matcher(file, desc);
             } else if (typeof matcher === 'string') {
-                return file.includes(matcher);
+                return minimatch(file, matcher);
             } else {
                 throw 'invalid matcher:' + matcher;
             }
@@ -151,17 +152,18 @@ module.exports = {
                 const realProp = realProps[prop.name];
                 if (typeof realProp !== 'undefined') {
 
+
                     prop.required = prop.required || prop.meta.code.value && ~prop.meta.code.value.indexOf('{"required":true}') || realProp && realProp.required;
 
                     if (!prop.type) {
-                        if (realProp.type && (realProp.type instanceof Function)) {
+                        if (realProp === null) {
+                            prop.type = {names: ['null']};
+                        } else if (realProp.type && (realProp.type instanceof Function)) {
                             prop.type = {names: [realProp.type.name]};
                         } else if(realProp instanceof Function) {
                             prop.type = {names: [realProp.name]};
                         } else if(typeof realProp === 'string') {
                             prop.type = {names: [realProp]};
-                        } else if(realProp === null) {
-                            prop.type = {name: ['null']};
                         } else {
                             debugger;
                         }

@@ -112,6 +112,10 @@ class RuntimeAnalyzer extends Plugin {
      * @deprecated
      */
     onPatch() {
+
+        delete this.cache;
+        // this.writeIndex();
+
     }
 
 

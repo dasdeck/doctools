@@ -118,11 +118,6 @@ module.exports = class ComponentMapper extends Plugin {
             {emit: findEvents},
             {trigger: data => data.filter(el => el.kind === 'trigger')},
 
-            // {components: (data, runtime) => {
-            //     if (runtime) {
-            //         debugger
-            //     }
-            // }}
         ].forEach(type => {
 
             const simple = typeof type === 'string';

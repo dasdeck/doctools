@@ -13,18 +13,15 @@
                 </label>
 
                 <ul uk-switcher class="uk-subnav uk-subnav-pill">
+                    <li v-if="data.menu"><a href="">menu</a></li>
                     <li><a href="">packages</a></li>
                     <li><a href="">files</a></li>
                 </ul>
-                <ul class="uk-switcher">
-                    <li>
-                        <PackageTree :data="resources[data.rootPackage]"/>
-
-                    </li>
-                    <li>
-                        <FileTree :resources="resources"/>
-                    </li>
-                </ul>
+                <div class="uk-switcher">
+                    <Menu v-if="data.menu" :menu="data.menu"/>
+                    <PackageTree :data="resources[data.rootPackage]"/>
+                    <FileTree :resources="resources"/>
+                </div>
             </div>
             <router-view class="uk-width-3-4"/>
 
@@ -41,6 +38,7 @@
     import PackageTree from './PackageTree.vue';
     import FileTree from './FileTree.vue';
     import Content from './Content.vue';
+    import Menu from './Menu.vue';
 
     /**
      * Container Component for the doctools app ui
@@ -50,7 +48,8 @@
         components: {
             PackageTree,
             FileTree,
-            Content
+            Content,
+            Menu
         },
 
         props: {
@@ -89,7 +88,7 @@
         },
 
         ref: '$doc',
-        
+
         computed: {
 
             types() {
@@ -99,7 +98,7 @@
             resources() {
                 return this.data && this.data.resources || {};
             },
-            
+
             selectedPackage() {
                 const resource = this.selectedModule;
                 if (!resource) {

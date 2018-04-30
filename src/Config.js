@@ -43,6 +43,10 @@ module.exports = {
      */
     watch: true,
 
+
+    menu: false,
+
+
     /**
      *
      */
@@ -67,8 +71,8 @@ module.exports = {
         'UIkitComponentMapper',
         'VueComponentMapper',
         'ComponentLinker',
-        'MarkdownExporter',
-        'VuePressExporter'
+        // 'MarkdownExporter',
+        // 'VuePressExporter'
     ],
 
     /**

@@ -49,7 +49,7 @@ const base = {
     devServer,
 
     mode: 'development',
-    
+
     devtool: 'inline-sourcemap',
 
     externals,
@@ -59,7 +59,7 @@ const base = {
     }
 };
 
-const MarkdownExporter = {
+const MarkdownAdapter = {
     ...base,
     output: {
         ...output,
@@ -73,4 +73,16 @@ const MarkdownExporter = {
     externals: undefined
 }
 
-module.exports = [base, MarkdownExporter];
+const VuePressAdapter = {
+    ...base,
+
+    entry: {
+        'VuePressAdapter': './VuePressAdapter.js'
+    },
+
+    externals: {
+        'vue': 'Vue'
+    }
+}
+
+module.exports = [base, MarkdownAdapter, VuePressAdapter];
