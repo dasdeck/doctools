@@ -46,6 +46,16 @@ module.exports = {
         return lines.map(line => newIndent + line.replace(origIndent, '')).join('\n');
     },
 
+    // fixTypes(el) {
+
+    //     if (this.returns && this.returns.type) {
+    //         this.returns.type.names = this.returns.type.names.map(name => {
+    //             name === 'function' 
+    //         });
+    //     }
+
+    // }
+
     /**
      * util function to map function (or similar) structures into a unified format
      * @param {*} el

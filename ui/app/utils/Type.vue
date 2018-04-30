@@ -13,6 +13,7 @@
 <script>
 
 import ModuleLink from './ModuleLink.vue';
+import _ from 'lodash';
 
 const Type = {
     
@@ -32,10 +33,6 @@ const Type = {
     computed: {
         
         types() {
-            // const res = this.$doc.types[this.module.type === 'package' ? this.module.resource : this.module.package];
-            // if (!res) {
-            //     debugger;
-            // }
             return this.$doc.types || {};
         },
 
@@ -49,7 +46,9 @@ const Type = {
         },
 
         primeType() {
-            return this.subTypes[0].trim();
+            const type = this.subTypes[0].trim();
+            const wrongCase = ['function'].includes(type);
+            return wrongCase ? _.upperFirst(type) : type;
         },
 
         isComplexType() {
@@ -57,9 +56,9 @@ const Type = {
         },
 
         apiDocLink() {
-            if(this.$doc.data.globals.includes(this.type)) {
+            if(this.$doc.data.globals.includes(this.primeType)) {
                 return `https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/${this.type}`;
-            } else if(window[this.type]) {
+            } else if(window[this.primeType]) {
                 return `https://developer.mozilla.org/docs/Web/API/${this.type}`;
             }
         }
