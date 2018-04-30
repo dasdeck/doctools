@@ -1,7 +1,7 @@
 <template>
     <div>
         <p>
-            {{data.description}}
+            {{data.module.description}}
         </p>
 
         <hr>

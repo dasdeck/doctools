@@ -3,13 +3,14 @@
 
         <h1>
             {{data.name}}
-            <template v-if="data.component && data.component.extends">
-                <code>
-                    <span>extends</span>
-                    <ModuleLink :resource="data.component.extends.resource"/>
-                </code>
-            </template>
+
         </h1>
+
+         <template v-if="data.component && data.component.extends">
+                <span class="inherited">
+                    ↳ <ModuleLink :resource="data.component.extends.resource"/>
+                </span>
+            </template>
 
         <!-- This is the nav containing the toggling elements -->
         <ul uk-switcher class="uk-subnav uk-subnav-pill nomd">
@@ -29,21 +30,21 @@
             <Globals v-if="data.globals" :data="data.globals"/>
             <div v-if="data.script">
                 <h2>code:</h2>
-                <Code language="javascript">{{data.script.replace(/```/g, ',,,')}}</Code>
+                <Code language="javascript">{{data.script}}</Code>
             </div>
             <div v-if="data.template">
                 <h2>template:</h2>
                 <template v-if="data.template.inherited">
-                    inherited from: <ModuleLink :resource="data.template.inherited"/>
+                    : <ModuleLink :resource="data.template.inherited"/>
                 </template>
                 <Code :class="data.template.inherited && 'inherited'" language="html">{{data.template.template}}</Code>
             </div>
             <div v-if="data.tests">
                 tests
             </div>
-            <Markdown v-if="data.markdown" :text="data.markdown"/>
+            <Markdown class="nomd" v-if="data.markdown" :text="data.markdown"/>
         </div>
-        
+
     </div>
 </template>
 

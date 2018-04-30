@@ -1,4 +1,14 @@
 
+-cutom menu structure
+    -define entry point for vuepress
+
+-more extra docu
+    -(multiple) vue docs
+    <!-- -modul ename .md -->
+
+-show memeber hierarchy in UI
+
+
 -type linker
     - check double types
 
@@ -11,18 +21,10 @@
     -optional pass objects
     -runtime without watch working only once? well, doh! use watch in webpack watch
     -check if watching in webpack plugin to enable internal watch
-    -request runtime form other plugins, runtime = true ... 
+    -request runtime form other plugins, runtime = true ...
     -onBeforeAnalyze => desc.runtime = true
 
--make onEmit callback (instead of onMap with special filter)
 
--cutom menu structure
-    -define entry point for vuepress
-
--vuepress/markdown
-    -shim router-link
-
--finish memeber hierarchy in UI
 
 -file browser
 
@@ -40,10 +42,6 @@
 
 -move binary to cli package
 -move server to server package
-
-
--esdoc analyser
--split esdoc and module mapper
 
 
 -component

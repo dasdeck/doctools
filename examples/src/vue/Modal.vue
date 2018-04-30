@@ -168,3 +168,12 @@
     };
 
 </script>
+
+<docs name="readme">
+I can write as much as I want here because this block is called "readme"
+</docs>
+
+<docs name="example1">
+
+this stuff is ignored as of yet
+</docs>

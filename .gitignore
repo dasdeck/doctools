@@ -1,2 +1,4 @@
 node_modules
 .idea
+examples/markdown
+examples/vuepress

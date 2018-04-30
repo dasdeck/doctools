@@ -127,7 +127,7 @@ export default {
 
         /**
          * the toglle method to open or close accordions programatically
-         * @param {*} item
+         * @param {NodeLike} item
          * @param {*} animate
          */
         toggle(item, animate) {

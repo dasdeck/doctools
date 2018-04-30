@@ -15,7 +15,7 @@ module.exports = class VueLoader {
         } catch (e) {
             console.warn('error loading vue component', file);
         }
-        return {script: ""};
+        return {script: ''};
     }
 
     unpack(file) {
@@ -26,12 +26,19 @@ module.exports = class VueLoader {
         const template = res.template && res.template.content.trim() !== '' && {template: res.template.content.trim()};
         const script = res.script && res.script.content.trim();
 
-        return {
+        const desc = {
             type: 'VueComponent',
             template,
             script,
         };
 
+        res.customBlocks.forEach(el => {
+            if (el.type === 'docs' && !el.attrs || el.attrs.name === 'readme') {
+                desc.readme = el.content;
+            }
+        });
+
+        return desc;
 
     }
-}
+};

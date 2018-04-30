@@ -47,7 +47,6 @@ module.exports = class ModuleMapper extends Plugin {
      */
     onMap(desc) {
 
-        
         const all = _.cloneDeep(desc.jsdoc);
         desc.log('mapping module', desc.name, !!all);
 
@@ -71,6 +70,10 @@ module.exports = class ModuleMapper extends Plugin {
                     res.ignore = true;
                 }
 
+            }
+
+            if(el.kind === 'readme') {
+                debugger;
             }
 
             if(el.kind === 'typedef') {
@@ -114,7 +117,7 @@ module.exports = class ModuleMapper extends Plugin {
                 if(!mainExport && /\bthis\b/.exec(code)) {
                     exporter.thisReferer = true;
                 }
-            
+
             }
 
             if (!el.undocumented) {
@@ -152,7 +155,7 @@ module.exports = class ModuleMapper extends Plugin {
                     debugger
                 }
                 res.types = res.types || {};
-                
+
                 res.types[el.kind] = res.types[el.kind] || [];
                 res.types[el.kind].push(el);
 

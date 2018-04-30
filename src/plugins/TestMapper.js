@@ -30,7 +30,7 @@ const {deIndent} = require('./util');
 const cache = {};
 
 const htmlPath = './test/test.html';
-const htmlText = fs.existsSync(htmlPath) && fs.readFileSync(htmlPath)
+const htmlText = fs.existsSync(htmlPath) && fs.readFileSync(htmlPath);
 const win = typeof window === 'undefined' ? (new (require('jsdom').JSDOM)(htmlText, 'utf8')).window : window;
 
 module.exports = {

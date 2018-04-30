@@ -17,13 +17,17 @@ class DevServerTools {
                 file = path.resolve(file);
 
                 if (! ['/src/', '/ui/'].some(name => file.includes(name))) {
+                    // debugger;
                     return;
                 }
                 console.log('code changed');
 
-                glob.sync(__dirname + '/(src|ui)/**/*.js').forEach(file => {
+                const sources = glob.sync(__dirname + '/+(src|ui)/**/*.js');
+                sources.forEach(file => {
                     delete require.cache[require.resolve(file)];
                 });
+
+                this.pack.dispose();
 
                 this.pack = null;
                 this.parser = null;

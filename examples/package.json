@@ -14,6 +14,10 @@
         "dev": "launches the examples of this package"
       }
   },
+  "repository": {
+    "type": "git",
+    "url": "dasdeck/random-repo"
+  },
   "author": "",
   "license": "MIT",
   "dependencies": {

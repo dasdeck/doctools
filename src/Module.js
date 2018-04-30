@@ -22,6 +22,13 @@ class Module extends TreeItem {
 
     analyze() {
 
+        try {
+            if (!this.readme) {
+                this.readme = fs.readFileSync(this.path + '.md', 'utf8');
+            }
+        } catch (e) {
+
+        }
         return this.execPluginCallback('onAnalyze');
             // .then(res => this.map());
 

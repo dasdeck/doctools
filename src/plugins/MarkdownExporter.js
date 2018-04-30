@@ -4,21 +4,29 @@ const path = require('path');
 const fs = require('fs');
 
 const Turndown = require('turndown');
+
 const {gfm} = require('turndown-plugin-gfm');
 
 const markdownAdapterSource = '../../ui/MarkdownAdapter.min.js';
 
 
 const turndown = new Turndown({
-    codeBlockStyle: 'fenced'
+    codeBlockStyle: 'fenced',
+    fence: '~~~'
 });
-turndown.use(gfm);
+// turndown.use(gfm);
+turndown.keep(['table']);
 
 /**
  * attemts to load the described class
  * mark module for runtime analysis by setting a member runtime = true
  */
-module.exports = class MarkdownExporter extends Plugin {
+class MarkdownExporter extends Plugin {
+
+    constructor(config = MarkdownExporter.defaultConfig) {
+      super();
+      this.config = config;
+    }
 
     getShallowContet(data, resource) {
 
@@ -37,7 +45,7 @@ module.exports = class MarkdownExporter extends Plugin {
 
 
       const comp = {
-          ...Content, 
+          ...Content,
           provide: {
               $doc
           },
@@ -56,7 +64,7 @@ module.exports = class MarkdownExporter extends Plugin {
               const UIkit = require('uikit');
               UIkit.util.remove(UIkit.util.$$('.nomd', toMD));
               return turndown.turndown(toMD.outerHTML);
-      
+
             }
           }
       };
@@ -65,7 +73,12 @@ module.exports = class MarkdownExporter extends Plugin {
       delete comp.watch;
 
       return comp;
-  };
+    };
+
+    onMap(desc) {
+
+
+    }
 
     /**
      * helper function to load the runtime for a component or module
@@ -75,7 +88,7 @@ module.exports = class MarkdownExporter extends Plugin {
     onWrite(pack, data) {
 
       const clear = require('jsdom-global')();
-      
+
       const Vue = require('vue/dist/vue');
 
       Vue.component('RouterLink', {
@@ -87,44 +100,40 @@ module.exports = class MarkdownExporter extends Plugin {
         props:['language']
       });
 
-      const dir = path.join(pack.config.base, 'markdown');
+      const dir = this.config.outputDir ? path.join(pack.config.base, this.config.outputDir) : null;
       try {
-        fs.mkdirSync(dir)
+        if (dir) {
+          fs.mkdirSync(dir)
+        }
 
       } catch (e) {
       }
 
-      _.forEach(data.resources ,resource => {
+      _.forEach(pack.getResources(), resource => {
 
         const CompDesc = this.getShallowContet(data, resource);
         const Comp = Vue.extend(CompDesc);
         const vm = new Comp({propsData: {resource: resource.resource}});
         vm.$mount();
         const markdown = vm.toMarkdown();
+
+        const changed = resource.markdown !== markdown;
+
         resource.markdown = markdown;
         vm.$destroy();
+        setImmediate(clear);
 
-        fs.writeFileSync(path.join(dir, resource.resource + '.md'), markdown);
-   
+        if (dir && changed) {
+          fs.writeFileSync(path.join(dir, resource.resource + '.md'), markdown);
+        }
+
       });
 
-      const vuePressDir = path.join(dir, '.vuepress');
-      
-      try {
-        fs.mkdirSync(vuePressDir);
-        
-      } catch (e) {}
-
-      fs.writeFileSync(path.join(vuePressDir, 'config.js'), `module.exports = ${JSON.stringify({
-        title: pack.name,
-    
-        themeConfig: {
-            sidebar: _.map(data.resources, res => [res.resource + '.md', res.name])
-            
-        }
-      }, null, 2)}`);
-
-      setImmediate(clear);
     }
 
 }
+MarkdownExporter.defaultConfig = {
+  outputDir: 'markdown'
+};
+
+module.exports = MarkdownExporter;

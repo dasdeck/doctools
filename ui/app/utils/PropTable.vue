@@ -1,6 +1,6 @@
 <template>
     <div>
-        <h3 v-if="name">{{name}}</h3>
+        <h4 v-if="name">{{name}}</h4>
         <table class="uk-table uk-table-striped">
 
             <thead v-if="headerToUse">
@@ -12,7 +12,10 @@
             <tbody>
             <template v-for="row in filteredData">
                 <tr :style="row._style">
-                    <td v-for="(header, col) in filteredHeaders">{{row[col]}}</td>
+                    <td v-for="(header, col) in filteredHeaders">
+                        <component v-if="row[col] && row[col].template" :is="row[col].template" v-bind="row[col]"/>
+                        <span v-else>{{row[col]}}</span>
+                    </td>
                 </tr>
 
                 <template v-for="annotation in annotations">
@@ -33,12 +36,17 @@
 
 <script>
     import _ from 'lodash';
+    import Types from './Types.vue';
 
     /**
      * utility view to render property lists
      * the table width will be determined by the header, so you need to provide one,
      */
     export default {
+
+        components: {
+            Types
+        },
 
         props: {
             /**

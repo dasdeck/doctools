@@ -49,8 +49,8 @@
 
                 <h3>
                     {{computed.name}}{{computed.type && (' : ' + computed.type.names.join('|'))}}
-                    <code v-if="computed.inherited">inherited from: <ModuleLink :resource="computed.inherited"/></code>
                 </h3>
+                <h4 class="inherited" v-if="computed.inherited"> ↳ <ModuleLink :resource="computed.inherited"/>.{{computed.name}}</h4>
 
                 {{computed.description}}
             </li>
@@ -90,58 +90,65 @@
 </template>
 
 <script>
+import PropTable from "../utils/PropTable.vue";
+import Function from "../utils/Function.vue";
+import ModuleLink from "../utils/ModuleLink.vue";
 
-    import PropTable from '../utils/PropTable.vue';
-    import Function from '../utils/Function.vue';
-    import ModuleLink from '../utils/ModuleLink.vue';
+import _ from "lodash";
 
-    import _ from 'lodash';
+export default {
+  components: {
+    PropTable,
+    Function,
+    ModuleLink
+  },
 
-    export default {
+  props: {
+    data: Object
+  },
 
-        components: {
-            PropTable,
-            Function,
-            ModuleLink
-        },
+  inject: ["$doc"],
 
-        props: {
-            data: Object
-        },
+  computed: {
+    component() {
+      return this.data.component;
+    },
 
-        inject: ['$doc'],
+    /**
+     * the filtered list of methods
+     */
+    methods() {
+      return _.filter(
+        this.component.methods,
+        method => this.$doc.settings.private || method.access !== "private"
+      );
+    },
 
-        computed: {
+    /**
+     * the lsit of props with added style information for rendering
+     */
+    props() {
+      const props = this.component.props;
 
-            component() {
-                return this.data.component;
-            },
+      _.forEach(
+        props,
+        prop =>
+          (prop._style = {
+            ...prop._style,
+            opacity: prop.optional ? 0.5 : 1,
+            "font-style": prop.inherited ? "italic" : undefined
+          })
+      );
 
-            /**
-             * the filtered list of methods
-             */
-            methods() {
-                return _.filter(this.component.methods, method => this.$doc.settings.private || method.access !== 'private');
-            },
-
-            /**
-             * the lsit of props with added style information for rendering
-             */
-            props() {
-
-                const props = this.component.props;
-
-                _.forEach(props, prop => prop._style = {
-                    ...prop._style,
-                    opacity: prop.optional ? 0.5 : 1,
-                    'font-style': prop.inherited ? 'italic' : undefined
-                });
-
-                return _.orderBy(_.mapValues(props, prop => ({
-                    ...prop,
-                    type: prop.type && prop.type.names.join('|')
-                })), ['inherited', 'name'], ['desc', 'asc']);
-            }
-        }
+      return _.orderBy(
+        _.mapValues(props, prop => ({
+          ...prop,
+          type: prop.type && {template: 'types', type: prop.type}
+        })),
+        ["inherited", "name"],
+        ["desc", "asc"]
+      );
     }
+  }
+};
 </script>

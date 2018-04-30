@@ -92,7 +92,7 @@ module.exports = {
             options[name].forEach((param, index) => {
                 const row = {
                     0: param.name,
-                    1: this.getTypesRaw(param.type.names),
+                    1: {template: 'types', type: param.type},
                     2: param.defaultvalue,
                     3: param.description
                 };

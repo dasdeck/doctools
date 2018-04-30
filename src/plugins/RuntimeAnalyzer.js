@@ -143,8 +143,9 @@ class RuntimeAnalyzer extends Plugin {
         const WebpackAdapter = require('../WebpackAdapter');
         const plugin = new WebpackAdapter(this.pack);
 
-        conf.plugins = conf.plugins || [];
-        conf.plugins.push(plugin);
+        // conf.plugins = conf.plugins || [];
+        // conf.plugins.push(plugin);
+        conf.plugins = [...conf.plugins, plugin];
 
         const compiler = webpack(conf);
 
@@ -197,10 +198,10 @@ class RuntimeAnalyzer extends Plugin {
     run() {
 
         this.compiler = this.compiler || this.createCompiler(this.writeIndex());
-        
+
         // ignored: '**/*'
         if(this.config.watch) {
-            
+
             if (this.watcher){
                 return;
             }
@@ -221,11 +222,11 @@ class RuntimeAnalyzer extends Plugin {
 
         this.pack.logFile('index.min.js', script);
         try {
-            
+
             // const code = `const clear = require('jsdom-global')();
             // ${script}
-            // clear();`            
-            
+            // clear();`
+
             // const vm = require('vm');
 
             // const sandbox = {require};
@@ -245,6 +246,12 @@ class RuntimeAnalyzer extends Plugin {
             this.pack.log('could not load runtime');
             this.pack.log(e);
             // resolve({});
+        }
+    }
+
+    onDispose() {
+        if (this.watcher) {
+            this.watcher.close();
         }
     }
 

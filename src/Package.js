@@ -23,7 +23,6 @@ module.exports = class Package extends TreeItem {
         this.resources = {};
         this.globals = {};
 
-        this.loadPackageFile();
         this.analyzeSubPackages();
 
     }
@@ -144,6 +143,16 @@ module.exports = class Package extends TreeItem {
         return res;
     }
 
+    getTypeGroupedModules() {
+        const groups = {};
+        this.getPackageModules().forEach(mod => {
+            groups[mod.type] = groups[mod.type] || {};
+            groups[mod.type][mod.resource] = mod;
+        })
+
+        return groups;
+    }
+
     getPackageModules() {
         const mods = Object.values(this.resources).filter(res => res instanceof Module);
         return mods;
@@ -164,6 +173,7 @@ module.exports = class Package extends TreeItem {
 
     analyze() {
 
+        this.loadPackageFile();
 
         return this.doRecursively('analyze')
         .then(res => this.execPluginCallback('onAnalyze'))
@@ -175,6 +185,9 @@ module.exports = class Package extends TreeItem {
 
     }
 
+    dispose() {
+        this.execPluginCallback('onDispose');
+    }
 
     doRecursively(method) {
         return Promise.all(_.map(this.packages, pack => pack[method]()))
@@ -331,17 +344,20 @@ module.exports = class Package extends TreeItem {
 
     }
 
-
+    /**
+     * gets a flat hash of all resources, including subpackages
+     * @param {Boolean} serialize - whether to provide seriali
+     */
     getResources() {
 
         const resources = {};
-        resources[this.resource] = this.serialize();
+        resources[this.resource] = this;
 
         _.forEach({...this.packages, ...this.resources}, resource => {
             if (resource.getResources) {
                 _.merge(resources, resource.getResources());
             } else {
-                resources[resource.resource] = resource.serialize();
+                resources[resource.resource] = resource;
             }
         });
 
@@ -363,7 +379,7 @@ module.exports = class Package extends TreeItem {
         const data = {
             types: this.getAllTypes(),
             globals: Object.getOwnPropertyNames(global),
-            resources: this.getResources(),
+            resources: _.mapValues(this.getResources(), res => res.serialize()),
             rootPackage: this.resource
         };
 
