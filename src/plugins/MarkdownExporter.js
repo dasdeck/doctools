@@ -2,6 +2,7 @@ const Plugin = require('../Plugin');
 const Package = require('../Package');
 const path = require('path');
 const fs = require('fs');
+const _ = require('lodash');
 
 const Turndown = require('turndown');
 
@@ -91,6 +92,8 @@ class MarkdownExporter extends Plugin {
 
       const Vue = require('vue/dist/vue');
 
+
+
       Vue.component('RouterLink', {
         template: '<a :href="`${to}.md`"><slot/></a>',
         props:['to']
@@ -119,7 +122,10 @@ class MarkdownExporter extends Plugin {
 
         const changed = resource.markdown !== markdown;
 
+        //set markdown in serialized AND original data
         resource.markdown = markdown;
+        data.resources[resource.resource].markdown = markdown;
+
         vm.$destroy();
         setImmediate(clear);
 

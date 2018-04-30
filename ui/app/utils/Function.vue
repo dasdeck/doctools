@@ -7,7 +7,7 @@
             {{data.description}}
         </a>
         <template v-else>
-            <code v-if="data.memberof === 'module.exports'">import { {{data.simpleName}} } from '{{$parent.data.fileInPackage}}'</code>
+            <code v-if="data.memberof === 'module.exports'">import { {{data.simpleName}} } from '{{module.fileInPackage}}'</code>
             <p>{{data.description}}</p>
 
             <h4 class="signature">{{data.simpleName}}(
@@ -15,7 +15,8 @@
                     <Param :param="param" :module="module" />
                     <span v-if="index < data.params.length - 1">, </span>
                 </template>
-                )</h4>
+                )<span v-if="data.returns">
+                    : <Types v-for="ret in data.returns" :type="ret.type"/></span></h4>
 
             <PropTable :key="name" v-for="(table, name) in data.tables" :name="name" :data="table" :headers="true"/>
             <template v-if="data.returns && data.returns.length">

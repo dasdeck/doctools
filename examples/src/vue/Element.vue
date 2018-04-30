@@ -58,7 +58,7 @@
 
             /**
              * Determines the uniquie Id for this component
-             * @returns {Number} Returns the id of this component
+             * @returns {Object} Returns the id of this component
              * @private
              * @param {Node} [root = this.builder.layout] - The root node to start counting from
              * @param {Integer} [id = 1] - The ID to start counting from

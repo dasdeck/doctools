@@ -45,15 +45,15 @@
         <template v-if="component.computed">
             <h2>computed:</h2>
 
-            <li v-for="computed in component.computed">
+            <div v-for="computed in component.computed">
 
-                <h3>
-                    {{computed.name}}{{computed.type && (' : ' + computed.type.names.join('|'))}}
-                </h3>
+                <h3>{{computed.name}}</h3>
                 <h4 class="inherited" v-if="computed.inherited"> ↳ <ModuleLink :resource="computed.inherited"/>.{{computed.name}}</h4>
-
-                {{computed.description}}
-            </li>
+                <Types :type="computed.type"/>
+                <p>
+                    {{computed.description}}
+                </p>
+            </div>
 
         </template>
 
@@ -93,6 +93,7 @@
 import PropTable from "../utils/PropTable.vue";
 import Function from "../utils/Function.vue";
 import ModuleLink from "../utils/ModuleLink.vue";
+import Types from "../utils/Types.vue";
 
 import _ from "lodash";
 
@@ -100,7 +101,8 @@ export default {
   components: {
     PropTable,
     Function,
-    ModuleLink
+    ModuleLink,
+    Types
   },
 
   props: {

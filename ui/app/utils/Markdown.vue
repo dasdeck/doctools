@@ -6,6 +6,18 @@
 <script>
 
 import marked from 'marked';
+import Prism from 'prismjs';
+
+marked.setOptions({
+    highlight: function (code, lang) {
+        if (Prism.languages[lang]) {
+            return Prism.highlight(code, Prism.languages[lang], lang);
+        } else {
+
+            return code;
+        }
+    }
+});
 
 export default {
     props:{

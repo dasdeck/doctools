@@ -11,7 +11,7 @@ export default {
     computed: {
 
         /**
-         *
+         * a fucking test memebers
          * @private
          * @type {String}
         */

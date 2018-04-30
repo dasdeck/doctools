@@ -20,7 +20,6 @@ Vue.mixin({
         if (this.$options.ref) {
             window[this.$options.ref] = this;
         }
-    
     }
 });
 

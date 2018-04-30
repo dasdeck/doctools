@@ -52,9 +52,9 @@ module.exports = class ModuleMapper extends Plugin {
 
         const config = desc.config;
         const documented = all.filter(el => !el.undocumented);
-        const res = {all, documented};
+        const res = {all, documented, global: []};
 
-        if(!all) debugger;
+        if (!all) debugger;
         all.forEach(el => {
 
             if (el.kind === 'function' && !el.undocumented) {
@@ -72,11 +72,11 @@ module.exports = class ModuleMapper extends Plugin {
 
             }
 
-            if(el.kind === 'readme') {
+            if (el.kind === 'readme') {
                 debugger;
             }
 
-            if(el.kind === 'typedef') {
+            if (el.kind === 'typedef') {
 
                 const pack = desc.package;
 
@@ -85,7 +85,7 @@ module.exports = class ModuleMapper extends Plugin {
 
                 const name = el.type && el.type.names[0] || el.longname;
 
-                if(pack.types[name]) {
+                if (pack.types[name]) {
                     // debugger;
                     desc.log('type already defined in package:', name);
                 } else {
@@ -96,7 +96,6 @@ module.exports = class ModuleMapper extends Plugin {
                 }
 
             }
-
 
             let code;
             if (el.meta && el.meta.range) {
@@ -114,7 +113,7 @@ module.exports = class ModuleMapper extends Plugin {
                     mainExport
                 };
 
-                if(!mainExport && /\bthis\b/.exec(code)) {
+                if (!mainExport && /\bthis\b/.exec(code)) {
                     exporter.thisReferer = true;
                 }
 
@@ -122,11 +121,17 @@ module.exports = class ModuleMapper extends Plugin {
 
             if (!el.undocumented) {
 
-                if(!['module', 'module.exports'].includes(el.memberof)) {
+                //!['module', 'module.exports'].includes(el.memberof)
+                if (desc.type === 'module') {
                     const parent = _.find(documented, els => els.longname === el.memberof);
                     if (parent) {
                         // debugger;
+                        parent.children = parent.children || []
+                        parent.children.push(el);
+                        // el.parent = parent;
 
+                    } else {
+                        res.global.push(el);
                     }
                 }
 
@@ -149,7 +154,6 @@ module.exports = class ModuleMapper extends Plugin {
                     // el.description && markDown.push(el.description);
                     // markDown.push(`see: <a href="#${el.see}">${el.see}</a>`);
                 }
-
 
                 if (res[el.kind] && !_.isArray(res[el.kind])) {
                     debugger
@@ -210,7 +214,7 @@ module.exports = class ModuleMapper extends Plugin {
 
     analyseFunction(el, desc) {
 
-        if(el.simpleName) {
+        if (el.simpleName) {
             debugger;
         }
 

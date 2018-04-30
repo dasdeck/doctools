@@ -27,9 +27,12 @@ class DevServerTools {
                     delete require.cache[require.resolve(file)];
                 });
 
-                this.pack.dispose();
+                if (this.pack) {
 
-                this.pack = null;
+                    this.pack.dispose();
+                    this.pack = null;
+                }
+
                 this.parser = null;
                 this.config._ = null;
 
@@ -76,12 +79,10 @@ class DevServerTools {
             this.pack = pack;
         }
 
-
         return this.pack;
 
     }
 }
-
 
 module.exports = {
 
@@ -101,6 +102,7 @@ module.exports = {
 
             pack.analyze().then(() => {
                 pack.write().then(data => {
+                    pack.logFile('output', data);
                     res.json(data);
                     next();
                 });

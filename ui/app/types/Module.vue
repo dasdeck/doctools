@@ -4,21 +4,13 @@
             {{data.module.description}}
         </p>
 
-        <hr>
-
-        <template v-for="desc in data.module.documented" v-if="hasKind(desc.kind)">
-            <component :is="desc.template || desc.kind" :data="desc" :module="data" headline="h2"/>
-            <hr>
-        </template>
+        <DescList :descs="descs"/>
 
     </div>
 </template>
 
 <script>
-    import PropTable from '../utils/PropTable.vue';
-    import Function from '../utils/Function.vue';
-    import Constant from '../utils/Constant.vue';
-    import Typedef from '../utils/Typedef.vue';
+    import DescList from '../utils/DescList.vue';
     import _ from 'lodash';
 
     /**
@@ -27,20 +19,18 @@
      */
     export default {
         components: {
-            PropTable,
-            Function,
-            Constant,
-            Member: Constant,
-            Typedef
+            DescList,
+
         },
         props: {
             data: Object
         },
-        methods: {
-            hasKind(kind) {
-                return this.$options.components[_.upperFirst(kind)];
+        computed: {
+            descs() {
+                return this.data.module.global;
             }
         }
+
     }
 </script>
 
