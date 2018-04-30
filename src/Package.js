@@ -37,6 +37,9 @@ module.exports = class Package extends TreeItem {
         if (fs.existsSync(packPath)) {
             this.script = fs.readFileSync(packPath, 'utf8');
             this.packageJson = JSON.parse(this.script);
+            if (_.size(this.packageJson) === 0 ) {
+                this.script = '';
+            }
         }
 
         const mdPath = path.join(this.path, 'README.md');

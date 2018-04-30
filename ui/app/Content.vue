@@ -14,9 +14,9 @@
         <!-- This is the nav containing the toggling elements -->
         <ul uk-switcher class="uk-subnav uk-subnav-pill nomd">
             <li v-if="data.readme"><a href="">readme</a></li>
-            <li><a href="">api</a></li>
-            <li v-if="data.globals"><a href="">globals</a></li>
-            <li v-if="data.script"><a href="">code</a></li>
+            <li v-if="apiHasContent"><a href="">api</a></li>
+            <li v-if="globals"><a href="">globals</a></li>
+            <li v-if="data.script"><a href="" >code</a></li>
             <li v-if="data.template"><a href="">template</a></li>
             <li v-if="data.tests"><a href="">test</a></li>
             <li v-if="data.markdown"><a href="">markdown</a></li>
@@ -25,8 +25,8 @@
         <!-- This is the container of the content items -->
         <div class="uk-switcher">
             <Markdown v-if="data.readme" :text="data.readme"/>
-            <component :is="data.type" :data="data"></component>
-            <Globals v-if="data.globals" :data="data.globals"/>
+            <component v-if="apiHasContent" :is="data.type" :data="data" ref="layout"/>
+            <Globals v-if="globals" :data="data.globals"/>
             <div v-if="data.script">
                 <h2>code:</h2>
                 <Code language="javascript">{{data.script}}</Code>
@@ -44,8 +44,8 @@
             <Markdown class="nomd" v-if="data.markdown" :text="data.markdown"/>
         </div>
 
-
-        <i>package: <ModuleLink :resource="data.package"/></i>
+        <hr>
+        <i v-if="data.package">package: <ModuleLink :resource="data.package"/></i>
     </div>
 </template>
 
@@ -57,6 +57,7 @@
     import ModuleLink from './utils/ModuleLink.vue';
     import Globals from './utils/Globals.vue';
     import Markdown from './utils/Markdown.vue';
+    import _ from 'lodash';
 
     /**
      * component wrapper for the vue-router
@@ -86,7 +87,28 @@
             resource: String
         },
 
+        // created() {
+
+        // },
+
+        // methods: {
+        //     tab(e) {
+
+        //         this.$router.push(`/${this.$route.params.resource}/${e.target.innerHTML}`)
+        //     }
+        // },
+
         computed: {
+
+            apiHasContent() {
+                const comp = this.$options.components[_.upperFirst(this.data.type)];
+                return comp && comp.hasContent && comp.hasContent(this.data);
+            },
+
+            globals() {
+                return this.data.globals && _.size(this.data.globals);
+            },
+
             /**
              * the data for the current content view.
              * the fata is dereferenced from the current's routes resource paremter

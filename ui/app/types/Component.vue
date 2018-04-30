@@ -94,10 +94,14 @@ import PropTable from "../utils/PropTable.vue";
 import Function from "../utils/Function.vue";
 import ModuleLink from "../utils/ModuleLink.vue";
 import Types from "../utils/Types.vue";
+import Base from './Base';
 
 import _ from "lodash";
 
 export default {
+
+    extends: Base,
+
   components: {
     PropTable,
     Function,
@@ -105,11 +109,11 @@ export default {
     Types
   },
 
-  props: {
-    data: Object
-  },
-
   inject: ["$doc"],
+
+        hasContent(data) {
+                return data.component && _.size(data.component) || data.module.description;
+        },
 
   computed: {
     component() {

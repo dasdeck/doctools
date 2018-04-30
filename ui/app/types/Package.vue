@@ -46,17 +46,21 @@
 
 <script>
     import Function from '../utils/Function.vue';
+    import Base from './Base';
 
     /**
      * view for package overviews
      */
     export default {
+        extends: Base,
+
         components: {
             Function
         },
 
-        props: {
-            data: Object
+
+        hasContent(data) {
+                return data.packageJson && !!_.size(_.omit(data.packageJson, 'name'));
         }
     }
 </script>

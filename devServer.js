@@ -110,5 +110,16 @@ module.exports = {
 
         });
 
+        app.get('/:resource/:tab?', function(request, response, next) {
+
+            const pack = server.getPack();
+
+            if (pack.getResources()[request.params.resource]) {
+                response.sendfile('./ui/index.html');
+            } else {
+                next();
+            }
+        });
+
     }
 };

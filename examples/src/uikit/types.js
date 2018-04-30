@@ -3,3 +3,9 @@
  * @file
  * @typedef {NodeLike}
  */
+
+/**
+ * a simple integer type
+ * @file
+ * @typedef {Integer}
+ */

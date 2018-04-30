@@ -12,23 +12,27 @@
 <script>
     import DescList from '../utils/DescList.vue';
     import _ from 'lodash';
+    import Base from './Base';
 
     /**
      * View to render module files
      *
      */
     export default {
+        extends: Base,
+
         components: {
             DescList,
 
-        },
-        props: {
-            data: Object
         },
         computed: {
             descs() {
                 return this.data.module.global;
             }
+        },
+
+        hasContent(data) {
+            return data.module && (data.module.description || data.module.global && data.module.global.length);
         }
 
     }

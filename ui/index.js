@@ -42,6 +42,7 @@ fetch('data.json').then(res => res.json()).then(data => {
 function init() {
 
     const router = new VueRouter({
+        mode: 'history',
         routes: [
             {
                 path: '/',
@@ -51,7 +52,7 @@ function init() {
                 }
             },
             {
-                path: '/:resource',
+                path: '/:resource/:tab?',
                 component: Content,
                 beforeEnter(route, to, next) {
                     //redirect to root if packackage not found
