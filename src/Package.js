@@ -40,6 +40,11 @@ module.exports = class Package extends TreeItem {
             this.packageJson = JSON.parse(this.script);
         }
 
+        const mdPath = path.join(this.path, 'README.md');
+        if (fs.existsSync(mdPath)) {
+            this.readme = fs.readFileSync(mdPath, 'utf8');
+        }
+
     }
 
 

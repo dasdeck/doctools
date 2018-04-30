@@ -32,7 +32,7 @@ module.exports = class TreeItem extends EventEmitter {
             try {fs.mkdirSync(logDir) } catch(e) {};
             this.logFile = (name, data) => fs.writeFileSync(path.join(logDir, name), _.isString(data) ? data : JSON.stringify(data, null, 2));
         } else {
-            this.log = x => x;
+            this.logFile = this.log = x => x;
         }
     }
 

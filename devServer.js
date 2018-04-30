@@ -2,6 +2,7 @@
 
 const glob = require('glob');
 const fs = require('fs');
+const path = require('path');
 
 class DevServerTools {
 
@@ -11,11 +12,16 @@ class DevServerTools {
 
         if (config.dev) {
 
-            fs.watch(__dirname+ '/src', {recursive: true}, res => {
+            fs.watch(__dirname, {recursive: true}, (e, file) => {
 
+                file = path.resolve(file);
+
+                if (! ['/src/', '/ui/'].some(name => file.includes(name))) {
+                    return;
+                }
                 console.log('code changed');
 
-                glob.sync(__dirname + '/src/**/*.js').forEach(file => {
+                glob.sync(__dirname + '/(src|ui)/**/*.js').forEach(file => {
                     delete require.cache[require.resolve(file)];
                 });
 
@@ -53,21 +59,19 @@ class DevServerTools {
 
             const pack = this.getParser().parse(global.doctoolsConfig);
 
-            if (this.config.watch) {
-                // pack.watch();
-                pack.on('change', () => {
+            pack.on('change', () => {
 
-                    pack.analyze().then(() => {
-                        pack.write().then(data => {
-                            this.sendDataToClient(data)
-                        });
+                pack.analyze().then(() => {
+                    pack.write().then(data => {
+                        this.sendDataToClient(data)
                     });
-
                 });
-            }
+
+            });
 
             this.pack = pack;
         }
+
 
         return this.pack;
 

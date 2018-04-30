@@ -8,15 +8,18 @@ const MemFs = require('memory-fs');
 const requireFromString = require('require-from-string');
 const Package = require('../Package');
 
+
 /**
  * attemts to load the described class
  * mark module for runtime analysis by setting a member runtime = true
  */
-module.exports = class RuntimeAnalyzer extends Plugin {
+class RuntimeAnalyzer extends Plugin {
 
-    constructor() {
+    constructor(config = RuntimeAnalyzer.defaultOptions) {
 
         super();
+
+        this.config = config;
         this.indexFile = tempfile('.js');
 
     }
@@ -29,11 +32,14 @@ module.exports = class RuntimeAnalyzer extends Plugin {
 
         this.pack = pack;
 
-        if (this.pack.config.watch) {
-            this.on('change', () => {
-                pack.getRootPackage().emit('change');
-            });
-        }
+        this.config.watch = this.config.watch && this.pack.config.watch;
+
+        this.outputFileSystem = new MemFs;
+
+
+        this.on('change', () => {
+            pack.getRootPackage().emit('change');
+        });
     }
 
     /**
@@ -56,7 +62,7 @@ module.exports = class RuntimeAnalyzer extends Plugin {
      */
     onAnalyze(pack) {
 
-        if(!this.cache) {
+        if (!this.cache) {
             this.run();
         }
 
@@ -79,7 +85,6 @@ module.exports = class RuntimeAnalyzer extends Plugin {
                     desc.runtime = runtime;
                 });
 
-                // return this.webpackFile(config, desc.path);
 
             } else if(config.runtime === true) {
                 throw 'unimplemented';
@@ -107,9 +112,6 @@ module.exports = class RuntimeAnalyzer extends Plugin {
      * @deprecated
      */
     onPatch() {
-
-        // delete this.cache;
-
     }
 
 
@@ -134,30 +136,20 @@ module.exports = class RuntimeAnalyzer extends Plugin {
 
     }
 
-    // onSerialize(desc, data) {
-    //     delete data.runtime;
-    // }
-
     createCompiler(filename = this.indexFile) {
 
         const conf = this.adaptConfig(filename);
-
-        // this.pack.logFile('webpack.config.js', 'module.exports = ' + JSON.stringify({
-        //     ...conf,
-        //     entry: {
-        //         'index': './index.js'
-        //     }
-        // }, null, 2));
 
         const WebpackAdapter = require('../WebpackAdapter');
         const plugin = new WebpackAdapter(this.pack);
 
         conf.plugins = conf.plugins || [];
         conf.plugins.push(plugin);
-        // debugger;
+
         const compiler = webpack(conf);
 
         compiler.outputFileSystem = this.outputFileSystem;
+
 
         return compiler;
 
@@ -187,6 +179,7 @@ module.exports = class RuntimeAnalyzer extends Plugin {
         pack.logFile('index.js', res);
         fs.writeFileSync(this.indexFile, res);
 
+        return this.indexFile;
     }
 
 
@@ -203,27 +196,21 @@ module.exports = class RuntimeAnalyzer extends Plugin {
 
     run() {
 
-        this.writeIndex();
-
-        if (this.pack.config.watch && this.watcher){
-            return;
-        }
-
-
-        this.outputFileSystem = new MemFs;
-
-        const compiler = this.createCompiler(this.indexFile);
-
-        compiler.inputFileSystem = compiler.inputFileSystem;
-
-
+        this.compiler = this.compiler || this.createCompiler(this.writeIndex());
+        
         // ignored: '**/*'
-        if(this.pack.config.watch) {
+        if(this.config.watch) {
+            
+            if (this.watcher){
+                return;
+            }
             this.pack.log('watching package:', this.pack.name);
-            this.watcher = compiler.watch({}, (...args) => this.onWebPack(...args));
+            this.watcher = this.compiler.watch({}, (...args) => this.onWebPack(...args));
         } else {
+
+            // TODO dont run if cache is valid ?
             this.pack.log('building package:', this.pack.name);
-            compiler.run((...args) => this.onWebPack(...args));
+            this.compiler.run((...args) => this.onWebPack(...args));
         }
     }
 
@@ -234,9 +221,21 @@ module.exports = class RuntimeAnalyzer extends Plugin {
 
         this.pack.logFile('index.min.js', script);
         try {
+            
+            // const code = `const clear = require('jsdom-global')();
+            // ${script}
+            // clear();`            
+            
+            // const vm = require('vm');
+
+            // const sandbox = {require};
+            // vm.createContext(sandbox);
+
+            // const rt = vm.runInContext(code, sandbox);
+
             const clear = require('jsdom-global')();
             const rt = requireFromString(script);
-            clear();
+            setImmediate(clear);
 
             this.cache = rt.default ? rt.default : rt;
             this.emit('change', this.cache);
@@ -283,3 +282,9 @@ module.exports = class RuntimeAnalyzer extends Plugin {
         }
     }
 }
+
+RuntimeAnalyzer.defaultOptions = {
+    watch: true
+}
+
+module.exports = RuntimeAnalyzer;

@@ -28,7 +28,6 @@
             </div>
             <router-view class="uk-width-3-4"/>
 
-            <Content style="display:none;" :resource="res.resource" v-for="res in resources" :key="res.resource" ref="markdown"/>
 
         </div>
         <div v-else>
@@ -91,22 +90,6 @@
 
         ref: '$doc',
         
-        methods: {
-
-            allMarkdown() {
-
-                console.log('test')
-
-                const res = _.map(this.$refs.markdown, comp => {
-
-                    return comp.markdown;
-
-                });
-
-            }
-
-        },
-
         computed: {
 
             types() {

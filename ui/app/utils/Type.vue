@@ -1,11 +1,11 @@
 <template>
     <span>
         <template v-if="isComplexType">
-            <Type :type="primeType"/>.<<Type v-for="(t,i) in secondaryTypes" :key="t" :type="t" :comma="i < secondaryTypes.length - 1"/>>
+            <Type :type="primeType"/>.(<Type v-for="(t,i) in secondaryTypes" :key="t" :type="t" :comma="i < secondaryTypes.length - 1"/>)
         </template>
-        <ModuleLink v-else-if="types[type]" :resource="types[type]" :name="type"/>
-        <a v-else-if="apiDocLink" :href="apiDocLink">{{type}}</a>
-        <span v-else>{{type}}</span>
+        <ModuleLink v-else-if="types[type]" :resource="types[type]" :name="primeType"/>
+        <a v-else-if="apiDocLink" :href="apiDocLink">{{primeType}}</a>
+        <span v-else>{{primeType}}</span>
         <span v-if="comma">, </span>
     </span>
 </template>

@@ -10,13 +10,19 @@ import 'prismjs/themes/prism.css'
 
 import Prism from 'vue-prism-component';
 
-import MarkdownMixin from './MarkdownMixin';
-
 Vue.use(VueRouter);
 
 Vue.component('Code', Prism);
 
-Vue.mixin(MarkdownMixin);
+Vue.mixin({
+    created() {
+
+        if (this.$options.ref) {
+            window[this.$options.ref] = this;
+        }
+    
+    }
+});
 
 let app;
 

@@ -8,6 +8,7 @@ module.exports = class Plugin extends EventEmitter {
         this.setMaxListeners(0);
 
     }
+    
     /**
      *
      * @param {Object} desc

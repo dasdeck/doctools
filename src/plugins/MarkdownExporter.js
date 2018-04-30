@@ -2,8 +2,17 @@ const Plugin = require('../Plugin');
 const Package = require('../Package');
 const path = require('path');
 const fs = require('fs');
+
+const Turndown = require('turndown');
+const {gfm} = require('turndown-plugin-gfm');
+
 const markdownAdapterSource = '../../ui/MarkdownAdapter.min.js';
 
+
+const turndown = new Turndown({
+    codeBlockStyle: 'fenced'
+});
+turndown.use(gfm);
 
 /**
  * attemts to load the described class
@@ -25,6 +34,8 @@ module.exports = class MarkdownExporter extends Plugin {
           }
       }
 
+
+
       const comp = {
           ...Content, 
           provide: {
@@ -35,6 +46,18 @@ module.exports = class MarkdownExporter extends Plugin {
               '$doc'() {
                   return $doc;
               }
+          },
+          methods: {
+            ...Content.methods,
+            toMarkdown() {
+
+              const toMD = this.$el.cloneNode(true);
+
+              const UIkit = require('uikit');
+              UIkit.util.remove(UIkit.util.$$('.nomd', toMD));
+              return turndown.turndown(toMD.outerHTML);
+      
+            }
           }
       };
 
@@ -54,9 +77,7 @@ module.exports = class MarkdownExporter extends Plugin {
       const clear = require('jsdom-global')();
       
       const Vue = require('vue/dist/vue');
-      const {MarkdownMixin} = require(markdownAdapterSource);
 
-      Vue.mixin(MarkdownMixin);
       Vue.component('RouterLink', {
         template: '<a :href="`${to}.md`"><slot/></a>',
         props:['to']
@@ -79,16 +100,16 @@ module.exports = class MarkdownExporter extends Plugin {
         const Comp = Vue.extend(CompDesc);
         const vm = new Comp({propsData: {resource: resource.resource}});
         vm.$mount();
-        const markdown = vm.markdown;
+        const markdown = vm.toMarkdown();
+        resource.markdown = markdown;
         vm.$destroy();
-
 
         fs.writeFileSync(path.join(dir, resource.resource + '.md'), markdown);
    
       });
 
-
       const vuePressDir = path.join(dir, '.vuepress');
+      
       try {
         fs.mkdirSync(vuePressDir);
         
@@ -101,7 +122,7 @@ module.exports = class MarkdownExporter extends Plugin {
             sidebar: _.map(data.resources, res => [res.resource + '.md', res.name])
             
         }
-      })}`)
+      }, null, 2)}`);
 
       setImmediate(clear);
     }

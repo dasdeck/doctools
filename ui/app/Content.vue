@@ -13,25 +13,23 @@
 
         <!-- This is the nav containing the toggling elements -->
         <ul uk-switcher class="uk-subnav uk-subnav-pill nomd">
+            <li v-if="data.readme"><a href="">readme</a></li>
             <li><a href="">api</a></li>
             <li v-if="data.globals"><a href="">globals</a></li>
             <li v-if="data.script"><a href="">code</a></li>
             <li v-if="data.template"><a href="">template</a></li>
             <li v-if="data.tests"><a href="">test</a></li>
-            <li><a href="">markdown</a></li>
+            <li v-if="data.markdown"><a href="">markdown</a></li>
         </ul>
 
         <!-- This is the container of the content items -->
         <div class="uk-switcher">
-            <div>
-                <component :is="data.type" :data="data"></component>
-            </div>
-            <div v-if="data.globals">
-                <Globals :data="data.globals"/>
-            </div>
+            <Markdown v-if="data.readme" :text="data.readme"/>
+            <component :is="data.type" :data="data"></component>
+            <Globals v-if="data.globals" :data="data.globals"/>
             <div v-if="data.script">
                 <h2>code:</h2>
-                <Code language="javascript">{{data.script.replace(/`/g, '(`)')}}</Code>
+                <Code language="javascript">{{data.script.replace(/```/g, ',,,')}}</Code>
             </div>
             <div v-if="data.template">
                 <h2>template:</h2>
@@ -43,11 +41,9 @@
             <div v-if="data.tests">
                 tests
             </div>
-            <div v-html="reHtml">
-            </div>
-            <div v-html="markdown">
-            </div>
+            <Markdown v-if="data.markdown" :text="data.markdown"/>
         </div>
+        
     </div>
 </template>
 
@@ -58,6 +54,7 @@
     import Package from './types/Package.vue';
     import ModuleLink from './utils/ModuleLink.vue';
     import Globals from './utils/Globals.vue';
+    import Markdown from './utils/Markdown.vue';
 
     /**
      * component wrapper for the vue-router
@@ -71,7 +68,8 @@
             Module: Module,
             Package,
             ModuleLink,
-            Globals
+            Globals,
+            Markdown
         },
 
         ref: '$content',
@@ -84,16 +82,6 @@
              * will be set by vue router
              */
             resource: String
-        },
-
-        watch: {
-            data() {
-                this.createMarkdown();
-            }
-        },
-
-        mounted() {
-            this.createMarkdown();
         },
 
         computed: {

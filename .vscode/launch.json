@@ -21,8 +21,18 @@
             "program": "${workspaceFolder}/node_modules/.bin/webpack",
             "cwd": "${workspaceFolder}/examples",
             "args": [
+                "${workspaceFolder}/examples"
+            ]
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "webpack plugin (watch)",
+            "program": "${workspaceFolder}/node_modules/.bin/webpack",
+            "cwd": "${workspaceFolder}/examples",
+            "args": [
                 "${workspaceFolder}/examples",
-                "--dev"
+                "-w"
             ]
         },
         {
@@ -48,6 +58,16 @@
         {
             "type": "node",
             "request": "launch",
+            "name": "examples (watch)",
+            "program": "${workspaceFolder}/bin/doctools.js",
+            "args": [
+                "${workspaceFolder}/examples",
+                "--dev"
+            ]
+        },
+        {
+            "type": "node",
+            "request": "launch",
             "name": "examples (explain)",
             "program": "${workspaceFolder}/bin/doctools.js",
             "args": [
@@ -59,11 +79,12 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "examples (dev)",
+            "name": "examples (dev-server)",
             "program": "${workspaceFolder}/bin/doctools.js",
             "args": [
                 "${workspaceFolder}/examples",
-                "--dev"
+                "--dev",
+                "--server"
             ]
         }
     ]

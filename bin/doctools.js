@@ -8,27 +8,16 @@ const _ = require('lodash');
 
 const argv = require('minimist')(process.argv.slice(2), {
     '--': true,
-    boolean: ['dev', 'explain'],
+    boolean: ['dev', 'explain', 'server'],
     string: ['config', 'search'],
     alias: {
         config: ['c', '--config'],
+        server: ['serv', '--server'],
         search: ['s', '--search'],
         dev: ['d', '--dev'],
         explain: ['e', '--explain']
     }
 });
-
-
-// const object = {};
-
-// const flat = (ns, k, nso) => {
-
-//     debugger;
-//     // console.log(ns, k, nso);
-// }
-
-// _.setWith(object, 'examples.sub', 'b', flat);
-// _.setWith(object, 'examples', {name: 'test'}, flat);
 
 
 /**
@@ -46,6 +35,7 @@ config.base = argv._[0] || process.cwd(); //set base default early, for webpack 
 config.search = argv.search;
 config.dev = argv.dev;
 config.config = argv.config;
+config.server = argv.server;
 
 config = parser.prepareConfig(config);
 
@@ -58,38 +48,36 @@ if (process.mainModule.filename !== __filename) {
 
 } else if (argv.explain) {
 
-    // config.watch = false;
-
+    config.watch = false;
+    
     const pack = parser.parse(config);
+    
+    pack.analyze().then(() => {
+        pack.write().then(console.log);
+    });
 
-    if (config.watch) {
+} else if (config.server) {
 
-        pack.on('change', res => {
-            pack.analyze().then(() => {
-                pack.write().then(console.log);
-            });
-        });
-        pack.emit('change');
-
-    } else {
-
-        pack.analyze().then(() => {
-            pack.write().then(console.log);
-        });
-    }
-
-} else {
+    config.watch = true;
 
     process.argv = [...process.argv.slice(0, 2), ...argv['--']];
-    //force the dev-server to use local config
     const uiWPConfig = path.join(__dirname, '..', 'ui', 'webpack.config.js');
 
     manualStart(uiWPConfig);
-    // process.argv.push('--config');
-    // process.argv.push(uiWPConfig);
-    // require('webpack-dev-server/bin/webpack-dev-server');
 
-}
+} else { 
+
+    const pack = parser.parse(config);
+
+    pack.on('change', res => {
+        console.log('package changed, updating...')
+        pack.analyze().then(() => {
+            pack.write().then(res => console.log('package updated!'));
+        });
+    });
+    pack.emit('change');
+
+} 
 
 function manualStart(cfg) {
 
