@@ -177,11 +177,13 @@ I can write as much as I want here because this block is called "readme"
     <div>{{test}}</div>
 </template>
 <script>
-console.log(`i'm here`);
 export default {
     computed: {
         test() {
             return 'tested!';
+        },
+        created() {
+            console.log('example created');
         }
     }
 }

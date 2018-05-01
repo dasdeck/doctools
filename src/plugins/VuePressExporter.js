@@ -8,9 +8,9 @@ const prismjs = require('prismjs');
  * attemts to load the described class
  * mark module for runtime analysis by setting a member runtime = true
  */
-class MarkdownExporter extends Plugin {
+class VuePressExporter extends Plugin {
 
-    constructor(config = MarkdownExporter.defaultConfig) {
+    constructor(config = VuePressExporter.defaultConfig) {
         super();
         this.config = config;
 
@@ -170,11 +170,11 @@ class MarkdownExporter extends Plugin {
 
 }
 
-MarkdownExporter.defaultConfig = {
+VuePressExporter.defaultConfig = {
     /**
      * if you only want
      */
     subdir: true
 };
 
-module.exports = MarkdownExporter;
+module.exports = VuePressExporter;

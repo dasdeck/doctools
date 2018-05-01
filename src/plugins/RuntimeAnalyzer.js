@@ -7,7 +7,8 @@ const webpack = require('webpack');
 const MemFs = require('memory-fs');
 const requireFromString = require('require-from-string');
 const Package = require('../Package');
-
+const path = require('path');
+const mkpath = require('mkpath');
 
 /**
  * attemts to load the described class
@@ -134,7 +135,7 @@ class RuntimeAnalyzer extends Plugin {
             ...runtime,
             entry,
             output: {
-                libraryTarget: 'commonjs'
+                libraryTarget: this.config.libraryTarget
             }
         };
 
@@ -224,8 +225,7 @@ class RuntimeAnalyzer extends Plugin {
         const resfname = Object.keys(res.compilation.assets)[0];
         const script = this.outputFileSystem.readFileSync(resfname ,'utf8');
 
-        this.pack.logFile('index.min.js', script);
-        try {
+        // this.pack.logFile('index.min.js', script);
 
             // const code = `const clear = require('jsdom-global')();
             // ${script}
@@ -238,19 +238,42 @@ class RuntimeAnalyzer extends Plugin {
 
             // const rt = vm.runInContext(code, sandbox);
 
-            const clear = require('jsdom-global')();
-            const rt = requireFromString(script);
-            setImmediate(clear);
+            if (!this.config.output) {
 
-            this.cache = rt.default ? rt.default : rt;
-            this.emit('change', this.cache);
+                try {
+
+                    const clear = require('jsdom-global')();
+                    const rt = requireFromString(script);
+                    setImmediate(clear);
+                    
+                    this.cache = rt.default ? rt.default : rt;
+                    this.emit('change', this.cache);
+
+                } catch(e) {
+
+                    this.pack.log('could not load runtime');
+                    this.pack.log(e);
+                    // resolve({});
+                }
+
+            } else {
+
+                let dir; 
+                if (path.isAbsolute(this.config.output)) {
+                    dir = this.config.output;
+                } else {
+                    dir = path.join(this.pack.config.base, this.config.output);
+                }
+                mkpath.sync(dir);
+                const file = path.join(dir, 'index.js');
+                fs.writeFileSync(file, script);
+                this.pack.log('runtime written to:', file);
+
+            }
             // resolve(rt.default ? rt.default : rt);
             this.pack.log('webpack built');
-        } catch(e) {
-            this.pack.log('could not load runtime');
-            this.pack.log(e);
-            // resolve({});
-        }
+
+        
     }
 
     onDispose() {
@@ -295,7 +318,9 @@ class RuntimeAnalyzer extends Plugin {
 }
 
 RuntimeAnalyzer.defaultOptions = {
-    watch: true
+    watch: true,
+    output: false,
+    libraryTarget: 'commonjs'
 }
 
 module.exports = RuntimeAnalyzer;

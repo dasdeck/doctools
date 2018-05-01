@@ -1,3 +1,6 @@
+const RuntimeAnalyzer = require('./plugins/RuntimeAnalyzer');
+const VueRunner = require('./runnner/VueRunner');
+
 /**
  * @file
  * @type {example}
@@ -72,7 +75,8 @@ module.exports = {
         'VueComponentMapper',
         'ComponentLinker',
         // 'MarkdownExporter',
-        // 'VuePressExporter'
+        // 'VuePressExporter',
+        new RuntimeAnalyzer(VueRunner.RTAConfig)
     ],
 
     /**

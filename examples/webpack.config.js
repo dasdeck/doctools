@@ -22,8 +22,8 @@ module.exports = {
     plugins: [new DocToolsWebpack()],
 
     externals: {
-        'vue': 'Vue',
-        'uikit': 'UIkit'
+        'vue': 'Vue'
+        // 'uikit': 'UIkit'
     },
 
     module: {

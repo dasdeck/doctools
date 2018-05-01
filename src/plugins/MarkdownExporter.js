@@ -6,7 +6,6 @@ const _ = require('lodash');
 
 const Turndown = require('turndown');
 
-const {gfm} = require('turndown-plugin-gfm');
 
 const markdownAdapterSource = '../../ui/MarkdownAdapter.min.js';
 
@@ -16,7 +15,6 @@ const turndown = new Turndown({
     fence: '~~~',
     headingStyle: 'atx'
 });
-// turndown.use(gfm);
 turndown.keep(['table']);
 
 /**
