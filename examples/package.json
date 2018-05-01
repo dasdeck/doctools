@@ -16,7 +16,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "dasdeck/random-repo"
+    "url": "dasdeck/doctools",
+    "workspace": "examples"
   },
   "author": "",
   "license": "MIT",

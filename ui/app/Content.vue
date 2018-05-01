@@ -46,6 +46,7 @@
 
         <hr>
         <i v-if="data.package">package: <ModuleLink :resource="data.package"/></i>
+        <i v-if="repoLink">source: <a :href="repoLink">test</a></i>
     </div>
 </template>
 
@@ -87,17 +88,6 @@
             resource: String
         },
 
-        // created() {
-
-        // },
-
-        // methods: {
-        //     tab(e) {
-
-        //         this.$router.push(`/${this.$route.params.resource}/${e.target.innerHTML}`)
-        //     }
-        // },
-
         computed: {
 
             apiHasContent() {
@@ -107,6 +97,31 @@
 
             globals() {
                 return this.data.globals && _.size(this.data.globals);
+            },
+
+            repoLink() {
+                if  (this.repo) {
+
+                    const shorthands = {
+                        'github:': 'https://github.com'
+                    }
+
+                    let url = this.repo.url;
+
+                    if(!_.some(shorthands, (rep, ser) => url.includes(ser) && url.replace(ser, rep + '/'))) {
+                        url = `${Object.values(shorthands)[0]}/${url}`;
+                    }
+                    return `${url}/tree/master/${this.repo.workspace}/${this.data.fileInPackage}`;
+                }
+            },
+
+            repo() {
+
+                const root = this.$doc.resources[this.$doc.data.rootPackage];
+                const repo = root && root.packageJson && root.packageJson.repository;
+
+                return repo;
+
             },
 
             /**

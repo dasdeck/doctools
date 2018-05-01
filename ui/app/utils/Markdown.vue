@@ -8,10 +8,10 @@
 import marked from 'marked';
 import Prism from 'prismjs';
 import Vue from 'vue';
+import UIkit from 'uikit';
 
 import ExampleRunner from '../ExampleRunner.vue';
 
-const ExampleRunnnerComp = Vue.extend(ExampleRunner);
 
 function guid() {
   function s4() {
@@ -42,7 +42,13 @@ export default {
                 });
                 return `<div id="${id}"></div>`;
             } else {
-                return defaultRenderer.code(code, lang, escaped);
+                // debugger;    
+                if (Prism.languages[lang]) {
+                        return `<pre><code class="language-${lang}">${Prism.highlight(code, Prism.languages[lang], lang)}</code></pre>`;
+                    } else {
+                        return defaultRenderer.code(code, lang, escaped);;
+                    }
+                // return 
             }
         };
         return {
@@ -51,32 +57,53 @@ export default {
         };
     },
 
-    created() {
-
+    mounted() {
+        this.updateExampleRunners();
     },
 
     watch: {
+        html() {
 
-        runners: {
-            handler(runners) {
-
-                runners.forEach(runner => {
-                    if (!runner.instance) {
-                        runner.instance = new ExampleRunnnerComp({propsData: {data: runner}, el:`#${runner.id}`});
-                    }
-                });
-
-            },
-            immediate: true
+            this.clearRunners();
+            this.updateExampleRunners();
         }
 
     },
 
+    methods: {
+
+        clearRunners() {
+            this.runners.forEach(runner => {
+                if (runner.instance) {
+                    runner.instance.$destroy();
+                }
+            });
+
+            this.runners = this.runners.filter(runner => !runner.instance);
+        },
+
+        updateExampleRunners() {
+            // if(this.runners.length) {
+
+            //     debugger;
+            // }
+            this.runners.forEach(runner => {
+                if (!runner.instance) {
+                    const el = UIkit.util.$(`#${runner.id}`, this.$el);
+                    const ExampleRunnnerComp = Vue.extend(ExampleRunner);
+                    runner.instance = new ExampleRunnnerComp({propsData: {data: runner}, el});
+                }
+            });
+        }
+    },
+
     computed: {
         html() {
+            this.clearRunners();
             return this.text && marked(this.text, {
                 renderer: this.renderer,
                 highlight: function (code, lang) {
+                    debugger;
                     if (Prism.languages[lang]) {
                         return Prism.highlight(code, Prism.languages[lang], lang);
                     } else {

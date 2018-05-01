@@ -3,7 +3,7 @@ const path = require('path');
 const fs = require('fs');
 const mkpath = require('mkpath');
 const _ = require('lodash');
-
+const prismjs = require('prismjs');
 /**
  * attemts to load the described class
  * mark module for runtime analysis by setting a member runtime = true
@@ -13,6 +13,20 @@ class MarkdownExporter extends Plugin {
     constructor(config = MarkdownExporter.defaultConfig) {
         super();
         this.config = config;
+
+        const examples = this.examples = {};
+
+        const clear = require('jsdom-global')();
+        const {ExampleRunner} = require('../../ui/MarkdownAdapter.min.js');
+
+        ExampleRunner.mounted = function() {
+            examples[this.data.id] = _.omit(this.data, ['instance']);
+            // debugger;
+            // prismjs.highlightElement(this.$refs.code);
+        }
+        
+        setImmediate(clear);
+
     }
 
     getResourcFileName(res) {
@@ -31,7 +45,8 @@ class MarkdownExporter extends Plugin {
 
     writeMarkdown() {
 
-        _.forEach(this.pack.getResources(), res => {
+        const resources = this.pack.getResources();
+        _.forEach(resources, res => {
 
             //cleanup links
             const file = this.getResourcFileName(res);
@@ -54,6 +69,10 @@ class MarkdownExporter extends Plugin {
                 }
             }
         })
+
+        fs.writeFileSync(path.join(this.getDir(), 'README.md'), _.map(resources, res => {
+            return `[${res.name}](${this.getResourceMDName(res)})`;
+        }).join('\n\n'));
             
     }
 
@@ -105,6 +124,8 @@ class MarkdownExporter extends Plugin {
         const subDir = this.config.subdir === true ? this.pack.name : this.config.subdir;
         return subDir ? path.join(dir, subDir) : dir;
     }
+
+
     /**
      * helper function to load the runtime for a component or module
      * @param {*} config
@@ -118,13 +139,14 @@ class MarkdownExporter extends Plugin {
 
         const confDir = path.join(dir, '.vuepress');
         
+        fs.writeFileSync(path.join(this.getDir(), 'examples.json'), JSON.stringify(this.examples, null, 2));
 
         //TODO write toc on front page
         if (this.config.subdir) {
             
             mkpath.sync(dir);
             const sidebar = this.getSideBar();
-            fs.writeFileSync(path.join(this.getDir(), 'index.js'), `module.exports = ${JSON.stringify(sidebar, null, 2)};`);
+            fs.writeFileSync(path.join(this.getDir(), 'sidebar.json'), JSON.stringify(sidebar, null, 2));
             
         } else {
 

@@ -92,6 +92,10 @@ class MarkdownExporter extends Plugin {
 
       const clear = require('jsdom-global')();
 
+      document.body.innerHTML = `<div id="app"></div>`;
+
+      const appEl = document.getElementById('app');
+
       const Vue = require('vue/dist/vue');
 
       Vue.component('RouterLink', {
@@ -103,8 +107,9 @@ class MarkdownExporter extends Plugin {
           }
         }
       });
+
       Vue.component('Code', {
-        template: '<pre ><code :class="`language-${language}`"><slot/></code></pre>',
+        template: '<pre><code :class="`language-${language}`"><slot/></code></pre>',
         props:['language']
       });
 
@@ -122,7 +127,7 @@ class MarkdownExporter extends Plugin {
         const CompDesc = this.getShallowContet(data, resource);
         const Comp = Vue.extend(CompDesc);
         const vm = new Comp({propsData: {resource: resource.resource}});
-        vm.$mount();
+        vm.$mount(appEl);
         const markdown = vm.toMarkdown();
 
         const changed = resource.markdown !== markdown;

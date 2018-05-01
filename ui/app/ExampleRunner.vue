@@ -1,30 +1,50 @@
 <template>
-  <div >
+  <div>
+      <div class="nomd">
 
-<!-- This is the nav containing the toggling elements -->
-<ul uk-switcher class="uk-subnav uk-subnav-pill">
-    <li><a href="">preview</a></li>
-    <li><a href="">code</a></li>
-</ul>
+    <ul uk-switcher class="uk-subnav uk-subnav-pill">
+        <li><a href="">preview</a></li>
+        <li><a href="">code</a></li>
+    </ul>
 
-<!-- This is the container of the content items -->
-<div class="uk-switcher">
-    <div v-html="data.code"></div>
-    <Code>{{data.code}}</Code>
-</div>
+    <div class="uk-switcher">
+        <div v-html="data.code"></div>
+        <Code ref="code" :language="language">{{data.code}}</Code>
+    </div>
+      </div>
+      <div style="display:none;">
+          {{`&lt;ExampleRunner id="${data.id}"/>`}}
+      </div>
   </div>
 </template>
 
 <script>
 
-import 'uikit';
-// import 'uikit/dist/css/'
-import UIkitRunner from '../../src/runnner/UIkitRunner';
-const runnner = new UIkitRunner();
 
-export default {
+const ExampleRunner = {
+
+    runners: {},
+
     props: {
-        data: Object,
+        id: String,
+        data: {
+            type: Object,
+            default() {
+                return ExampleRunner.examples && ExampleRunner.examples[this.id]
+            }
+        }
+    },
+
+    computed: {
+        language() {
+            return this.runner && this.runner.getLanguage();
+        },
+
+        runner() {
+            return ExampleRunner.runners[this.data.lang.split(':').pop()];
+        }
     }
 }
+export default ExampleRunner;
+
 </script>
