@@ -71,8 +71,8 @@ module.exports = {
         'UIkitComponentMapper',
         'VueComponentMapper',
         'ComponentLinker',
-        'MarkdownExporter',
-        'VuePressExporter'
+        // 'MarkdownExporter',
+        // 'VuePressExporter'
     ],
 
     /**

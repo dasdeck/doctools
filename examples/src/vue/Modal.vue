@@ -171,6 +171,24 @@
 
 <docs name="readme">
 I can write as much as I want here because this block is called "readme"
+
+```run:vue
+<template>
+    <div>{{test}}</div>
+</template>
+<script>
+console.log(`i'm here`);
+export default {
+    computed: {
+        test() {
+            return 'tested!';
+        }
+    }
+}
+</script>
+```
+
+more text
 </docs>
 
 <docs name="example1">

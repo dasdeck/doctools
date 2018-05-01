@@ -42,13 +42,11 @@ export default {
                 });
                 return `<div id="${id}"></div>`;
             } else {
-                // debugger;    
                 if (Prism.languages[lang]) {
-                        return `<pre><code class="language-${lang}">${Prism.highlight(code, Prism.languages[lang], lang)}</code></pre>`;
-                    } else {
-                        return defaultRenderer.code(code, lang, escaped);;
-                    }
-                // return 
+                    return `<pre><code class="language-${lang}">${Prism.highlight(code, Prism.languages[lang], lang)}</code></pre>`;
+                } else {
+                    return defaultRenderer.code(code, lang, escaped);;
+                }
             }
         };
         return {
@@ -62,9 +60,11 @@ export default {
     },
 
     watch: {
-        html() {
 
+        text() {
             this.clearRunners();
+        },
+        html() {
             this.updateExampleRunners();
         }
 
@@ -83,13 +83,17 @@ export default {
         },
 
         updateExampleRunners() {
-            // if(this.runners.length) {
-
-            //     debugger;
-            // }
-            this.runners.forEach(runner => {
+            this.runners.some(runner => {
                 if (!runner.instance) {
                     const el = UIkit.util.$(`#${runner.id}`, this.$el);
+
+                    if (!el) {
+                        //not yet rendered, try next iteration
+                        Vue.nextTick(res => {
+                            this.updateExampleRunners();
+                        });
+                        return true;
+                    }
                     const ExampleRunnnerComp = Vue.extend(ExampleRunner);
                     runner.instance = new ExampleRunnnerComp({propsData: {data: runner}, el});
                 }
@@ -99,18 +103,7 @@ export default {
 
     computed: {
         html() {
-            this.clearRunners();
-            return this.text && marked(this.text, {
-                renderer: this.renderer,
-                highlight: function (code, lang) {
-                    debugger;
-                    if (Prism.languages[lang]) {
-                        return Prism.highlight(code, Prism.languages[lang], lang);
-                    } else {
-                        return code;
-                    }
-                }
-            });
+            return this.text && marked(this.text, {renderer: this.renderer});
         }
     }
 }

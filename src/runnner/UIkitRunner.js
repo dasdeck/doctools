@@ -17,8 +17,9 @@ module.exports = class UIkitRunner {
 
     }
 
-    getLanguage() {
-        return 'html';
+    getLanguage(code) {
+
+        return code.trim().substr(0, 1) === '<' ? 'html' : 'js';
     }
     
 }

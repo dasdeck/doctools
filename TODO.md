@@ -2,6 +2,8 @@
 -vuepress only subdirecties (index with menus, etc.)
 -default menu from config (recursive with functions)
 
+-strange whitespace in code class?
+
 -write meaningful index file for MD
 
 -example executer
