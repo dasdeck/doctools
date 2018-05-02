@@ -3,6 +3,8 @@
   "version": "1.0.0",
   "description": "collection of helpers to generate code documentation",
   "main": "src/parser.js",
+  "module": "exports.es.js",
+  "sideEffects": false,
   "bin": {
     "doctools": "./bin/doctools.js"
   },

@@ -73,16 +73,5 @@ const MarkdownAdapter = {
     externals: undefined
 }
 
-const VuePressAdapter = {
-    ...base,
 
-    entry: {
-        'VuePressAdapter': './VuePressAdapter.js'
-    },
-
-    externals: {
-        'vue': 'Vue'
-    }
-}
-
-module.exports = [base, MarkdownAdapter, VuePressAdapter];
+module.exports = [base, MarkdownAdapter];

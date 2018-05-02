@@ -2,12 +2,12 @@
   <div>
       <div class="nomd">
 
-        <!-- <ul uk-switcher class="uk-subnav uk-subnav-pill">
+        <ul uk-switcher class="uk-subnav uk-subnav-pill">
             <li><a href="">preview</a></li>
             <li><a href="">code</a></li>
-        </ul> -->
+        </ul>
 
-        <!-- <div class="uk-switcher"> -->
+        <div class="uk-switcher">
             <div class="preview" >
                 <div v-html="preview"></div>
             </div>
@@ -15,7 +15,7 @@
                 <!-- <Code ref="code" v-model="code" :options="codemirrorOpts" :language="language">{{code}}</Code> -->
                 <Code ref="code" :language="language">{{code}}</Code>
             </div>
-        <!-- </div> -->
+        </div>
       </div>
       <div style="display:none;">
           {{`&lt;ExampleRunner id="${data.id}" resource="${data.resource}"/>`}}
@@ -25,7 +25,7 @@
 
 <script>
 
-import UIkit from 'uikit';
+// import UIkit from 'uikit';
 // import { codemirror } from 'vue-codemirror';
 // import 'codemirror/lib/codemirror.css'
 // import 'codemirror/mode/vue/vue.js'
