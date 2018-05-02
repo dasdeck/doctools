@@ -9,7 +9,7 @@ if (typeof process === 'undefined') {
 }
 
 const umdPlugin = require('babel-plugin-transform-es2015-modules-umd');
-const Vue = require('vue').default || require('vue'); //hack for vuepress 
+const Vue = require('vue').default || require('vue'); //hack for vuepress
 const vueTemplateCompiler = require('vue-template-compiler');
 
 class VueRunner {
@@ -20,7 +20,7 @@ class VueRunner {
 
     getComponentDefinition(rawScript) {
 
-        const transformed = babel.transform(rawScript, { 
+        const transformed = babel.transform(rawScript, {
             presets: ['es2015'],
             plugins: [umdPlugin]
         });
@@ -43,7 +43,7 @@ class VueRunner {
     preview(code, el, resource) {
 
         let componentDefinition;
-        
+
         if (this.getLanguage(code) === 'html') {
             const res = vueTemplateCompiler.parseComponent(code);
             componentDefinition = this.getComponentDefinition(res.script.content);
@@ -51,27 +51,27 @@ class VueRunner {
         } else {
             componentDefinition = this.getComponentDefinition(code);
         }
-        
+
         if (componentDefinition.template) {
-            
+
             const renderFuncs = vueTemplateCompiler.compileToFunctions(componentDefinition.template, componentDefinition);
             componentDefinition.render = renderFuncs.render;
         }
-        
+
         const comp = Vue.extend(componentDefinition);
         const instance = new comp();
-        
+
         instance.$mount(el);
-            
+
         return '...loading';
-     
+
     }
 }
 
 VueRunner.runtime = {};
 
 VueRunner.RTAConfig = {
-    libraryTarget: 'var',
+    libraryTarget: 'umd',
     output: 'runtime'
 }
 

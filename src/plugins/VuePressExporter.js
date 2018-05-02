@@ -24,7 +24,7 @@ class VuePressExporter extends Plugin {
             // debugger;
             // prismjs.highlightElement(this.$refs.code);
         }
-        
+
         setImmediate(clear);
 
     }
@@ -32,7 +32,7 @@ class VuePressExporter extends Plugin {
     getResourcFileName(res) {
 
         const filename = this.getResourceMDName(res);
-        const dir = this.getDir();
+        const dir = this.getDataDir();
         const file = path.join(dir, filename);
         return file;
     }
@@ -53,11 +53,11 @@ class VuePressExporter extends Plugin {
             let markdown = res.markdown;
 
             _.forEach(this.pack.getResources(), res => {
-                
+
                 const file = this.getResourceMDName(res);
-                markdown = markdown.replace(new RegExp(`href="${file}"`, 'g'), `href="${file.replace('.md', '.html')}"`);           
+                markdown = markdown.replace(new RegExp(`href="${file}"`, 'g'), `href="${file.replace('.md', '.html')}"`);
             });
-            
+
             let changed;
             try {
                 changed = fs.readFileSync(file, 'utf8') !== markdown
@@ -70,10 +70,10 @@ class VuePressExporter extends Plugin {
             }
         })
 
-        fs.writeFileSync(path.join(this.getDir(), 'README.md'), _.map(resources, res => {
+        fs.writeFileSync(path.join(this.getDataDir(), 'README.md'), _.map(resources, res => {
             return `[${res.name}](${this.getResourceMDName(res)})`;
         }).join('\n\n'));
-            
+
     }
 
     getResourceSidebarEntry(res) {
@@ -91,7 +91,7 @@ class VuePressExporter extends Plugin {
         if (menu) {
 
             const resources = this.pack.getResources();
-            
+
             return menu.map(entry => {
                 return {
                     title: entry.label,
@@ -104,26 +104,33 @@ class VuePressExporter extends Plugin {
         } else {
 
             const packages = _.filter(this.pack.getResources(), res => res.type === 'package');
-            
+
             return _.map(packages, pack => {
-                
+
                 const resources = _.filter(pack.getPackageModules(), res => res.markdown);
                 return {
                     title: pack.name,
                     children: _.map(resources, res => this.getResourceSidebarEntry(res))
                 };
-                
+
             });
 
         }
 
     }
 
-    getDir() {
-        const dir = path.join(this.pack.config.base, 'vuepress');
+    getBaseDir() {
+        return path.isAbsolute(this.config.outputDir) ? this.config.outputDir : path.join(this.pack.config.base, this.config.outputDir);
+
+    }
+
+    getDataDir() {
+        const dir = this.getBaseDir();
         const subDir = this.config.subdir === true ? this.pack.name : this.config.subdir;
         return subDir ? path.join(dir, subDir) : dir;
     }
+
+
 
 
     /**
@@ -135,22 +142,23 @@ class VuePressExporter extends Plugin {
 
         this.pack = pack;
 
-        const dir = this.getDir();
+        const dir = this.getDataDir();
+        mkpath.sync(dir);
 
         const confDir = path.join(dir, '.vuepress');
-        
-        fs.writeFileSync(path.join(this.getDir(), 'examples.json'), JSON.stringify(this.examples, null, 2));
+
+        fs.writeFileSync(path.join(this.getDataDir(), 'examples.json'), JSON.stringify(this.examples, null, 2));
 
         //TODO write toc on front page
         if (this.config.subdir) {
-            
-            mkpath.sync(dir);
+
             const sidebar = this.getSideBar();
-            fs.writeFileSync(path.join(this.getDir(), 'sidebar.json'), JSON.stringify(sidebar, null, 2));
-            
+            fs.writeFileSync(path.join(this.getDataDir(), 'sidebar.json'), JSON.stringify(sidebar, null, 2));
+
         } else {
 
             mkpath.sync(confDir);
+
             const config = {
                 title: pack.name,
 
@@ -174,7 +182,11 @@ VuePressExporter.defaultConfig = {
     /**
      * if you only want
      */
-    subdir: true
+    subdir: true,
+
+    outputDir: 'vuepress'
+
+
 };
 
 module.exports = VuePressExporter;

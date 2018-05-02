@@ -23,6 +23,7 @@
                     <FileTree :resources="resources"/>
                 </div>
             </div>
+
             <router-view class="uk-width-3-4"/>
 
 

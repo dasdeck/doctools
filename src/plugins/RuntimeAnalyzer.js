@@ -41,13 +41,13 @@ class RuntimeAnalyzer extends Plugin {
         this.outputFileSystem = new MemFs;
 
         if (this.config.serve && this.pack.config.devServer) {
-            
+
             this.pack.config.devServer.app.get('/' + this.config.serve, (req, res, next) => {
 
                 res.type('.js');
                 res.send(this.script);
                 next();
-    
+
             });
         }
 
@@ -212,7 +212,7 @@ class RuntimeAnalyzer extends Plugin {
                 return Promise.resolve(this.cache[resource]);
             } else {
                 return new Promise(resolve => {
-                    this.once('change', res => resolve(his.cach && this.cach[resource]));
+                    this.once('change', res => resolve(this.cach && this.cach[resource]));
                 })
             }
 
@@ -249,7 +249,7 @@ class RuntimeAnalyzer extends Plugin {
 
         if (this.config.output) {
 
-            let dir; 
+            let dir;
             if (path.isAbsolute(this.config.output)) {
                 dir = this.config.output;
             } else {
@@ -265,21 +265,21 @@ class RuntimeAnalyzer extends Plugin {
         if (this.load()) {
 
             try {
-                
+
                 const clear = require('jsdom-global')();
                 const rt = requireFromString(this.script);
                 setImmediate(clear);
-                
+
                 this.cache = rt.default ? rt.default : rt;
-                
+
             } catch(e) {
-                
+
                 this.pack.log('could not load runtime');
                 this.pack.log(e);
             }
 
         }
-        
+
         this.pack.log('webpack built');
         this.emit('change', this.cache);
 

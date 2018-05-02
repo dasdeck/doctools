@@ -5,3 +5,4 @@ examples/vuepress
 examples/log
 log
 *.min.js
+examples/runtime
