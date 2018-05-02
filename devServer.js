@@ -6,8 +6,9 @@ const path = require('path');
 
 class DevServerTools {
 
-    constructor(config) {
+    constructor(config, app) {
 
+        this.app = app;
         this.config = config;
 
         if (config.dev) {
@@ -94,7 +95,10 @@ module.exports = {
     inline: false,
     before(app) {
 
-        const server = new DevServerTools(global.doctoolsConfig);
+
+        const server = new DevServerTools(global.doctoolsConfig, app);
+        global.doctoolsConfig.devServer = server;// = app;
+        server.getPack(); //init once to register routes first
 
         app.get('/data.json', (req, res, next) => {
 

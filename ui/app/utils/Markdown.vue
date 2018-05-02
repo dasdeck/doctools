@@ -28,6 +28,8 @@ export default {
     props:{
         text: String
     },
+    
+    inject: ['$doc'],
 
     data() {
         const renderer = new marked.Renderer();
@@ -38,7 +40,8 @@ export default {
                     id,
                     lang,
                     code,
-                    escaped
+                    escaped,
+                    resource: this.$doc.selectedModule.resource
                 });
                 return `<div id="${id}"></div>`;
             } else {

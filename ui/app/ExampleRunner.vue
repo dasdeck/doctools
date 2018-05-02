@@ -68,7 +68,7 @@ const ExampleRunner = {
     },
     methods: {
         createPreview() {
-            const el = UIkit.util.$('.preview', this.$el);
+            const el = UIkit.util.$('.preview', this.$el, this.data.resource);
             if (!el) {
                 Vue.nextTick(res => {
                     this.createPreview();

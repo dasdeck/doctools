@@ -74,8 +74,8 @@ module.exports = {
         'UIkitComponentMapper',
         'VueComponentMapper',
         'ComponentLinker',
-        // 'MarkdownExporter',
-        // 'VuePressExporter',
+        'MarkdownExporter',
+        'VuePressExporter',
         new RuntimeAnalyzer(VueRunner.RTAConfig)
     ],
 

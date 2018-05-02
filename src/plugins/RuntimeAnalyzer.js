@@ -21,6 +21,9 @@ class RuntimeAnalyzer extends Plugin {
         super();
 
         this.config = config;
+
+        _.defaults(this.config, RuntimeAnalyzer.defaultOptions);
+
         this.indexFile = tempfile('.js');
 
     }
@@ -36,6 +39,17 @@ class RuntimeAnalyzer extends Plugin {
         this.config.watch = this.config.watch && this.pack.config.watch;
 
         this.outputFileSystem = new MemFs;
+
+        if (this.config.serve && this.pack.config.devServer) {
+            
+            this.pack.config.devServer.app.get('/' + this.config.serve, (req, res, next) => {
+
+                res.type('.js');
+                res.send(this.script);
+                next();
+    
+            });
+        }
 
 
         this.on('change', () => {
@@ -62,6 +76,7 @@ class RuntimeAnalyzer extends Plugin {
      * @param {*} desc
      */
     onAnalyze(pack) {
+
 
         if (!this.cache) {
             this.run();
@@ -135,7 +150,8 @@ class RuntimeAnalyzer extends Plugin {
             ...runtime,
             entry,
             output: {
-                libraryTarget: this.config.libraryTarget
+                libraryTarget: this.config.libraryTarget,
+                library: this.config.library
             }
         };
 
@@ -190,12 +206,18 @@ class RuntimeAnalyzer extends Plugin {
 
 
     getRuntime(resource) {
-        if (this.cache) {
-            return Promise.resolve(this.cache[resource]);
+
+        if (this.load()) {
+            if (this.cache) {
+                return Promise.resolve(this.cache[resource]);
+            } else {
+                return new Promise(resolve => {
+                    this.once('change', res => resolve(his.cach && this.cach[resource]));
+                })
+            }
+
         } else {
-            return new Promise(resolve => {
-                this.once('change', res => resolve(res[resource]));
-            })
+            return Promise.resolve();
         }
 
     }
@@ -223,57 +245,44 @@ class RuntimeAnalyzer extends Plugin {
     onWebPack(err, res) {
 
         const resfname = Object.keys(res.compilation.assets)[0];
-        const script = this.outputFileSystem.readFileSync(resfname ,'utf8');
+        this.script = this.outputFileSystem.readFileSync(resfname ,'utf8');
 
-        // this.pack.logFile('index.min.js', script);
+        if (this.config.output) {
 
-            // const code = `const clear = require('jsdom-global')();
-            // ${script}
-            // clear();`
-
-            // const vm = require('vm');
-
-            // const sandbox = {require};
-            // vm.createContext(sandbox);
-
-            // const rt = vm.runInContext(code, sandbox);
-
-            if (!this.config.output) {
-
-                try {
-
-                    const clear = require('jsdom-global')();
-                    const rt = requireFromString(script);
-                    setImmediate(clear);
-                    
-                    this.cache = rt.default ? rt.default : rt;
-                    this.emit('change', this.cache);
-
-                } catch(e) {
-
-                    this.pack.log('could not load runtime');
-                    this.pack.log(e);
-                    // resolve({});
-                }
-
+            let dir; 
+            if (path.isAbsolute(this.config.output)) {
+                dir = this.config.output;
             } else {
-
-                let dir; 
-                if (path.isAbsolute(this.config.output)) {
-                    dir = this.config.output;
-                } else {
-                    dir = path.join(this.pack.config.base, this.config.output);
-                }
-                mkpath.sync(dir);
-                const file = path.join(dir, 'index.js');
-                fs.writeFileSync(file, script);
-                this.pack.log('runtime written to:', file);
-
+                dir = path.join(this.pack.config.base, this.config.output);
             }
-            // resolve(rt.default ? rt.default : rt);
-            this.pack.log('webpack built');
+            mkpath.sync(dir);
+            const file = path.join(dir, 'index.js');
+            fs.writeFileSync(file, this.script);
+            this.pack.log('runtime written to:', file);
 
+        }
+
+        if (this.load()) {
+
+            try {
+                
+                const clear = require('jsdom-global')();
+                const rt = requireFromString(this.script);
+                setImmediate(clear);
+                
+                this.cache = rt.default ? rt.default : rt;
+                
+            } catch(e) {
+                
+                this.pack.log('could not load runtime');
+                this.pack.log(e);
+            }
+
+        }
         
+        this.pack.log('webpack built');
+        this.emit('change', this.cache);
+
     }
 
     onDispose() {
@@ -315,12 +324,18 @@ class RuntimeAnalyzer extends Plugin {
             return Promise.reject(e);
         }
     }
+
+    load() {
+        return this.config.libraryTarget === 'commonjs';
+    }
 }
 
 RuntimeAnalyzer.defaultOptions = {
     watch: true,
     output: false,
-    libraryTarget: 'commonjs'
+    libraryTarget: 'commonjs',
+    library: 'runtime',
+    serve: 'runtime'
 }
 
 module.exports = RuntimeAnalyzer;
