@@ -58,6 +58,17 @@
         {
             "type": "node",
             "request": "launch",
+            "name": "uikit (server)",
+            "program": "${workspaceFolder}/bin/doctools.js",
+            "args": [
+                "/Users/jms/uikit",
+                "--dev",
+                "--server"
+            ]
+        },
+        {
+            "type": "node",
+            "request": "launch",
             "name": "examples (watch)",
             "program": "${workspaceFolder}/bin/doctools.js",
             "args": [

@@ -1,14 +1,15 @@
 /* eslint-env node */
 const _ = require('lodash');
 const minimatch = require('minimatch');
-
+const path = require('path');
+const fs = require('fs');
 const getTypesRaw = arr => arr ? arr.join(' | ') : '';
 
 module.exports = {
 
     getTypesRaw,
 
-    match(conf, file, desc) {
+    match(conf, file, desc, recursive = true) {
         conf = _.isArray(conf) ? conf : [conf];
 
         return conf.some(matcher => {
@@ -17,7 +18,8 @@ module.exports = {
             } else if (typeof matcher === 'function') {
                 return matcher(file, desc);
             } else if (typeof matcher === 'string') {
-                return minimatch(file, matcher);
+                matcher = desc && !path.isAbsolute(matcher) && path.join(desc.config.base, matcher) || matcher;
+                return minimatch(file, matcher) || recursive && fs.lstatSync(file).isDirectory() && matcher.includes(file);
             } else {
                 throw 'invalid matcher:' + matcher;
             }
@@ -50,7 +52,7 @@ module.exports = {
 
     //     if (this.returns && this.returns.type) {
     //         this.returns.type.names = this.returns.type.names.map(name => {
-    //             name === 'function' 
+    //             name === 'function'
     //         });
     //     }
 

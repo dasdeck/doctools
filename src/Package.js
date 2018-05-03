@@ -13,6 +13,7 @@ module.exports = class Package extends TreeItem {
 
     constructor(config, file = config.base, parent = null) {
 
+
         super(config, file, parent);
 
 
@@ -102,7 +103,7 @@ module.exports = class Package extends TreeItem {
         fs.readdirSync(directory).forEach(file => {
             file = path.resolve(path.join(directory, file));
 
-            if(util.match(this.config.exclude, file) || !util.match(this.config.include, file)) {
+            if(util.match(this.config.exclude, file, this) || !util.match(this.config.include, file, this)) {
                 this.log('skipping file:', file);
                 return;
             }
@@ -380,15 +381,23 @@ module.exports = class Package extends TreeItem {
     createMenu(children = this.config.menu) {
         const res = [];
 
-        return children.map(child => {
+        return _.map(children, child => {
 
             if (child.match) {
-                return {
-                    ...child,
-                    items: _.map(_.filter(this.getResources(), res => {
-                        return util.match(child.match, res.path, res);
-                    }), res => res.resource)
-                }
+                // if (child.label) {
+
+                    return {
+                        ...child,
+                        items: _.map(_.filter(this.getResources(), res => {
+                            return util.match(child.match, res.path, res, false);
+                        }), res => res.resource)
+                    }
+                // } else {
+                //     debugger
+                //     return _.map(_.filter(this.getResources(), res => {
+                //         return util.match(child.match, res.path, res, false);
+                //     }), res => res.resource)
+                // }
             }
 
         });
@@ -399,6 +408,7 @@ module.exports = class Package extends TreeItem {
         const menu = this.config.menu ? this.createMenu() : null;
 
         const data = {
+            config: _.pick(this.config, ['menus']),
             menu,
             types: this.getAllTypes(),
             globals: Object.getOwnPropertyNames(global),

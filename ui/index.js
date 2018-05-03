@@ -13,6 +13,7 @@ import Prism from 'vue-prism-component';
 import ExamplerRunner from './app/ExampleRunner.vue';
 import vuerunner from '../src/runnner/VueRunner'
 import uikitrunner from '../src/runnner/UIkitRunner'
+import _ from 'lodash';
 
 ExamplerRunner.runners['vue'] = new vuerunner;
 ExamplerRunner.runners['uikit'] = new uikitrunner;
@@ -22,6 +23,11 @@ Vue.use(VueRouter);
 Vue.component('Code', Prism);
 
 Vue.mixin({
+    computed:{
+        _() {
+            return _;
+        }
+    },
     created() {
 
         if (this.$options.ref) {

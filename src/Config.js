@@ -70,7 +70,7 @@ module.exports = {
      * extra mapping plugins
      */
     plugins: [
-        'RuntimeAnalyzer',
+        // 'RuntimeAnalyzer',
         'UIkitComponentMapper',
         'VueComponentMapper',
         'ComponentLinker',
@@ -78,6 +78,14 @@ module.exports = {
         'VuePressExporter',
         new RuntimeAnalyzer(VueRunner.RTAConfig)
     ],
+
+    /** enables or disables menus */
+    menus: {
+        menu: true,
+        packages: true,
+        files:true
+    },
+
 
     /**
      * strict mode

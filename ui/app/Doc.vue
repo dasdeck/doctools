@@ -12,15 +12,15 @@
                     <input type="text" v-model="settings.filter">
                 </label>
 
-                <ul uk-switcher class="uk-subnav uk-subnav-pill">
-                    <li v-if="data.menu"><a href="">menu</a></li>
-                    <li><a href="">packages</a></li>
-                    <li><a href="">files</a></li>
+                <ul v-if="_.size(data.menus) > 1" uk-switcher class="uk-subnav uk-subnav-pill">
+                    <li v-if="data.menu && data.config.menus.menu"><a href="">menu</a></li>
+                    <li v-if="data.config.menus.packages"><a href="">packages</a></li>
+                    <li v-if="data.config.menus.files"><a href="">files</a></li>
                 </ul>
-                <div class="uk-switcher">
-                    <Menu v-if="data.menu" :menu="data.menu"/>
-                    <PackageTree :data="resources[data.rootPackage]"/>
-                    <FileTree :resources="resources"/>
+                <div :class="(_.size(data.menus) > 1) && 'uk-switcher'">
+                    <Menu v-if="data.menu && data.config.menus.menu" :menu="data.menu"/>
+                    <PackageTree v-if="data.config.menus.packages" :data="resources[data.rootPackage]"/>
+                    <FileTree v-if="data.config.menus.files" :resources="resources"/>
                 </div>
             </div>
 
