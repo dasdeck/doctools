@@ -31,6 +31,7 @@ class DevServerTools {
             delete require.cache[require.resolve(file)];
         });
 
+
         if (this.pack) {
 
             this.pack.dispose();
@@ -40,7 +41,9 @@ class DevServerTools {
         this.parser = null;
         this.config._ = null;
 
-        this.getPack();
+        const pack = this.getPack();
+
+        pack.emit('change');
 
     }
 
@@ -91,7 +94,7 @@ module.exports = {
     },
     contentBase: [__dirname, 'src'],
     watchContentBase: false,
-    inline: false,
+    inline: true,
     before(app) {
 
         const server = new DevServerTools(global.doctoolsConfig, app);

@@ -69,13 +69,13 @@ module.exports = {
      * extra mapping plugins
      */
     plugins: [
-        // 'RuntimeAnalyzer',
+        () => new RuntimeAnalyzer(VueRunner.RTAConfig),
+        'ModuleMapper',
         'UIkitComponentMapper',
         'VueComponentMapper',
         'ComponentLinker',
         'MarkdownExporter',
         'VuePressExporter',
-        new RuntimeAnalyzer(VueRunner.RTAConfig)
     ],
 
     /** enables or disables menus */

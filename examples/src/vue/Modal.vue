@@ -196,21 +196,20 @@ export default {
 ```
 
 
-
 This is a real example that uses the actual code:
 
 ```run:vue
 <template>
     <div>
         <Modal ref="modal">{{test}}</Modal>
-        <button @click="$refs.modal.open()">open modal</button>
+        <button @click="$refs.modal.open()">open motal</button>
     </div>
 </template>
 <script>
 export default {
     computed: {
         test() {
-            return 'tested!';
+            return 'tested here!';
         },
         created() {
             console.log('example created');

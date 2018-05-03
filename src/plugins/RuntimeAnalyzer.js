@@ -28,18 +28,6 @@ class RuntimeAnalyzer extends Plugin {
 
     }
 
-
-
-    // sendToClient() {
-    //     if (this.serve) {
-    //         this.getScript().then(script => {
-
-    //             this.pack.config.devServer.sendToClient(script, this.config.serve);
-
-    //         });
-    //     }
-    // }
-
     /**
      *assozciate the package to build and watch
      * @param {Object} desc
@@ -51,20 +39,6 @@ class RuntimeAnalyzer extends Plugin {
         this.config.watch = this.config.watch && this.pack.config.watch;
 
         this.outputFileSystem = new MemFs;
-
-        // if (this.config.serve && this.pack.config.devServer) {
-
-        //     this.pack.config.devServer.app.get('/' + this.config.serve, (req, res, next) => {
-
-        //         if (this.script) {
-
-        //             res.type('.js');
-        //             res.send(this.script);
-        //         }
-        //         next();
-
-        //     });
-        // }
 
         this.on('change', () => {
             pack.getRootPackage().emit('change');
@@ -86,8 +60,6 @@ class RuntimeAnalyzer extends Plugin {
     getRuntimeModules() {
         return this.pack.getAllModules().filter(mod => mod.runtime);
     }
-
-
 
     /**
      * helper function to load the runtime for a component or module
@@ -153,7 +125,6 @@ class RuntimeAnalyzer extends Plugin {
 
         this.patched = true;
         delete this.cache;
-        // this.writeIndex();
 
     }
 
@@ -161,7 +132,6 @@ class RuntimeAnalyzer extends Plugin {
 
         data.runtime = this.script;
     }
-
 
     adaptConfig(files) {
 
@@ -209,7 +179,6 @@ class RuntimeAnalyzer extends Plugin {
         return compiler;
 
     }
-
 
     writeIndex(pack = this.pack) {
 

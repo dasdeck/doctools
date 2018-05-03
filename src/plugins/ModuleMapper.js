@@ -295,7 +295,7 @@ class ModuleMapper extends Plugin {
 
 ModuleMapper.defaultConfig = {
     getReadme(desc) {
-        return decs.path + '.md';
+        return desc.path + '.md';
     }
 }
 

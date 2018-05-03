@@ -29,6 +29,8 @@ function loadPlugins(config) {
         if (_.isString(plugin)) {
             const Pluigin = require('./plugins/' + plugin);
             plugin = new Pluigin;
+        } else if (_.isFunction(plugin)) {
+            plugin = plugin();
         }
         return plugin;
     });

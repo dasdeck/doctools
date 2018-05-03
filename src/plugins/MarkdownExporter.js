@@ -75,9 +75,9 @@ class MarkdownExporter extends Plugin {
       return comp;
     };
 
-    onPatch(desc) {
-      debugger;
-    }
+    // onPatch(desc) {
+    //   debugger;
+    // }
 
     renderMarkdown(pack, data) {
       pack.log('exporting markdown...')

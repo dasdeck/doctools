@@ -1,5 +1,64 @@
 # accordion
 
+## usage:
+
+The Accordion component consists of a parent container with the `uk-accordion` attribute, and a title and content part for each accordion item.
+
+<table><thead><tr><th style="text-align:left">Class</th><th style="text-align:left">Description</th></tr></thead><tbody><tr><td style="text-align:left"><code>.uk-accordion-title</code></td><td style="text-align:left">Defines and styles the toggle for each accordion item. Use <code>&lt;a&gt;</code> elements.</td></tr><tr><td style="text-align:left"><code>.uk-accordion-content</code></td><td style="text-align:left">Defines the content part for each accordion item.</td></tr></tbody></table>
+
+~~~html
+<ul uk-accordion>
+    <li>
+        <a class="uk-accordion-title" href="#"></a>
+        <div class="uk-accordion-content"></div>
+    </li>
+</ul>
+~~~
+
+<ExampleRunner id="runner-50108902-6f54-1df9-4a6e-ba83a7467d8d" resource="src.uikit.accordion.js"/>
+
+* * *
+
+### No collapsing
+
+By default, all accordion items can be collapsed. To prevent this behavior and always maintain one open item, add the `collapsible: false` option to the attribute.
+
+~~~html
+<ul uk-accordion="collapsible: false">...</ul>
+~~~
+
+<ExampleRunner id="runner-14e621da-ab7a-f2bb-0d43-1e675684b5fe" resource="src.uikit.accordion.js"/>
+
+* * *
+
+### Multiple open items
+
+To display multiple content sections at the same time without one collapsing when the other one is opened, add the `multiple: true` option to the `uk-accordion` attribute.
+
+~~~html
+<ul uk-accordion="multiple: true">...</ul>
+~~~
+
+<ExampleRunner id="runner-9fda9215-b1a9-2482-3c5a-06c070797e24" resource="src.uikit.accordion.js"/>
+
+* * *
+
+### Set open items
+
+To specify which items should be opened initially, add the `.uk-open` class to the item. You can also use this to open multiple items. Just make sure to add the option `multiple: true` to the `uk-accordion` attribute.
+
+**Note** Alternatively, you can open a single item by adding the `active: <index>` option to the `uk-accordion` attribute, e.g. `active: 1` to show the second element (the index is zero-based). Note that this will overwrite the `uk-open` class.
+
+~~~html
+<ul uk-accordion>
+    <li></li>
+    <li class="uk-open"></li>
+    <li></li>
+</ul>
+~~~
+
+<ExampleRunner id="runner-1b086820-bf41-2e1b-086d-64c4c58abe25" resource="src.uikit.accordion.js"/>
+
 an accordion component
 
 * * *

@@ -1,7 +1,5 @@
--decouple vuepress exporter from server
 -make markdown render cachable
 -extract examples inside the vuepress exporter / markdown only once
-
 
 -default menu from config (recursive with functions)
 
@@ -9,7 +7,8 @@
     -unwatch assets in runtime module
     -watch for add/remove in package
 
--analyse defaults from local code
+
+-analyse defaults from local code, instead of full script
 
 -custom css => file or source
 
