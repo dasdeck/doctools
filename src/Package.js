@@ -179,23 +179,30 @@ module.exports = class Package extends TreeItem {
 
         this.loadPackageFile();
 
-        return this.doRecursively('analyze')
+        return this.doRecursively('execPluginCallback', 'onPrepare')
+        .then(res => this.execPluginCallback('onPrepare'))
+
+        .then(res => this.doRecursively('analyze'))
         .then(res => this.execPluginCallback('onAnalyze'))
 
         // .then(res => this.getPackageModules().map(mod => mod.map()))
-        .then(all => this.map())
+        .then(res => this.map())
+
         .then(() => this)
+
         .catch(err => {throw err});
 
     }
 
     dispose() {
-        this.execPluginCallback('onDispose');
+
+        return this.doRecursively('execPluginCallback', 'onDispose', {}, true)
+        .then(res => this.execPluginCallback('onDispose', {}, true));
     }
 
-    doRecursively(method) {
-        return Promise.all(_.map(this.packages, pack => pack[method]()))
-        .then(res => Promise.all(this.getPackageModules().map(mod => mod[method]())))
+    doRecursively(method, ...args) {
+        return Promise.all(_.map(this.packages, pack => pack[method](...args)))
+        .then(res => Promise.all(this.getPackageModules().map(mod => mod[method](...args))))
     }
 
         /**
@@ -204,16 +211,9 @@ module.exports = class Package extends TreeItem {
     map() {
 
         this.globals = {};
+
          const jobs = this.getPackageModules().map(module => {
-
-            return module.map().then(() => {
-
-                _.forEach(module.trigger, trigger => {
-
-
-                });
-            });
-
+            return module.map();
         });
 
         return Promise.all(_.map(this.packages, pack => pack.map()))

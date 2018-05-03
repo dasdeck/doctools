@@ -1,7 +1,7 @@
 const _ = require('lodash');
 const fs = require('fs');
 
-module.exports = class DefaultLoader {
+class DefaultLoader {
 
     match(file) {
         return _.endsWith(file, '.js');
@@ -11,5 +11,6 @@ module.exports = class DefaultLoader {
         return {script: fs.readFileSync(file, 'utf8')};
     }
 
-
 }
+
+module.exports = DefaultLoader;

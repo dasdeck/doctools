@@ -64,10 +64,13 @@ class RuntimeAnalyzer extends Plugin {
      */
     matchesType(desc) {
         const isPackage = desc.type === 'package' || desc instanceof Package;
-        return desc.config.runtime && isPackage && desc.isRootPackage();
+        return isPackage && desc.isRootPackage();
 
     }
 
+    getRuntimeModules() {
+        return this.pack.getAllModules().filter(mod => mod.runtime);
+    }
 
 
     /**
@@ -77,12 +80,11 @@ class RuntimeAnalyzer extends Plugin {
      */
     onAnalyze(pack) {
 
-
         if (!this.cache) {
             this.run();
         }
 
-        const jobs = pack.getAllModules().map(resource => this.analyzeRuntime(resource));
+        const jobs = this.getRuntimeModules().map(resource => this.analyzeRuntime(resource));
         return Promise.all(jobs);
     }
 
@@ -129,6 +131,7 @@ class RuntimeAnalyzer extends Plugin {
      */
     onPatch() {
 
+        this.patched = true;
         delete this.cache;
         // this.writeIndex();
 
@@ -148,6 +151,7 @@ class RuntimeAnalyzer extends Plugin {
         const runtime = require(this.pack.config.runtime);
         return {
             ...runtime,
+            target: this.config.target,
             entry,
             output: {
                 libraryTarget: this.config.libraryTarget,
@@ -179,7 +183,7 @@ class RuntimeAnalyzer extends Plugin {
 
     writeIndex(pack = this.pack) {
 
-        const files = pack.getAllModules();//_.filter(, res => res.type !== 'package');
+        const files = this.getRuntimeModules();//_.filter(, res => res.type !== 'package');
 
         const imports = files.map(desc => {
             const file = desc.path;
@@ -245,7 +249,15 @@ class RuntimeAnalyzer extends Plugin {
     onWebPack(err, res) {
 
         const resfname = Object.keys(res.compilation.assets)[0];
-        this.script = this.outputFileSystem.readFileSync(resfname ,'utf8');
+        const script = this.outputFileSystem.readFileSync(resfname ,'utf8');
+        if (!this.patched && script === this.script) {
+
+            return //bundle unchanged
+        }
+
+        this.patched = false;
+        this.script = script;
+
 
         if (this.config.output) {
 
@@ -335,7 +347,8 @@ RuntimeAnalyzer.defaultOptions = {
     output: false,
     libraryTarget: 'commonjs',
     library: 'runtime',
-    serve: 'runtime'
+    serve: 'runtime',
+    target: 'node'
 }
 
 module.exports = RuntimeAnalyzer;

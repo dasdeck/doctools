@@ -3,11 +3,13 @@ const path = require('path');
 const _ = require('lodash');
 const fs = require('fs');
 const parser = require('./parser');
+const {EventEmitter} = require('events');
 
-module.exports = class DocToolsWebpack {
+class DoctoolsWebpack extends EventEmitter {
 
     constructor(config = {}) {
 
+        super();
         this.config = _.defaults(config, {
             path: process.cwd() + '/docs.json'
         });
@@ -20,20 +22,22 @@ module.exports = class DocToolsWebpack {
             this.pack = parser.parse(config);
 
         } else {
-            // TODO will be confused by command line params!
-            this.pack = parser.parse();///require(__dirname + '/../bin/doctools');
+            // TODO will be confused by command line params
+            const binPath = require.resolve('../bin/doctools.js');
+            this.pack = (process.mainModule.filename === binPath) ? null : parser.parse();
+            if (!this.pack) {
+                console.warn(this.constructor.name, 'skipped when running from doctools-cli');
+            }
         }
-
 
         this.initial = true;
     }
 
     apply(compiler) {
 
-
-        if (!this.pack.config) {
+        if (!this.pack) {
             return; //bypass plugin inside devtools
-        }  else {
+        } else {
             this.pack.config.watch = compiler.options.watch;
         }
 
@@ -41,7 +45,7 @@ module.exports = class DocToolsWebpack {
 
             this.pack.analyze().then(res => {
 
-                const data = this.pack.write().then(data => {
+                this.pack.write().then(data => {
 
                     // if(this.config.path) {
 
@@ -75,3 +79,5 @@ module.exports = class DocToolsWebpack {
 
     }
 }
+
+module.exports = DoctoolsWebpack;

@@ -28,7 +28,7 @@ export default {
     props:{
         text: String
     },
-    
+
     inject: ['$doc'],
 
     data() {
@@ -41,6 +41,7 @@ export default {
                     lang,
                     code,
                     escaped,
+                    name: this.$doc.selectedModule.name,
                     resource: this.$doc.selectedModule.resource
                 });
                 return `<div id="${id}"></div>`;

@@ -49,11 +49,14 @@ if (process.mainModule.filename !== __filename) {
 } else if (argv.explain) {
 
     config.watch = false;
-    
+
     const pack = parser.parse(config);
-    
+
     pack.analyze().then(() => {
-        pack.write().then(console.log);
+        pack.write().then(res => {
+            console.log(res);
+
+        });
     });
 
 } else if (config.server) {
@@ -65,7 +68,7 @@ if (process.mainModule.filename !== __filename) {
 
     manualStart(uiWPConfig);
 
-} else { 
+} else {
 
     const pack = parser.parse(config);
 
@@ -77,7 +80,7 @@ if (process.mainModule.filename !== __filename) {
     });
     pack.emit('change');
 
-} 
+}
 
 function manualStart(cfg) {
 

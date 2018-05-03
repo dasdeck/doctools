@@ -1,7 +1,6 @@
 node_modules
 .idea
 examples/markdown
-examples/vuepress
 examples/log
 log
 *.min.js

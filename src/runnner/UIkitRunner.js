@@ -1,5 +1,5 @@
 
-module.exports = class UIkitRunner {
+class UIkitRunner {
 
     constructor() {
 
@@ -21,5 +21,7 @@ module.exports = class UIkitRunner {
 
         return code.trim().substr(0, 1) === '<' ? 'html' : 'js';
     }
-    
+
 }
+
+module.exports = UIkitRunner;

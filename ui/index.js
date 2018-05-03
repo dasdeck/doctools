@@ -15,6 +15,7 @@ import vuerunner from '../src/runnner/VueRunner'
 import uikitrunner from '../src/runnner/UIkitRunner'
 import _ from 'lodash';
 
+ExamplerRunner.runtime = VueRunnerRuntime.default;
 ExamplerRunner.runners['vue'] = new vuerunner;
 ExamplerRunner.runners['uikit'] = new uikitrunner;
 

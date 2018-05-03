@@ -1,0 +1,44 @@
+{
+  "runner-00f39f17-05f8-9033-082a-683fffbf561d": {
+    "id": "runner-00f39f17-05f8-9033-082a-683fffbf561d",
+    "lang": "run:uikit",
+    "code": "\n<ul uk-accordion>\n    <li class=\"uk-open\">\n        <a class=\"uk-accordion-title\" href=\"#\">Item 1</a>\n        <div class=\"uk-accordion-content\">\n            <p>Lez Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>\n        </div>\n    </li>\n    <li>\n        <a class=\"uk-accordion-title\" href=\"#\">Item 2</a>\n        <div class=\"uk-accordion-content\">\n            <p>Ali enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor reprehenderit.</p>\n        </div>\n    </li>\n    <li>\n        <a class=\"uk-accordion-title\" href=\"#\">Item 3</a>\n        <div class=\"uk-accordion-content\">\n            <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat proident.</p>\n        </div>\n    </li>\n</ul>",
+    "name": "accordion",
+    "resource": "src.uikit.accordion.js"
+  },
+  "runner-380037d5-1da5-8af1-0f84-f0e04527a92a": {
+    "id": "runner-380037d5-1da5-8af1-0f84-f0e04527a92a",
+    "lang": "run:uikit",
+    "code": "<ul uk-accordion=\"collapsible: false\">\n    <li>\n        <a class=\"uk-accordion-title\" href=\"#\">Item 1</a>\n        <div class=\"uk-accordion-content\">\n            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>\n        </div>\n    </li>\n    <li>\n        <a class=\"uk-accordion-title\" href=\"#\">Item 2</a>\n        <div class=\"uk-accordion-content\">\n            <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor reprehenderit.</p>\n        </div>\n    </li>\n    <li>\n        <a class=\"uk-accordion-title\" href=\"#\">Item 3</a>\n        <div class=\"uk-accordion-content\">\n            <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat proident.</p>\n        </div>\n    </li>\n</ul>",
+    "name": "accordion",
+    "resource": "src.uikit.accordion.js"
+  },
+  "runner-95c641c2-31c0-4492-b3d2-e1b4974494d4": {
+    "id": "runner-95c641c2-31c0-4492-b3d2-e1b4974494d4",
+    "lang": "run:uikit",
+    "code": "<ul uk-accordion=\"multiple: true\">\n    <li class=\"uk-open\">\n        <a class=\"uk-accordion-title\" href=\"#\">Item 1</a>\n        <div class=\"uk-accordion-content\">\n            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>\n        </div>\n    </li>\n    <li>\n        <a class=\"uk-accordion-title\" href=\"#\">Item 2</a>\n        <div class=\"uk-accordion-content\">\n            <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor reprehenderit.</p>\n        </div>\n    </li>\n    <li>\n        <a class=\"uk-accordion-title\" href=\"#\">Item 3</a>\n        <div class=\"uk-accordion-content\">\n            <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat proident.</p>\n        </div>\n    </li>\n</ul>",
+    "name": "accordion",
+    "resource": "src.uikit.accordion.js"
+  },
+  "runner-596b7c10-2505-6394-7433-f28b1a7bd184": {
+    "id": "runner-596b7c10-2505-6394-7433-f28b1a7bd184",
+    "lang": "run:uikit",
+    "code": "<ul uk-accordion>\n    <li>\n        <a class=\"uk-accordion-title\" href=\"#\">Item 1</a>\n        <div class=\"uk-accordion-content\">\n            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>\n        </div>\n    </li>\n    <li class=\"uk-open\">\n        <a class=\"uk-accordion-title\" href=\"#\">Item 2</a>\n        <div class=\"uk-accordion-content\">\n            <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor reprehenderit.</p>\n        </div>\n    </li>\n    <li>\n        <a class=\"uk-accordion-title\" href=\"#\">Item 3</a>\n        <div class=\"uk-accordion-content\">\n            <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat proident.</p>\n        </div>\n    </li>\n</ul>",
+    "name": "accordion",
+    "resource": "src.uikit.accordion.js"
+  },
+  "runner-8853319b-5d1a-e8b4-d150-31e3f1127f3a": {
+    "id": "runner-8853319b-5d1a-e8b4-d150-31e3f1127f3a",
+    "lang": "run:vue",
+    "code": "\n<template>\n    <div>{{test}}</div>\n</template>\n<script>\nexport default {\n    computed: {\n        test() {\n            return 'tested!';\n        },\n        created() {\n            console.log('example created');\n        }\n    }\n}\n</script>\n",
+    "name": "Modal",
+    "resource": "src.vue.Modal.vue"
+  },
+  "runner-6c9f8b7d-63d3-3490-d5c2-0f805ad23f27": {
+    "id": "runner-6c9f8b7d-63d3-3490-d5c2-0f805ad23f27",
+    "lang": "run:vue",
+    "code": "<template>\n    <div>\n        <Modal ref=\"modal\">{{test}}</Modal>\n        <button @click=\"$refs.modal.open()\">open modal</button>\n    </div>\n</template>\n<script>\nexport default {\n    computed: {\n        test() {\n            return 'tested!';\n        },\n        created() {\n            console.log('example created');\n        }\n    }\n}\n</script>\n",
+    "name": "Modal",
+    "resource": "src.vue.Modal.vue"
+  }
+}

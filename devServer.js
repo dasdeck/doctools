@@ -13,35 +13,34 @@ class DevServerTools {
 
         if (config.dev) {
 
-            fs.watch(__dirname, {recursive: true}, (e, file) => {
-
-                file = path.resolve(file);
-
-                if (! ['/src/', '/ui/'].some(name => file.includes(name))) {
-                    // debugger;
-                    return;
-                }
-                console.log('code changed');
-
-                const sources = glob.sync(__dirname + '/+(src|ui)/**/*.js');
-                sources.forEach(file => {
-                    delete require.cache[require.resolve(file)];
-                });
-
-                if (this.pack) {
-
-                    this.pack.dispose();
-                    this.pack = null;
-                }
-
-                this.parser = null;
-                this.config._ = null;
-
-                this.getPack();
-
-            });
+            fs.watch(__dirname + '/src', {recursive: true}, (e, file) => this.sourceChanged(file));
+            fs.watch(__dirname + '/ui', {recursive: true}, (e, file) => this.sourceChanged(file));
 
         }
+
+    }
+
+    sourceChanged(file) {
+
+        file = path.resolve(file);
+
+        console.log('code changed');
+
+        const sources = glob.sync(__dirname + '/+(src|ui)/**/*.js');
+        sources.forEach(file => {
+            delete require.cache[require.resolve(file)];
+        });
+
+        if (this.pack) {
+
+            this.pack.dispose();
+            this.pack = null;
+        }
+
+        this.parser = null;
+        this.config._ = null;
+
+        this.getPack();
 
     }
 

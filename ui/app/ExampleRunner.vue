@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="data">
       <div class="nomd">
 
         <ul uk-switcher class="uk-subnav uk-subnav-pill">
@@ -13,7 +13,7 @@
             </div>
             <div>
                 <!-- <Code ref="code" v-model="code" :options="codemirrorOpts" :language="language">{{code}}</Code> -->
-                <Code ref="code" :language="language">{{code}}</Code>
+                <Code v-if="language" ref="code" :language="language">{{code}}</Code>
             </div>
         </div>
       </div>
@@ -21,14 +21,12 @@
           {{`&lt;ExampleRunner id="${data.id}" resource="${data.resource}"/>`}}
       </div>
   </div>
+  <div v-else>could not load example data</div>
 </template>
 
 <script>
 
-// import UIkit from 'uikit';
-// import { codemirror } from 'vue-codemirror';
-// import 'codemirror/lib/codemirror.css'
-// import 'codemirror/mode/vue/vue.js'
+import UIkit from '../../src/uikit-node';
 
 const langMap = {
     'vue': 'text/x-vue',
@@ -38,10 +36,6 @@ const langMap = {
 
 const ExampleRunner = {
 
-    // components: {
-    //     Code: codemirror
-    // },
-
     runners: {},
 
     props: {
@@ -49,7 +43,7 @@ const ExampleRunner = {
         data: {
             type: Object,
             default() {
-                return ExampleRunner.examples && ExampleRunner.examples[this.id]
+                return ExampleRunner.examples[this.id] || null;
             }
         }
     },
@@ -68,17 +62,19 @@ const ExampleRunner = {
     },
     methods: {
         createPreview() {
-            const el = UIkit.util.$('.preview', this.$el, this.data.resource);
-            if (!el) {
-                Vue.nextTick(res => {
-                    this.createPreview();
-                });
-            } else {
-                try {
-                    this.error = '';
-                    this.preview = this.runner && this.runner.preview && this.runner.preview(this.code, el.firstChild) || this.code;
-                } catch (e) {
-                    this.error = e.message;
+            if(this.data) {
+
+                if (!this.previewEl) {
+                    this.$nextTick(res => {
+                        this.createPreview();
+                    });
+                } else {
+                    try {
+                        this.error = '';
+                        this.preview = this.runner && this.runner.preview && this.runner.preview(this) || this.code;
+                    } catch (e) {
+                        this.error = e.message;
+                    }
                 }
             }
         }
@@ -89,6 +85,19 @@ const ExampleRunner = {
     },
 
     computed: {
+
+        previewEl() {
+            return UIkit.util.$('.preview', this.$el, this.data.resource);
+        },
+
+        runtime() {
+            return ExampleRunner.runtime[this.data.resource];
+        },
+
+        moduleName() {
+            return this.data.name;
+        },
+
         codemirrorOpts(){
             return {
                 mode: langMap[this.type],
@@ -99,10 +108,13 @@ const ExampleRunner = {
         },
         code: {
             get() {
-                return this.data.code;
+                return this.data && this.data.code;
             },
             set(code) {
-                this.data.code = code;
+                if (this.data) {
+
+                    this.data.code = code;
+                }
             }
         },
 
@@ -111,7 +123,7 @@ const ExampleRunner = {
         },
 
         type() {
-            return this.data.lang.split(':').pop();
+            return this.data && this.data.lang.split(':').pop();
         },
 
         runner() {
@@ -119,6 +131,10 @@ const ExampleRunner = {
         }
     }
 }
+
+ExampleRunner.examples = {};
+ExampleRunner.runtime = {};
+
 export default ExampleRunner;
 
 </script>

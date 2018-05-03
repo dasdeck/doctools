@@ -7,7 +7,7 @@ module.exports = class UIkitComponentMapper extends ComponentMapper {
         return desc.type === 'UIkitComponent';
     }
 
-    onBeforeAnalyze(desc) {
+    onAnalyze(desc) {
         desc.runtime = true;
     }
 

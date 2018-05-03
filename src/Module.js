@@ -13,6 +13,8 @@ class Module extends TreeItem {
 
         this.init();
 
+        this.runtime = true;
+
         this.type = this.type || 'module';
 
         if (this.template && this.type !== 'VueComponent') {
@@ -22,15 +24,7 @@ class Module extends TreeItem {
 
     analyze() {
 
-        try {
-            if (!this.readme) {
-                this.readme = fs.readFileSync(this.path + '.md', 'utf8');
-            }
-        } catch (e) {
-
-        }
         return this.execPluginCallback('onAnalyze');
-            // .then(res => this.map());
 
     }
 
@@ -58,11 +52,13 @@ class Module extends TreeItem {
         return data;
     }
 
-    patch(module) {
+    patch(module = this) {
 
         this.execPluginCallback('onPatch');
 
-        _.assign(this, module);
+        if (this !== module) {
+            _.assign(this, module);
+        }
     }
 
 }

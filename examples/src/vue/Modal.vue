@@ -20,7 +20,7 @@
     import UIkit from 'uikit';
 
     /**
-     * Reusable modal component using UIkit.modal and VUE.
+     * Reusable modal component using UIkit.modal and VUE. Rad!
      * @example
      * <Modal><ChilComponent/></Modal>
      */
@@ -34,7 +34,7 @@
              */
             props: {
                 type: Object,
-                required: true
+                required: false
             },
 
             /**
@@ -124,12 +124,16 @@
              * @param {Object} options.events - Hash of listeners to be registered to the content component to be executed once
              * @returns {Promise.<this>} Returns a promise resolving with this modal when the content is ready
              */
-            open({events}) {
+            open(options = {}) {
+
+                const events = options.events;
                 if (!this.modal) {
                     this.modal = UIkit.modal(this.$refs.modal, {stack: true});
                 }
 
-                return this.modal.show().then(() => {
+                const p = this.modal.show();
+
+                return p && p.then(() => {
 
                     if (events) {
                         Object.keys(events).forEach(event => {
@@ -153,7 +157,8 @@
              * @private
              */
             onHidden() {
-                this.getContent().$off(this.contentEvents);
+                const content = this.getContent();
+                content && content.$off && content.$off(this.contentEvents);
 
                 /**
                  * triggered when the modal has been closed
@@ -162,9 +167,7 @@
                 this.$emit('close');
                 this.opened = false;
             }
-
         }
-
     };
 
 </script>
@@ -173,6 +176,7 @@
 I can write as much as I want here because this block is called "readme"
 
 ```run:vue
+
 <template>
     <div>{{test}}</div>
 </template>
@@ -188,6 +192,33 @@ export default {
     }
 }
 </script>
+
+```
+
+
+
+This is a real example that uses the actual code:
+
+```run:vue
+<template>
+    <div>
+        <Modal ref="modal">{{test}}</Modal>
+        <button @click="$refs.modal.open()">open modal</button>
+    </div>
+</template>
+<script>
+export default {
+    computed: {
+        test() {
+            return 'tested!';
+        },
+        created() {
+            console.log('example created');
+        }
+    }
+}
+</script>
+
 ```
 
 more text

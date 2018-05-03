@@ -8,7 +8,7 @@ module.exports = class Plugin extends EventEmitter {
         this.setMaxListeners(0);
 
     }
-    
+
     /**
      *
      * @param {Object} desc
@@ -24,6 +24,8 @@ module.exports = class Plugin extends EventEmitter {
      */
     onConstruct(desc) {}
 
+    onPrepare(desc) {}
+
     onAnalyze(desc) {}
 
     /**
@@ -37,5 +39,7 @@ module.exports = class Plugin extends EventEmitter {
     onSerialize(desc) {}
 
     onWrite(data) {}
+
+    onDispose() {}
 
 };

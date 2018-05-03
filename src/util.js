@@ -137,8 +137,6 @@ module.exports = {
 
     },
 
-
-
     /**
      * primive runtime import
      * @param {*} script
@@ -172,9 +170,9 @@ module.exports = {
                             prop.type = {names: ['null']};
                         } else if (realProp.type && (realProp.type instanceof Function)) {
                             prop.type = {names: [realProp.type.name]};
-                        } else if(realProp instanceof Function) {
+                        } else if (realProp instanceof Function) {
                             prop.type = {names: [realProp.name]};
-                        } else if(typeof realProp === 'string') {
+                        } else if (typeof realProp === 'string') {
                             prop.type = {names: [realProp]};
                         } else {
                             debugger;

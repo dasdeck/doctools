@@ -17,17 +17,18 @@ The Accordion component consists of a parent container with the `uk-accordion` a
 ```
 
 ```run:uikit
+
 <ul uk-accordion>
     <li class="uk-open">
         <a class="uk-accordion-title" href="#">Item 1</a>
         <div class="uk-accordion-content">
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+            <p>Lez Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
         </div>
     </li>
     <li>
         <a class="uk-accordion-title" href="#">Item 2</a>
         <div class="uk-accordion-content">
-            <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor reprehenderit.</p>
+            <p>Ali enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor reprehenderit.</p>
         </div>
     </li>
     <li>

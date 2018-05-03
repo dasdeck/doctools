@@ -23,20 +23,28 @@ module.exports = class VueComponentMapper extends ComponentMapper {
         if(desc.component.trigger) {
 
             _.forEach(desc.component.trigger, trigger => {
-                
+
                 trigger.resource = desc.resource;
                 trigger.template = 'function';
                 trigger.simpleName = trigger.name;
                 util.mapParams(trigger);
                 desc.package.globals.trigger = desc.package.globals.trigger || [];
                 desc.package.globals.trigger.push(trigger);
-                
+
             });
 
         }
 
         return Promise.resolve();
 
+    }
+
+    onPatch() {
+
+    }
+
+    onPrepare(desc) {
+        desc.runtime = true;
     }
 
     parseTemplate(desc) {

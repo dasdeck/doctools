@@ -40,9 +40,10 @@ class VueRunner {
         return componentDefinition;
     }
 
-    preview(code, el, resource) {
+    preview(runner) {
 
         let componentDefinition;
+        const code = runner.code;
 
         if (this.getLanguage(code) === 'html') {
             const res = vueTemplateCompiler.parseComponent(code);
@@ -50,6 +51,12 @@ class VueRunner {
             componentDefinition.template = res.template.content;
         } else {
             componentDefinition = this.getComponentDefinition(code);
+        }
+
+        if (runner.runtime) {
+            componentDefinition.components = {
+                [runner.moduleName]: runner.runtime
+            };
         }
 
         if (componentDefinition.template) {
@@ -61,7 +68,7 @@ class VueRunner {
         const comp = Vue.extend(componentDefinition);
         const instance = new comp();
 
-        instance.$mount(el);
+        instance.$mount(runner.previewEl);
 
         return '...loading';
 
@@ -72,7 +79,9 @@ VueRunner.runtime = {};
 
 VueRunner.RTAConfig = {
     libraryTarget: 'umd',
-    output: 'runtime'
+    library: 'VueRunnerRuntime',
+    output: 'runtime',
+    target: 'web'
 }
 
 module.exports = VueRunner;

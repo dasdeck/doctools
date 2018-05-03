@@ -3,7 +3,7 @@ const path = require('path');
 const fs = require('fs');
 const mkpath = require('mkpath');
 const _ = require('lodash');
-const prismjs = require('prismjs');
+// const prismjs = require('prismjs');
 /**
  * attemts to load the described class
  * mark module for runtime analysis by setting a member runtime = true
@@ -21,12 +21,18 @@ class VuePressExporter extends Plugin {
 
         ExampleRunner.mounted = function() {
             examples[this.data.id] = _.omit(this.data, ['instance']);
-            // debugger;
-            // prismjs.highlightElement(this.$refs.code);
-        }
+        };
 
         setImmediate(clear);
 
+    }
+
+    matchesType(desc) {
+        return desc.type === 'package' && desc.isRootPackage();
+    }
+
+    onPrepare(desc) {
+        for (const member in this.examples) delete this.examples[member];
     }
 
     getResourcFileName(res) {
@@ -98,7 +104,7 @@ class VuePressExporter extends Plugin {
                     children: entry.items.map(res => {
                         return this.getResourceSidebarEntry(resources[res]);
                     })
-                }
+                };
             });
 
         } else {
@@ -129,9 +135,6 @@ class VuePressExporter extends Plugin {
         const subDir = this.config.subdir === true ? this.pack.name : this.config.subdir;
         return subDir ? path.join(dir, subDir) : dir;
     }
-
-
-
 
     /**
      * helper function to load the runtime for a component or module

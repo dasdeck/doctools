@@ -50,8 +50,6 @@ module.exports = class TreeItem extends EventEmitter {
         this.execPluginCallback('onConstruct', {}, true);
     }
 
-
-
     getRootPackage() {
         if (this.package) {
             return this.package.getRootPackage();
@@ -64,7 +62,11 @@ module.exports = class TreeItem extends EventEmitter {
         return this === this.getRootPackage() && this.package === null;
     }
 
-    execPluginCallback(name, data = null, sync = false,) {
+    execPluginCallback(name, data = null, sync = false) {
+
+        if (!this.config._) {
+            debugger;
+        }
 
         const jobs = this.config._.plugins.map(plugin => {
             return () => plugin.matchesType(this) && plugin[name](this, data) || Promise.resolve();

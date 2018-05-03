@@ -3,8 +3,15 @@ const _ = require('lodash');
 const jsdoc = require('jsdoc-api');
 const Plugin = require('../Plugin');
 const util = require('../util');
+const fs = require('fs');
 
 module.exports = class ModuleMapper extends Plugin {
+
+    constructor() {
+        super();
+
+        this.watchers = [];
+    }
 
     /**
      *
@@ -17,6 +24,24 @@ module.exports = class ModuleMapper extends Plugin {
 
     onAnalyze(desc) {
 
+        try {
+            if (!desc.readme) {
+                const filename = desc.path + '.md';
+
+                desc.readme = fs.readFileSync(filename, 'utf8');
+
+                this.watchers.push(fs.watch(filename, {}, () => {
+                    const readme = fs.readFileSync(filename, 'utf8');
+                    if (readme !== desc.readme) {
+                        desc.readme = readme;
+                        desc.package.getRootPackage().emit('change');
+                    }
+                }));
+            }
+        } catch (e) {
+
+        }
+
         if (desc.jsdoc) {
             return Promise.resolve();
         } else {
@@ -25,9 +50,14 @@ module.exports = class ModuleMapper extends Plugin {
                 desc.log('jsdoc parsed:', desc.name, !!all);
             }).catch(e => {
                 debugger;
-                desc.log('error whule jsdoc:', desc.path);
+                desc.log('error while jsdoc:', desc.path);
             });
         }
+    }
+
+    onDispose() {
+        this.watchers.forEach(watcher => watcher.close());
+        this.watchers = [];
     }
 
     onSerialize(desc, data) {
@@ -38,6 +68,7 @@ module.exports = class ModuleMapper extends Plugin {
         desc.log('jsdoc cleared', desc.name, !!desc.all);
         delete desc.jsdoc;
         delete desc.module;
+        // delete desc.readme;
     }
 
     /**
