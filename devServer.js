@@ -94,7 +94,6 @@ module.exports = {
     inline: false,
     before(app) {
 
-
         const server = new DevServerTools(global.doctoolsConfig, app);
         global.doctoolsConfig.devServer = server;// = app;
         server.getPack(); //init once to register routes first
@@ -126,7 +125,7 @@ module.exports = {
             const pack = server.getPack();
 
             if (pack.getResources()[request.params.resource]) {
-                response.sendfile('./ui/index.html');
+                response.sendfile(__dirname + '/ui/index.html');
             } else {
                 next();
             }

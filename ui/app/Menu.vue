@@ -4,7 +4,7 @@
             <li v-for="entry in menu">
                 {{entry.label}}
                 <Menu v-if="entry.items && entry.items.length" :menu="entry.items"/>
-                <ModuleLink v-else :resource="entry"/>
+                <ModuleLink v-else-if="!entry.items" :resource="entry"/>
             </li>
         </ul>
     </div>

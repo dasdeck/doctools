@@ -5,10 +5,12 @@ const Plugin = require('../Plugin');
 const util = require('../util');
 const fs = require('fs');
 
-module.exports = class ModuleMapper extends Plugin {
+class ModuleMapper extends Plugin {
 
-    constructor() {
+    constructor(config = ModuleMapper.defaultConfig) {
         super();
+
+        this.config = config;
 
         this.watchers = [];
     }
@@ -22,24 +24,38 @@ module.exports = class ModuleMapper extends Plugin {
         return desc.type !== 'package';
     }
 
+    getReadmeFile(desc) {
+        return this.config.getReadme && this.config.getReadme(desc) || desc.path + '.md';
+    }
+    getReadme(desc) {
+        const filename = this.getReadmeFile(desc);
+
+        const readme = fs.readFileSync(filename, 'utf8');
+
+        return readme;
+    }
+
     onAnalyze(desc) {
 
         try {
             if (!desc.readme) {
-                const filename = desc.path + '.md';
 
-                desc.readme = fs.readFileSync(filename, 'utf8');
+                const file = this.getReadmeFile(desc);
+                desc.readme = this.getReadme(desc);
 
-                this.watchers.push(fs.watch(filename, {}, () => {
-                    const readme = fs.readFileSync(filename, 'utf8');
+                this.watchers.push(fs.watch(file, {}, () => {
+                    const readme = this.getReadme(desc);
+
                     if (readme !== desc.readme) {
+                        desc.log('readme changed', this.getReadme());
+
                         desc.readme = readme;
                         desc.package.getRootPackage().emit('change');
                     }
                 }));
             }
         } catch (e) {
-
+            // debugger;
         }
 
         if (desc.jsdoc) {
@@ -274,3 +290,11 @@ module.exports = class ModuleMapper extends Plugin {
     }
 
 };
+
+ModuleMapper.defaultConfig = {
+    getReadme(desc) {
+        return decs.path + '.md';
+    }
+}
+
+module.exports = ModuleMapper;

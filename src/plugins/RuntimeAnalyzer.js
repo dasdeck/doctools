@@ -105,7 +105,8 @@ class RuntimeAnalyzer extends Plugin {
 
 
             } else if(config.runtime === true) {
-                throw 'unimplemented';
+                // throw 'unimplemented';
+
 
             } else {
                 const runtime = _.get(config.runtime, `${desc.type}.${desc.name}`) || _.get(config.runtime, desc.name);
@@ -148,16 +149,25 @@ class RuntimeAnalyzer extends Plugin {
             entry[name] = name;
         });
 
-        const runtime = require(this.pack.config.runtime);
-        return {
-            ...runtime,
-            target: this.config.target,
-            entry,
-            output: {
-                libraryTarget: this.config.libraryTarget,
-                library: this.config.library
-            }
-        };
+        const p = this.pack.config.runtime === true ? path.join(this.pack.config.base, 'webpack.config.js') : this.config.runtime;
+        try {
+            const runtime = require(p);
+            const origConf = _.isArray(runtime) ? runtime[0] : (_.isFunction(runtime) ? runtime({}) : runtime);
+            return {
+                ...origConf,
+                target: this.config.target,
+                entry,
+                output: {
+                    libraryTarget: this.config.libraryTarget,
+                    library: this.config.library
+                }
+            };
+
+        } catch (e) {
+            throw 'could not loead webpack config: ' + p;
+        }
+
+
 
     }
 
@@ -170,7 +180,7 @@ class RuntimeAnalyzer extends Plugin {
 
         // conf.plugins = conf.plugins || [];
         // conf.plugins.push(plugin);
-        conf.plugins = [...conf.plugins, plugin];
+        conf.plugins = [...(conf.plugins || []), plugin];
 
         const compiler = webpack(conf);
 

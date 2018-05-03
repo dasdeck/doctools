@@ -14,6 +14,8 @@ class VuePressExporter extends Plugin {
         super();
         this.config = config;
 
+        _.defaults(this.config, VuePressExporter.defaultConfig);
+
         const examples = this.examples = {};
 
         const clear = require('jsdom-global')();
@@ -45,7 +47,7 @@ class VuePressExporter extends Plugin {
 
     getResourceMDName(res) {
 
-        const filename = res.resource.replace(/\./g, '-') + '.md';
+        const filename = this.config.getMDFileName(res);
         return filename;
     }
 
@@ -66,8 +68,8 @@ class VuePressExporter extends Plugin {
 
             let changed;
             try {
-                changed = fs.readFileSync(file, 'utf8') !== markdown
-            } catch(e) {
+                changed = fs.readFileSync(file, 'utf8') !== markdown;
+            } catch (e) {
                 changed = true;
             } finally {
                 if (changed) {
@@ -143,6 +145,8 @@ class VuePressExporter extends Plugin {
      */
     onWrite(pack, data) {
 
+        pack.log('exporting vuepress...');
+
         this.pack = pack;
 
         const dir = this.getDataDir();
@@ -177,6 +181,8 @@ class VuePressExporter extends Plugin {
 
         this.writeMarkdown();
 
+        pack.log('exporting vuepress...done');
+
     }
 
 }
@@ -187,8 +193,11 @@ VuePressExporter.defaultConfig = {
      */
     subdir: true,
 
-    outputDir: 'vuepress'
+    outputDir: 'vuepress',
 
+    getMDFileName(desc) {
+        return desc.resource.replace(/\./g, '-') + '.md';
+    }
 
 };
 

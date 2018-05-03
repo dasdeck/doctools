@@ -17,7 +17,14 @@ function loadPlugins(config) {
 
     config._ = {};
 
-    config._.plugins = ['ModuleMapper', ...config.plugins].map(plugin => {
+
+    config._.plugins = [ ...config.plugins]
+
+    if (!config._.plugins.some(plugin => plugin === 'ModuleMapper' || plugin.constructor && plugin.constructor.name === 'ModuleMapper')) {
+        config._.plugins.unshift('ModuleMapper');
+    }
+
+    config._.plugins = config._.plugins.map(plugin => {
 
         if (_.isString(plugin)) {
             const Pluigin = require('./plugins/' + plugin);

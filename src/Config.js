@@ -7,7 +7,6 @@ const VueRunner = require('./runnner/VueRunner');
  * @name config
  */
 
-
  /**
   * a sample config
   * @typedef DoctoolsConfig
@@ -83,9 +82,8 @@ module.exports = {
     menus: {
         menu: true,
         packages: true,
-        files:true
+        files: true
     },
-
 
     /**
      * strict mode
@@ -104,5 +102,9 @@ module.exports = {
      * a glob to search for files to be included
      * @type {GlobString}
      */
-    search: 'src/**/*.+(js|vue)'
+    search: 'src/**/*.+(js|vue)',
+
+    getResourceName(desc) {
+        return desc.fileInPackage.substr(1).replace(/\//g, '.').substr(1) || desc.name;
+    }
 };

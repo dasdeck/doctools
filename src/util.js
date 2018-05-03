@@ -26,6 +26,14 @@ module.exports = {
         });
     },
 
+    // createExampleFinder(callback) {
+
+    //     return {
+
+    //     }
+
+    // },
+
     /**e
      * scapes a string to be a valid variable name
      */

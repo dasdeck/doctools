@@ -16,20 +16,18 @@ module.exports = class TreeItem extends EventEmitter {
 
         this.package = parent;
 
-
         this.path = file;
         this.fileInPackage = this.path.replace(this.config.base, '.');
         if (this.fileInPackage === '.') {
             this.fileInPackage += '/';
         }
         this.name = this.path.split('/').pop().split('.').shift();
-        const res = this.fileInPackage.substr(1).replace(/\//g, '.').substr(1);
-        this.resource = res || this.name;
+        this.resource = this.config.getResourceName(this);
 
         if (config.dev || config.log) {
             this.log = console.log;
             const logDir = path.join(this.config.base, 'log');
-            try {fs.mkdirSync(logDir) } catch(e) {};
+            try {fs.mkdirSync(logDir)} catch(e) {};
             this.logFile = (name, data) => fs.writeFileSync(path.join(logDir, name), _.isString(data) ? data : JSON.stringify(data, null, 2));
         } else {
             this.logFile = this.log = x => x;
@@ -65,7 +63,7 @@ module.exports = class TreeItem extends EventEmitter {
     execPluginCallback(name, data = null, sync = false) {
 
         if (!this.config._) {
-            debugger;
+            // debugger;
         }
 
         const jobs = this.config._.plugins.map(plugin => {

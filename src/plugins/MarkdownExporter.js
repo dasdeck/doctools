@@ -75,10 +75,8 @@ class MarkdownExporter extends Plugin {
       return comp;
     };
 
-    convertPath(path) {
-
-
-
+    onPatch(desc) {
+      debugger;
     }
 
     /**
@@ -88,6 +86,7 @@ class MarkdownExporter extends Plugin {
      */
     onWrite(pack, data) {
 
+      pack.log('exporting markdown...')
       const clear = require('jsdom-global')();
 
       document.body.innerHTML = `<div id="app"></div>`;
@@ -95,6 +94,7 @@ class MarkdownExporter extends Plugin {
       const appEl = document.getElementById('app');
 
       const Vue = require('vue/dist/vue');
+      Vue.config.productionTip = false;
 
       Vue.component('RouterLink', {
         template: '<a :href="`${toClean}.md`"><slot/></a>',
@@ -111,16 +111,22 @@ class MarkdownExporter extends Plugin {
         props:['language']
       });
 
-      const dir = this.config.outputDir ? path.join(pack.config.base, this.config.outputDir) : null;
+      const dir = this.config.output ? path.join(pack.config.base, this.config.output) : null;
       try {
         if (dir) {
           fs.mkdirSync(dir)
         }
 
       } catch (e) {
+
       }
 
-      _.forEach(pack.getResources(), resource => {
+      const res = pack.getResources();
+      _.forEach(res, resource => {
+
+        if (this.config.cache && resource.markdown) {
+          return;
+        }
 
         const CompDesc = this.getShallowContet(data, resource);
         const Comp = Vue.extend(CompDesc);
@@ -143,11 +149,15 @@ class MarkdownExporter extends Plugin {
 
       });
 
+      pack.log('exporting markdown...done!')
+
     }
 
 }
 MarkdownExporter.defaultConfig = {
-  outputDir: 'markdown'
+  output: 'markdown',
+  cache: false
+
 };
 
 module.exports = MarkdownExporter;

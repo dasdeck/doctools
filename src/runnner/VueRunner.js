@@ -10,6 +10,8 @@ if (typeof process === 'undefined') {
 
 const umdPlugin = require('babel-plugin-transform-es2015-modules-umd');
 const Vue = require('vue').default || require('vue'); //hack for vuepress
+Vue.config.productionTip = false;
+
 const vueTemplateCompiler = require('vue-template-compiler');
 
 class VueRunner {
@@ -33,7 +35,7 @@ class VueRunner {
 
         const componentDefinition = fun({});
 
-         if (componentDefinition.components) {
+        if (componentDefinition.components) {
             throw 'vue examples can not have local components';
         }
 
