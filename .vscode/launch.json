@@ -17,6 +17,16 @@
         {
             "type": "node",
             "request": "launch",
+            "name": "examples (vuepress + plugin)",
+            "program": "/usr/local/bin/vuepress",
+            "cwd": "${workspaceFolder}/examples/vuepress",
+            "args": [
+                "dev"
+            ]
+        },
+        {
+            "type": "node",
+            "request": "launch",
             "name": "webpack plugin",
             "program": "${workspaceFolder}/node_modules/.bin/webpack",
             "cwd": "${workspaceFolder}/examples",

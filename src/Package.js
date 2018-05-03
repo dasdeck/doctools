@@ -5,13 +5,13 @@ const fs = require('fs');
 const glob = require('glob');
 const TreeItem = require('./TreeItem');
 const Module = require('./Module');
-
+const defaultConfig = require('./Config');
 /**
  * the Package parser
  */
 module.exports = class Package extends TreeItem {
 
-    constructor(config, file = config.base, parent = null) {
+    constructor(config = defaultConfig, file = config.base, parent = null) {
 
 
         super(config, file, parent);

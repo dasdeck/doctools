@@ -2,6 +2,7 @@
 const path = require('path');
 const _ = require('lodash');
 const fs = require('fs');
+const parser = require('./parser');
 
 module.exports = class DocToolsWebpack {
 
@@ -11,7 +12,18 @@ module.exports = class DocToolsWebpack {
             path: process.cwd() + '/docs.json'
         });
 
-        this.pack = require(__dirname + '/../bin/doctools');
+        if (this.config.config) {
+
+            const config = require(path.resolve(this.config.config));
+            _.defaults(config, this.config);
+
+            this.pack = parser.parse(config);
+
+        } else {
+            // TODO will be confused by command line params!
+            this.pack = parser.parse();///require(__dirname + '/../bin/doctools');
+        }
+
 
         this.initial = true;
     }
@@ -31,11 +43,14 @@ module.exports = class DocToolsWebpack {
 
                 const data = this.pack.write().then(data => {
 
-                    fs.writeFileSync(this.config.path, JSON.stringify(data, null, 2));
-                    console.log(this.constructor.name, 'json written to:', this.config.path);
-                    
+                    // if(this.config.path) {
+
+                    // }
+                    // fs.writeFileSync(this.config.path, JSON.stringify(data, null, 2));
+                    console.log(this.constructor.name, 'updated');
+
                 });
-                
+
                 this.initial = false;
             });
 
