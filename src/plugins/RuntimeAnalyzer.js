@@ -28,6 +28,18 @@ class RuntimeAnalyzer extends Plugin {
 
     }
 
+
+
+    // sendToClient() {
+    //     if (this.serve) {
+    //         this.getScript().then(script => {
+
+    //             this.pack.config.devServer.sendToClient(script, this.config.serve);
+
+    //         });
+    //     }
+    // }
+
     /**
      *assozciate the package to build and watch
      * @param {Object} desc
@@ -40,20 +52,23 @@ class RuntimeAnalyzer extends Plugin {
 
         this.outputFileSystem = new MemFs;
 
-        if (this.config.serve && this.pack.config.devServer) {
+        // if (this.config.serve && this.pack.config.devServer) {
 
-            this.pack.config.devServer.app.get('/' + this.config.serve, (req, res, next) => {
+        //     this.pack.config.devServer.app.get('/' + this.config.serve, (req, res, next) => {
 
-                res.type('.js');
-                res.send(this.script);
-                next();
+        //         if (this.script) {
 
-            });
-        }
+        //             res.type('.js');
+        //             res.send(this.script);
+        //         }
+        //         next();
 
+        //     });
+        // }
 
         this.on('change', () => {
             pack.getRootPackage().emit('change');
+
         });
     }
 
@@ -73,6 +88,7 @@ class RuntimeAnalyzer extends Plugin {
     }
 
 
+
     /**
      * helper function to load the runtime for a component or module
      * @param {*} config
@@ -83,9 +99,12 @@ class RuntimeAnalyzer extends Plugin {
         if (!this.cache) {
             this.run();
         }
-
-        const jobs = this.getRuntimeModules().map(resource => this.analyzeRuntime(resource));
-        return Promise.all(jobs);
+        if (this.load()) {
+            const jobs = this.getRuntimeModules().map(resource => this.analyzeRuntime(resource));
+            return Promise.all(jobs);
+        } else {
+            return this.getScript();
+        }
     }
 
     /**
@@ -106,7 +125,7 @@ class RuntimeAnalyzer extends Plugin {
 
             } else if(config.runtime === true) {
                 // throw 'unimplemented';
-
+                debugger
 
             } else {
                 const runtime = _.get(config.runtime, `${desc.type}.${desc.name}`) || _.get(config.runtime, desc.name);
@@ -138,6 +157,11 @@ class RuntimeAnalyzer extends Plugin {
 
     }
 
+    onWrite(desc, data) {
+
+        data.runtime = this.script;
+    }
+
 
     adaptConfig(files) {
 
@@ -149,7 +173,7 @@ class RuntimeAnalyzer extends Plugin {
             entry[name] = name;
         });
 
-        const p = this.pack.config.runtime === true ? path.join(this.pack.config.base, 'webpack.config.js') : this.config.runtime;
+        const p = this.pack.config.runtime === true ? path.join(this.pack.config.base, 'webpack.config.js') : this.pack.config.runtime;
         try {
             const runtime = require(p);
             const origConf = _.isArray(runtime) ? runtime[0] : (_.isFunction(runtime) ? runtime({}) : runtime);
@@ -167,8 +191,6 @@ class RuntimeAnalyzer extends Plugin {
             throw 'could not loead webpack config: ' + p;
         }
 
-
-
     }
 
     createCompiler(filename = this.indexFile) {
@@ -178,18 +200,16 @@ class RuntimeAnalyzer extends Plugin {
         const WebpackAdapter = require('../WebpackAdapter');
         const plugin = new WebpackAdapter(this.pack);
 
-        // conf.plugins = conf.plugins || [];
-        // conf.plugins.push(plugin);
         conf.plugins = [...(conf.plugins || []), plugin];
 
         const compiler = webpack(conf);
 
         compiler.outputFileSystem = this.outputFileSystem;
 
-
         return compiler;
 
     }
+
 
     writeIndex(pack = this.pack) {
 
@@ -218,15 +238,24 @@ class RuntimeAnalyzer extends Plugin {
         return this.indexFile;
     }
 
+    getScript() {
+        if (this.script) {
+            return Promise.resolve(this.script);
+        } else {
+            return new Promise(resolve => {
+                this.once('change', res => resolve(this.script));
+            })
+        }
+    }
 
     getRuntime(resource) {
 
-        if (this.load()) {
+        if (!this.config.async) {
             if (this.cache) {
                 return Promise.resolve(this.cache[resource]);
             } else {
                 return new Promise(resolve => {
-                    this.once('change', res => resolve(this.cach && this.cach[resource]));
+                    this.once('change', res => resolve(this.cache && this.cache[resource]));
                 })
             }
 
@@ -358,7 +387,8 @@ RuntimeAnalyzer.defaultOptions = {
     libraryTarget: 'commonjs',
     library: 'runtime',
     serve: 'runtime',
-    target: 'node'
+    target: 'node',
+    async: false
 }
 
 module.exports = RuntimeAnalyzer;

@@ -15,7 +15,6 @@ import vuerunner from '../src/runnner/VueRunner'
 import uikitrunner from '../src/runnner/UIkitRunner'
 import _ from 'lodash';
 
-ExamplerRunner.runtime = window.VueRunnerRuntime && window.VueRunnerRuntime.default;
 ExamplerRunner.runners['vue'] = new vuerunner;
 ExamplerRunner.runners['uikit'] = new uikitrunner;
 
@@ -38,6 +37,7 @@ Vue.mixin({
 });
 
 let app;
+let runtime;
 
 function setData(data) {
     window.$data = data;

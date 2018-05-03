@@ -12,12 +12,12 @@
                     <input type="text" v-model="settings.filter">
                 </label>
 
-                <ul v-if="_.size(data.menus) > 1" uk-switcher class="uk-subnav uk-subnav-pill">
+                <ul v-if="_.size(data.config.menus) > 1" uk-switcher class="uk-subnav uk-subnav-pill">
                     <li v-if="data.menu && data.config.menus.menu"><a href="">menu</a></li>
                     <li v-if="data.config.menus.packages"><a href="">packages</a></li>
                     <li v-if="data.config.menus.files"><a href="">files</a></li>
                 </ul>
-                <div :class="(_.size(data.menus) > 1) && 'uk-switcher'">
+                <div :class="(_.size(data.config.menus) > 1) && 'uk-switcher'">
                     <Menu v-if="data.menu && data.config.menus.menu" :menu="data.menu"/>
                     <PackageTree v-if="data.config.menus.packages" :data="resources[data.rootPackage]"/>
                     <FileTree v-if="data.config.menus.files" :resources="resources"/>
@@ -77,6 +77,8 @@
 
                 data: this.initialData,
 
+                lastRuntime: null,
+
                 /**
                  * general application wide settings
                  */
@@ -90,7 +92,16 @@
 
         ref: '$doc',
 
+
         computed: {
+
+            runtime() {
+                if (this.data.runtime && this.data.runtime !== this.lastRuntime) {
+                    this.lastRuntime = this.data.runtime;
+                    eval(this.data.runtime);
+                }
+                return window.VueRunnerRuntime && window.VueRunnerRuntime.default;
+            },
 
             types() {
                 return this.data && this.data.types || {};

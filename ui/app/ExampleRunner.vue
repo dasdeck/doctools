@@ -40,6 +40,7 @@ const ExampleRunner = {
 
     props: {
         id: String,
+        dynamicRuntime: Object,
         data: {
             type: Object,
             default() {
@@ -91,7 +92,7 @@ const ExampleRunner = {
         },
 
         runtime() {
-            return ExampleRunner.runtime[this.data.resource];
+            return this.dynamicRuntime || ExampleRunner.runtime[this.data.resource];
         },
 
         moduleName() {

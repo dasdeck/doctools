@@ -79,13 +79,7 @@ class MarkdownExporter extends Plugin {
       debugger;
     }
 
-    /**
-     * helper function to load the runtime for a component or module
-     * @param {*} config
-     * @param {*} desc
-     */
-    onWrite(pack, data) {
-
+    renderMarkdown(pack, data) {
       pack.log('exporting markdown...')
       const clear = require('jsdom-global')();
 
@@ -150,13 +144,27 @@ class MarkdownExporter extends Plugin {
       });
 
       pack.log('exporting markdown...done!')
+    }
+    /**
+     * helper function to load the runtime for a component or module
+     * @param {*} config
+     * @param {*} desc
+     */
+    onWrite(pack, data) {
+
+      if (this.config.async) {
+            setImmediate(res => this.renderMarkdown(pack, data));
+      } else {
+        this.renderMarkdown(pack, data);
+      }
 
     }
 
 }
 MarkdownExporter.defaultConfig = {
   output: 'markdown',
-  cache: false
+  cache: false,
+  async : true
 
 };
 

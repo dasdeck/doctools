@@ -44,10 +44,10 @@ class DevServerTools {
 
     }
 
-    sendDataToClient(data) {
+    sendDataToClient(data, message = 'doc-changed') {
 
         const server = this.config.server;
-        server.sockWrite(server.sockets, 'doc-changed', data);
+        server.sockWrite(server.sockets, message, data);
 
     }
 
@@ -123,9 +123,9 @@ module.exports = {
         app.get('/:resource/:tab?', function(request, response, next) {
 
             const pack = server.getPack();
-
-            if (pack.getResources()[request.params.resource]) {
-                response.sendfile(__dirname + '/ui/index.html');
+            const resources = pack.getResources();
+            if (resources[request.params.resource]) {
+                response.sendFile(__dirname + '/ui/index.html');
             } else {
                 next();
             }

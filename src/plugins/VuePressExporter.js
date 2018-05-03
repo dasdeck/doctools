@@ -138,12 +138,21 @@ class VuePressExporter extends Plugin {
         return subDir ? path.join(dir, subDir) : dir;
     }
 
+
+    onWrite(pack, data) {
+        if (this.config.async) {
+            setImmediate(res => this.write(pack, data));
+        } else {
+            this.write(pack, data);
+        }
+    }
+
     /**
      * helper function to load the runtime for a component or module
      * @param {*} config
      * @param {*} desc
      */
-    onWrite(pack, data) {
+    write(pack, data) {
 
         pack.log('exporting vuepress...');
 
@@ -192,6 +201,8 @@ VuePressExporter.defaultConfig = {
      * if you only want
      */
     subdir: true,
+
+    async: true,
 
     outputDir: 'vuepress',
 

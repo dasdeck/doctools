@@ -78,6 +78,8 @@ class ModuleMapper extends Plugin {
 
     onSerialize(desc, data) {
         delete data.jsdoc;
+        delete data.module.all;
+        delete data.module.documented;
     }
 
     onPatch(desc) {

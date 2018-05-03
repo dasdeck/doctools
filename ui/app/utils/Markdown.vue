@@ -71,6 +71,10 @@ export default {
         html() {
             this.updateExampleRunners();
         }
+        // '$doc.runtime'() {
+        //     // this.clearRunners();
+        //     // this.updateExampleRunners();
+        // }
 
     },
 
@@ -87,9 +91,9 @@ export default {
         },
 
         updateExampleRunners() {
-            this.runners.some(runner => {
-                if (!runner.instance) {
-                    const el = UIkit.util.$(`#${runner.id}`, this.$el);
+            this.runners.some(data => {
+                if (!data.instance) {
+                    const el = UIkit.util.$(`#${data.id}`, this.$el);
 
                     if (!el) {
                         //not yet rendered, try next iteration
@@ -98,8 +102,12 @@ export default {
                         });
                         return true;
                     }
-                    const ExampleRunnnerComp = Vue.extend(ExampleRunner);
-                    runner.instance = new ExampleRunnnerComp({propsData: {data: runner}, el});
+                    const dynamicRuntime = this.$doc.runtime && this.$doc.runtime[this.$doc.selectedModule.resource];
+                    if (dynamicRuntime) {
+                        const ExampleRunnnerComp = Vue.extend(ExampleRunner);
+                        data.instance = new ExampleRunnnerComp({propsData: {data, dynamicRuntime}, el});
+
+                    }
                 }
             });
         }
