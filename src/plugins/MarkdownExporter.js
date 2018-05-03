@@ -26,6 +26,7 @@ class MarkdownExporter extends Plugin {
     constructor(config = MarkdownExporter.defaultConfig) {
       super();
       this.config = config;
+      _.defaults(this.config, MarkdownExporter.defaultConfig);
     }
 
     getShallowContet(data, resource) {
@@ -155,7 +156,7 @@ class MarkdownExporter extends Plugin {
       if (this.config.async) {
             setImmediate(res => this.renderMarkdown(pack, data));
       } else {
-        this.renderMarkdown(pack, data);
+          this.renderMarkdown(pack, data);
       }
 
     }

@@ -2,11 +2,7 @@
 
 I can write as much as I want here because this block is called "readme"
 
-<ExampleRunner id="runner-c70de543-ad7b-5fbb-fb04-d40aeab90029" resource="src.vue.Modal.vue"/>
-
 This is a real example that uses the actual code:
-
-<ExampleRunner id="runner-10670fcd-e5e8-f02b-8978-bbedba698223" resource="src.vue.Modal.vue"/>
 
 more text
 

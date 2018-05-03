@@ -158,7 +158,7 @@ class RuntimeAnalyzer extends Plugin {
             };
 
         } catch (e) {
-            throw 'could not loead webpack config: ' + p;
+            throw 'could not load webpack config: ' + p + e.message;
         }
 
     }

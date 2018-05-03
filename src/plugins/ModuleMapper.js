@@ -47,7 +47,7 @@ class ModuleMapper extends Plugin {
                     const readme = this.getReadme(desc);
 
                     if (readme !== desc.readme) {
-                        desc.log('readme changed', this.getReadme());
+                        desc.log('readme changed', this.getReadme(desc));
 
                         desc.readme = readme;
                         desc.package.getRootPackage().emit('change');
