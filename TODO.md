@@ -1,12 +1,10 @@
 
--vuepress only subdirecties (index with menus, etc.)
 -default menu from config (recursive with functions)
 
--strange whitespace in code class?
+-make asset wathcing part of each module
+    -unwatch assets in runtime module
+    -watch for add/remove in package
 
--write meaningful index file for MD
-
--example executer
 
 -custom css => file or source
 
@@ -17,6 +15,9 @@
 
 -grouped log
 
+-multiple components per file
+    -seperate files and "content"
+
 -improve/review plugin flow -> pipeline
 
 -runtime
@@ -24,11 +25,9 @@
     - move all runtime stuff to runtime plugin
     - also the watch option
     -optional pass objects
-    -runtime without watch working only once? well, doh! use watch in webpack watch
-    -check if watching in webpack plugin to enable internal watch
     -request runtime form other plugins, runtime = true ...
     -onBeforeAnalyze => desc.runtime = true
-
+        -how to solve this in uikit, when type is known only after map?
 
 -TestMapper
 
