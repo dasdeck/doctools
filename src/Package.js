@@ -159,13 +159,18 @@ module.exports = class Package extends TreeItem {
 
 
 
+    doRecursivelySync(method, ...args) {
+        _.forEach(this.packages, pack => pack[method](...args));
+        this.getPackageModules().forEach(mod => mod[method](...args));
+    }
+
     doRecursively(method, ...args) {
         return Promise.all(_.map(this.packages, pack => pack[method](...args)))
         .then(res => Promise.all(this.getPackageModules().map(mod => mod[method](...args))))
     }
 
     dispose() {
-        this.doRecursively('dispose');
+        this.doRecursivelySync('dispose');
         super.dispose();
     }
         /**

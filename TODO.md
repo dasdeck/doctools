@@ -1,4 +1,3 @@
--buble instead of babel
 -seperate module for big deps / runnners
 -lodash es
 -uikitonly once?

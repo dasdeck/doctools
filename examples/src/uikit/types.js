@@ -9,3 +9,9 @@
  * @file
  * @typedef {Integer}
  */
+
+/**
+ * a vue VM
+ * @file
+ * @typedef {VueComponentInstance}
+ */

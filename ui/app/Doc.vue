@@ -100,7 +100,7 @@
                     this.lastRuntime = this.data.runtime;
                     eval(this.data.runtime);
                 }
-                return window.VueRunnerRuntime && window.VueRunnerRuntime.default;
+                return window.RuntimeProvider && window.RuntimeProvider.default;
             },
 
             types() {

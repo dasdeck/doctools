@@ -74,7 +74,7 @@ RuntimeProvider.defaultOptions = {
     watch: true,
     output: false,
     libraryTarget: 'umd',
-    library: 'runtime',
+    library: 'RuntimeProvider',
     serve: 'runtime',
     target: 'web',
 }

@@ -77,14 +77,5 @@ class VueRunner {
     }
 }
 
-VueRunner.runtime = {};
-
-VueRunner.RTAConfig = {
-    libraryTarget: 'umd',
-    library: 'VueRunnerRuntime',
-    output: 'runtime',
-    target: 'web',
-    serve: 'runtime'
-}
 
 module.exports = VueRunner;
