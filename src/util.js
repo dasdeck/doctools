@@ -5,26 +5,59 @@ const path = require('path');
 const fs = require('fs');
 const getTypesRaw = arr => arr ? arr.join(' | ') : '';
 
+class AndMatch {
+    constructor(...args) {
+        this.and = args;
+    }
+
+}
+
+function match(conf, file, desc, recursive = true) {
+    conf = _.isArray(conf) ? conf : [conf];
+
+    return conf.some(matcher => {
+
+        if (matcher instanceof AndMatch || matcher.and) {
+            for (let i = 0 ; i < matcher.and.length; i++) {
+                const subMatcher = matcher.and[i];
+                if (!match(subMatcher, file, desc, recursive)) {
+                    return false;
+                }
+            }
+            return true;
+
+        } else if (matcher instanceof RegExp) {
+            return matcher.exec(file);
+        } else if (typeof matcher === 'function') {
+            return matcher(file, desc);
+        } else if (typeof matcher === 'string') {
+            matcher = desc && !path.isAbsolute(matcher) && path.join(desc.config.base, matcher) || matcher;
+            return minimatch(file, matcher) || recursive && matcher.includes(file);
+        } else if (_.isPlainObject(matcher)) {
+
+            const isDir = recursive && fs.lstatSync(file).isDirectory();
+            const include = this.match(matcher.include, file, desc, isDir);
+            const res = include && (!matcher.exclude || !this.match(matcher.exclude, file, desc, false));
+
+            return res;
+
+        } else {
+            throw 'invalid matcher:' + matcher;
+        }
+    });
+}
+
+match.and = function(...args) {
+    return new AndMatch(...args);
+}
+
 module.exports = {
 
     getTypesRaw,
 
-    match(conf, file, desc, recursive = true) {
-        conf = _.isArray(conf) ? conf : [conf];
+    match,
 
-        return conf.some(matcher => {
-            if (matcher instanceof RegExp) {
-                return matcher.exec(file);
-            } else if (typeof matcher === 'function') {
-                return matcher(file, desc);
-            } else if (typeof matcher === 'string') {
-                matcher = desc && !path.isAbsolute(matcher) && path.join(desc.config.base, matcher) || matcher;
-                return minimatch(file, matcher) || recursive && fs.lstatSync(file).isDirectory() && matcher.includes(file);
-            } else {
-                throw 'invalid matcher:' + matcher;
-            }
-        });
-    },
+    AndMatch,
 
     // createExampleFinder(callback) {
 

@@ -129,7 +129,7 @@
              * the fata is dereferenced from the current's routes resource paremter
              */
             data() {
-                return this.$doc.resources[this.resource];
+                return this.resource && this.$doc.resources[this.resource] || this.$doc.selectedModule;
             }
         }
     }

@@ -119,8 +119,12 @@
                 return resource && this.resources[resource.type === 'package' ? resource.resource : resource.package];
             },
 
+            selectedModuleResource() {
+                return this.$route.fullPath.substr(1);
+            },
+
             selectedModule() {
-                return this.resources[this.$route.fullPath];
+                return this.resources[this.selectedModuleResource];
             }
 
         }

@@ -11,6 +11,12 @@ const util = require('./util');
 const defaultConfig = require('./Config');
 
 
+function forcePlugin(name, list) {
+    if (!list.some(plugin => plugin === name || plugin.constructor && plugin.constructor.name === name)) {
+        list.unshift(name);
+    }
+}
+
 function loadPlugins(config) {
 
     if (config._) return;
@@ -18,11 +24,8 @@ function loadPlugins(config) {
     config._ = {};
 
 
-    config._.plugins = [ ...config.plugins]
+    config._.plugins = [...config.plugins]
 
-    if (!config._.plugins.some(plugin => plugin === 'ModuleMapper' || plugin.constructor && plugin.constructor.name === 'ModuleMapper')) {
-        config._.plugins.unshift('ModuleMapper');
-    }
 
     config._.plugins = config._.plugins.map(plugin => {
 
@@ -35,14 +38,25 @@ function loadPlugins(config) {
         return plugin;
     });
 
-    config._.loaders = ['DefaultLoader', ...config.loaders].map(loader => {
+    forcePlugin('ModuleMapper', config._.plugins);
+
+
+    config._.loaders = [ ...config.loaders];
+
+
+    config._.loaders = config._.loaders.map(loader => {
 
         if (_.isString(loader)) {
             const Loader = require('./loaders/' + loader);
             loader = new Loader;
+        } else if (_.isFunction(loader)) {
+            loader = loader();
         }
         return loader;
     });
+
+    forcePlugin('DefaultLoader', config._.loaders);
+
 }
 
  /**

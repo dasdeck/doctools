@@ -66,6 +66,7 @@ const ExampleRunner = {
             if(this.data) {
 
                 if (!this.previewEl) {
+
                     this.$nextTick(res => {
                         this.createPreview();
                     });

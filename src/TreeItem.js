@@ -27,7 +27,7 @@ module.exports = class TreeItem extends EventEmitter {
         if (config.dev || config.log) {
             this.log = console.log;
             const logDir = path.join(this.config.base, 'log');
-            try {fs.mkdirSync(logDir)} catch(e) {};
+            try {fs.mkdirSync(logDir);} catch(e) {};
             this.logFile = (name, data) => fs.writeFileSync(path.join(logDir, name), _.isString(data) ? data : JSON.stringify(data, null, 2));
         } else {
             this.logFile = this.log = x => x;
@@ -36,14 +36,12 @@ module.exports = class TreeItem extends EventEmitter {
 
     init() {
 
-        const desc = this.config._.loaders.reduce((cur, loader) => {
-            if (util.match(loader.match, this.path)) {
-                cur = loader.load(this.path);
-            }
-            return cur;
-        }, {});
+        if (this.loader) {
 
-        _.assign(this, desc);
+            const desc = this.loader.load(this.path);
+            _.assign(this, desc);
+
+        }
 
         this.execPluginCallback('onConstruct', {}, true);
     }
@@ -67,7 +65,7 @@ module.exports = class TreeItem extends EventEmitter {
         }
 
         const jobs = this.config._.plugins.map(plugin => {
-            return () => plugin.matchesType(this) && plugin[name](this, data) || Promise.resolve();
+            return () => plugin.matchesType(this) && plugin[name] && plugin[name](this, data) || Promise.resolve();
         });
 
         if (sync) {

@@ -90,7 +90,7 @@ module.exports = class ComponentMapper extends Plugin {
     mapComponent(desc) {
         const data = desc.module;
 
-        desc.log('mapping component', desc.name);
+        // desc.log('mapping component', desc.name);
 
         if (!desc.jsdoc) {
             throw 'can not use Component mapper without the Module Mapper first';

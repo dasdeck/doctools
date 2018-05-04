@@ -103,13 +103,14 @@ module.exports = class Package extends TreeItem {
         fs.readdirSync(directory).forEach(file => {
             file = path.resolve(path.join(directory, file));
 
-            if(util.match(this.config.exclude, file, this) || !util.match(this.config.include, file, this)) {
+            if (!util.match(this.config, file, this)) {
                 this.log('skipping file:', file);
                 return;
             }
 
             const stats = fs.lstatSync(file);
             if (stats.isDirectory()) {
+
                 //can now create packages
                 const packageJson = path.resolve(path.join(file, 'package.json'));
 
@@ -123,10 +124,15 @@ module.exports = class Package extends TreeItem {
                 }
 
             } else {
-                if (this.config._.loaders.some(loader => util.match(loader.match, file))) {
-                        this.addFile(file);
 
-                }
+                this.config._.loaders.some(loader => {
+
+                    if (util.match(loader.match.bind(loader), file, this)) {
+                        this.addFile(file, false, loader);
+                        return true;
+                    }
+
+                });
             }
         })
     }
@@ -222,6 +228,9 @@ module.exports = class Package extends TreeItem {
 
     }
 
+    /**
+     * @deprecated
+     */
     loadFiles() {
 
         const files = this.getIncludedFiles(true);
@@ -231,12 +240,16 @@ module.exports = class Package extends TreeItem {
 
     }
 
-    addFile(file, patch = false) {
+    addFile(file, patch = false, loader) {
 
         this.log('adding file:', file, 'to:', this.name);
 
-        const res = new Module(this.config, file , this);// parser.parse();
+        const res = new Module(this.config, file , this, loader);// parser.parse();
+
+        res.loader = loader;
         this.addModule(res, patch);
+
+        return res;
 
     }
 
@@ -401,8 +414,7 @@ module.exports = class Package extends TreeItem {
         });
     }
 
-    write() {
-
+    get() {
         const menu = this.config.menu ? this.createMenu() : null;
 
         const data = {
@@ -413,6 +425,15 @@ module.exports = class Package extends TreeItem {
             resources: _.mapValues(this.getResources(), res => res.serialize()),
             rootPackage: this.resource
         };
+
+        this.execPluginCallback('onGet', data, true);
+
+        return Promise.resolve(data);
+    }
+
+    write() {
+
+        const data = this.get();
 
         this.execPluginCallback('onWrite', data, true);
         return Promise.resolve(data);

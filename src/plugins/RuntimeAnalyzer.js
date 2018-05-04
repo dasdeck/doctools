@@ -87,17 +87,13 @@ class RuntimeAnalyzer extends Plugin {
 
         if (config.runtime) {
 
-            if (_.isString(config.runtime)) {
+            if (_.isString(config.runtime) || config.runtime === true) {
 
                 // const serv = this.getRuntimeService(desc);
                 return this.getRuntime(desc.resource).then(runtime => {
-                    desc.runtime = runtime;
+                    desc.runtime = runtime || true;
                 });
 
-
-            } else if(config.runtime === true) {
-                // throw 'unimplemented';
-                debugger
 
             } else {
                 const runtime = _.get(config.runtime, `${desc.type}.${desc.name}`) || _.get(config.runtime, desc.name);
@@ -128,7 +124,7 @@ class RuntimeAnalyzer extends Plugin {
 
     }
 
-    onWrite(desc, data) {
+    onGet(desc, data) {
 
         data.runtime = this.script;
     }
@@ -224,7 +220,9 @@ class RuntimeAnalyzer extends Plugin {
                 return Promise.resolve(this.cache[resource]);
             } else {
                 return new Promise(resolve => {
-                    this.once('change', res => resolve(this.cache && this.cache[resource]));
+                    this.once('change', res => {
+                        resolve(this.cache && this.cache[resource])
+                    });
                 })
             }
 
@@ -290,7 +288,7 @@ class RuntimeAnalyzer extends Plugin {
                 const rt = requireFromString(this.script);
                 setImmediate(clear);
 
-                this.cache = rt.default ? rt.default : rt;
+                this.cache = rt[this.config.library].default;
 
             } catch(e) {
 

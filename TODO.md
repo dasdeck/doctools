@@ -13,6 +13,13 @@
     -move adapters and bridges, so compiler loads only if relevant code changes
     -refactor out the example runners
 
+-add arbitrary runners
+    -demonstrate functions, etc.
+    -run:test:MyTestedFunction
+    -multi input test runners?
+        -html
+        -javscript
+
 -make markdown render cachable
 -extract examples inside the vuepress exporter / markdown only once
 

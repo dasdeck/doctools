@@ -6,7 +6,11 @@ const devServer = require('webpack-dev-server');
 const parser = require('../src/parser');
 const _ = require('lodash');
 
-const argv = require('minimist')(process.argv.slice(2), {
+
+let config = {};
+
+
+const minimistConf = {
     '--': true,
     boolean: ['dev', 'explain', 'server'],
     string: ['config', 'search'],
@@ -17,7 +21,24 @@ const argv = require('minimist')(process.argv.slice(2), {
         dev: ['d', '--dev'],
         explain: ['e', '--explain']
     }
-});
+};
+
+const argv = require('minimist')(process.argv.slice(2), minimistConf);
+
+if (process.mainModule.filename === __filename) {
+
+
+    config.base = argv._[0];
+     //set base default early, for webpack dev server
+    config.search = argv.search;
+    config.dev = argv.dev;
+    config.config = argv.config;
+    config.server = argv.server;
+} else {
+
+    throw 'do not include this file elsewhere!'
+
+}
 
 
 /**
@@ -30,30 +51,20 @@ const argv = require('minimist')(process.argv.slice(2), {
  *
  */
 
-let config = {};
-config.base = argv._[0] || process.cwd(); //set base default early, for webpack dev server
-config.search = argv.search;
-config.dev = argv.dev;
-config.config = argv.config;
-config.server = argv.server;
 
 config = parser.prepareConfig(config);
 
 //easy transport into devserver
 global.doctoolsConfig = config;
 
-if (process.mainModule.filename !== __filename) {
-
-    module.exports = parser.parse(config);
-
-} else if (argv.explain) {
+if (argv.explain) {
 
     config.watch = false;
 
     const pack = parser.parse(config);
 
     pack.analyze().then(() => {
-        pack.write().then(res => {
+        pack.get().then(res => {
             console.log(res);
 
         });
@@ -75,7 +86,7 @@ if (process.mainModule.filename !== __filename) {
     pack.on('change', res => {
         console.log('package changed, updating...')
         pack.analyze().then(() => {
-            pack.write().then(res => console.log('package updated!'));
+            pack.get().then(res => console.log('package updated!'));
         });
     });
     pack.emit('change');

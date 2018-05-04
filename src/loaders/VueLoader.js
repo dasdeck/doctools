@@ -30,6 +30,7 @@ module.exports = class VueLoader {
             type: 'VueComponent',
             template,
             script,
+            runtime: true
         };
 
         res.customBlocks.forEach(el => {

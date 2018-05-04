@@ -72,7 +72,7 @@ class DevServerTools {
             pack.on('change', () => {
 
                 pack.analyze().then(() => {
-                    pack.write().then(data => {
+                    pack.get().then(data => {
                         this.sendDataToClient(data);
                     });
                 });
@@ -106,7 +106,7 @@ module.exports = {
             const pack = server.getPack();
 
             pack.analyze().then(() => {
-                pack.write().then(data => {
+                pack.get().then(data => {
                     pack.logFile('output', data);
                     res.json(data);
                     next();
@@ -125,10 +125,9 @@ module.exports = {
 
         app.get('*', function(request, response, next) {
 
-
             const pack = server.getPack();
             const resources = pack.getResources();
-            if (resources[request.url]) {
+            if (resources[request.url.substr(1)]) {
                 response.sendFile(__dirname + '/ui/index.html');
             } else {
                 next();

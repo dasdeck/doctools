@@ -7,15 +7,22 @@ const fs = require('fs');
 
 class Module extends TreeItem {
 
-    constructor(config, file = config.base, pack = null) {
+    constructor(config, file = config.base, pack = null, loader) {
 
         super(config, file, pack);
 
+        this.loader = loader;
+
+
+
         this.init();
 
-        this.runtime = true;
+        // this.runtime = true;
 
-        this.type = this.type || 'module';
+        // if (!this.type) {
+        //     throw "your loader should assign a type!"
+        // }
+        // this.type = this.type || 'module';
 
         if (this.template && this.type !== 'VueComponent') {
             debugger;
@@ -54,7 +61,7 @@ class Module extends TreeItem {
 
     patch(module = this) {
 
-        this.execPluginCallback('onPatch');
+        this.execPluginCallback('onPatch', null, true);
 
         if (this !== module) {
             _.assign(this, module);

@@ -38,6 +38,8 @@ module.exports = class Plugin extends EventEmitter {
 
     onSerialize(desc) {}
 
+    onGet(data) {}
+
     onWrite(data) {}
 
     onDispose() {}

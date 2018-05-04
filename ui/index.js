@@ -65,10 +65,10 @@ function init() {
                 component: Content,
                 beforeEnter(route, to, next) {
                     //redirect to root if packackage not found
-                    window.$data.resources[route.fullPath] ?
+                    const res = route.fullPath.substr(1);
+                    window.$data.resources[res] ?
                         next() : next(window.$data.rootPackage)
-                },
-                props: (route) => ({resource: route.fullPath})
+                }
             }
         ]
     });

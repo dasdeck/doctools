@@ -71,10 +71,6 @@ export default {
         html() {
             this.updateExampleRunners();
         }
-        // '$doc.runtime'() {
-        //     // this.clearRunners();
-        //     // this.updateExampleRunners();
-        // }
 
     },
 
@@ -95,6 +91,13 @@ export default {
                 if (!data.instance) {
                     const el = UIkit.util.$(`#${data.id}`, this.$el);
 
+                    const dynamicRuntime = this.$doc.runtime && this.$doc.runtime[this.$doc.selectedModule.resource];
+
+                    // if(!dynamicRuntime) {
+                    //     debugger;
+                    //     throw "no runtime found for examples:" + this.$doc.selectedModule.resource;
+                    // }
+
                     if (!el) {
                         //not yet rendered, try next iteration
                         Vue.nextTick(res => {
@@ -102,12 +105,11 @@ export default {
                         });
                         return true;
                     }
-                    const dynamicRuntime = this.$doc.runtime && this.$doc.runtime[this.$doc.selectedModule.resource];
-                    if (dynamicRuntime) {
-                        const ExampleRunnnerComp = Vue.extend(ExampleRunner);
-                        data.instance = new ExampleRunnnerComp({propsData: {data, dynamicRuntime}, el});
+                    // if (dynamicRuntime) {
+                    const ExampleRunnnerComp = Vue.extend(ExampleRunner);
+                    data.instance = new ExampleRunnnerComp({propsData: {data, dynamicRuntime}, el});
 
-                    }
+                    // }
                 }
             });
         }

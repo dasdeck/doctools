@@ -47,7 +47,7 @@ class ModuleMapper extends Plugin {
                     const readme = this.getReadme(desc);
 
                     if (readme !== desc.readme) {
-                        desc.log('readme changed', this.getReadme(desc));
+                        desc.log('readme changed', this.getReadme(desc.path));
 
                         desc.readme = readme;
                         desc.package.getRootPackage().emit('change');
@@ -97,7 +97,7 @@ class ModuleMapper extends Plugin {
     onMap(desc) {
 
         const all = _.cloneDeep(desc.jsdoc);
-        desc.log('mapping module', desc.name, !!all);
+        // desc.log('mapping module', desc.name, !!all);
 
         const config = desc.config;
         const documented = all.filter(el => !el.undocumented);

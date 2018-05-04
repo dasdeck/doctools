@@ -39,14 +39,6 @@ module.exports = class VueComponentMapper extends ComponentMapper {
 
     }
 
-    onPatch() {
-
-    }
-
-    onPrepare(desc) {
-        desc.runtime = true;
-    }
-
     parseTemplate(desc) {
 
         const {template} = desc.template;

@@ -71,6 +71,7 @@
             "name": "uikit (server)",
             "program": "${workspaceFolder}/bin/doctools.js",
             "cwd": "/Users/jms/uikit",
+            "console": "internalConsole",
             "args": [
                 "/Users/jms/uikit",
                 "--dev",
