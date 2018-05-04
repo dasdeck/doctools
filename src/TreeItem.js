@@ -12,6 +12,8 @@ module.exports = class TreeItem extends EventEmitter {
 
         super();
 
+        this._assets = {};
+
         this.config = config;
 
         this.package = parent;
@@ -44,6 +46,46 @@ module.exports = class TreeItem extends EventEmitter {
         }
 
         this.execPluginCallback('onConstruct', {}, true);
+    }
+
+    watchAsset(file, targetKey) {
+
+        if (!this._assets[file]) {
+
+            const load = () => {
+
+                const newValue = fs.readFileSync(file);
+
+                const currentValue = _.get(this, targetKey);
+
+                if (newValue !== currentValue) {
+                    this.log('asset changed', targetKey);
+
+                    _.set(this, targetKey, newValue);
+
+                    this.getRootPackage().emit('change');
+                }
+            };
+
+            load();
+
+            const watcher = fs.watch(file, {}, change);
+
+            this._assets[file] = {watcher};
+        }
+    }
+
+    unwatchAsset(file) {
+        const asset = this._assets[file];
+        if (asset) {
+            delete this._assets[file];
+            asset.watcher.close();
+        }
+    }
+
+    dispose() {
+        _.forEach(this._assets, () => asset.watcher.close())
+        _.forEach(this.getResources(), res => res.execPluginCallback('onDispose', {}, true));
     }
 
     getRootPackage() {

@@ -37,25 +37,15 @@ class ModuleMapper extends Plugin {
 
     onAnalyze(desc) {
 
-        try {
-            if (!desc.readme) {
+        if (typeof desc.readme === 'undefined') {
 
-                const file = this.getReadmeFile(desc);
-                desc.readme = this.getReadme(desc);
-
-                this.watchers.push(fs.watch(file, {}, () => {
-                    const readme = this.getReadme(desc);
-
-                    if (readme !== desc.readme) {
-                        desc.log('readme changed', this.getReadme(desc.path));
-
-                        desc.readme = readme;
-                        desc.package.getRootPackage().emit('change');
-                    }
-                }));
+            const readme = this.getReadmeFile(desc);
+            if (fs.existsSync(readme)) {
+                desc.watchAsset(readme, 'readme');
+            } else {
+                desc.readme = null;
             }
-        } catch (e) {
-            // debugger;
+
         }
 
         if (desc.jsdoc) {

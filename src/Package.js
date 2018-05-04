@@ -200,9 +200,7 @@ module.exports = class Package extends TreeItem {
 
     }
 
-    dispose() {
-        _.forEach(this.getResources(), res => res.execPluginCallback('onDispose', {}, true));
-    }
+
 
     doRecursively(method, ...args) {
         return Promise.all(_.map(this.packages, pack => pack[method](...args)))
