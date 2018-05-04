@@ -8,7 +8,8 @@
         </ul>
 
         <div class="uk-switcher">
-            <div class="preview" >
+            <div v-if="error" class="error">{{error}}</div>
+            <div v-else class="preview" >
                 <div v-html="preview"></div>
             </div>
             <div>
@@ -73,7 +74,11 @@ const ExampleRunner = {
                 } else {
                     try {
                         this.error = '';
-                        this.preview = this.runner && this.runner.preview && this.runner.preview(this) || this.code;
+                        if (this.runner) {
+                            this.preview = this.runner.preview && this.runner.preview(this) || this.code;
+                        } else {
+                            this.error = 'could not find runnner';
+                        }
                     } catch (e) {
                         this.error = e.message;
                     }

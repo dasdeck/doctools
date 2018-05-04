@@ -70,7 +70,7 @@ module.exports = {
      */
     plugins: [
         'RuntimeAnalyzer',
-        // () => new RuntimeAnalyzer(VueRunner.RTAConfig),
+        'RuntimeProvider',
         'ModuleMapper',
         'UIkitComponentMapper',
         'VueComponentMapper',

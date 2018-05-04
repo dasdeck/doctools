@@ -195,7 +195,6 @@ export default {
 
 ```
 
-
 This is a real example that uses the actual code:
 
 ```run:vue

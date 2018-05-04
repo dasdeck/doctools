@@ -28,6 +28,7 @@ module.exports = class VueComponentMapper extends ComponentMapper {
                 trigger.template = 'function';
                 trigger.simpleName = trigger.name;
                 util.mapParams(trigger);
+
                 desc.package.globals.trigger = desc.package.globals.trigger || [];
                 desc.package.globals.trigger.push(trigger);
 

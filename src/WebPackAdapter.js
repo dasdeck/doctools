@@ -14,10 +14,16 @@ module.exports = class WebpackAdapter {
         });
 
         compiler.hooks.compilation.tap(this.constructor.name, compilation => {
-            !this.initial && compilation.hooks.buildModule.tap(this.constructor.name, info => {
+             compilation.hooks.buildModule.tap(this.constructor.name, info => {
                 if (info && info.rawRequest) {
+                    const file = info.rawRequest;
                     try {
-                        this.analyzer.fileChanged(info.rawRequest);
+                        if(this.analyzer.pack.getResourceByFile(file)) {
+                            console.log(this.analyzer.constructor.name, 'webpack:', file);
+                            if (!this.initial) {
+                                this.analyzer.fileChanged(file);
+                            }
+                        }
                     } catch (e) {
                         console.warn(this.constructor.name, ':', e);
                     }

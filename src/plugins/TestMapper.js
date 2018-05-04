@@ -13,7 +13,7 @@ let base; //= 'module.exports';
 
 const Plugin = require('../Plugin');
 
-module.exports = class ComponentMapper extends Plugin {
+module.exports = class TestMapper extends Plugin {
 
     onSerialize(desc, data) {
     }

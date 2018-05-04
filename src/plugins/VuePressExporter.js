@@ -109,7 +109,7 @@ class VuePressExporter extends Plugin {
                 };
             });
 
-        } else {
+        } else { // get package hierarchy menu
 
             const packages = _.filter(this.pack.getResources(), res => res.type === 'package');
 

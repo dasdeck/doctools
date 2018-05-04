@@ -4,7 +4,7 @@ const glob = require('glob');
 const fs = require('fs');
 const path = require('path');
 
-class DevServerTools {
+class DevServer {
 
     constructor(config, app) {
 
@@ -70,7 +70,7 @@ class DevServerTools {
             const pack = this.getParser().parse(global.doctoolsConfig);
 
             pack.on('change', () => {
-
+                console.log('devServer:', 'change');
                 pack.analyze().then(() => {
                     pack.get().then(data => {
                         this.sendDataToClient(data);
@@ -97,7 +97,7 @@ module.exports = {
     inline: true,
     before(app) {
 
-        const server = new DevServerTools(global.doctoolsConfig, app);
+        const server = new DevServer(global.doctoolsConfig, app);
         global.doctoolsConfig.devServer = server;// = app;
         server.getPack(); //init once to register routes first
 

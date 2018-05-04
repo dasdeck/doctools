@@ -67,9 +67,14 @@ class ModuleMapper extends Plugin {
     }
 
     onSerialize(desc, data) {
-        delete data.jsdoc;
-        delete data.module.all;
-        delete data.module.documented;
+        // delete data.jsdoc;
+        // delete data.module.all;
+        // delete data.module.documented;
+        data.module = {global: desc.module.global};
+    }
+
+    onPrepare(desc) {
+        desc.package.types = {};
     }
 
     onPatch(desc) {
@@ -120,7 +125,7 @@ class ModuleMapper extends Plugin {
                 const pack = desc.package;
 
                 // debugger
-                pack.types = pack.types || {};
+                // pack.types = pack.types || {};
 
                 const name = el.type && el.type.names[0] || el.longname;
 

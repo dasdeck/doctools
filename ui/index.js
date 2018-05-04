@@ -2,21 +2,22 @@ import Vue from 'vue';
 import VueRouter from 'vue-router';
 import SockJS from 'sockjs-client';
 
-import Doc from './app/Doc.vue';
-import Content from './app/Content.vue';
 
 import 'prismjs'
 import 'prismjs/themes/prism.css'
+import _ from 'lodash';
 
 import Prism from 'vue-prism-component';
 
+import Doc from './app/Doc.vue';
+import Content from './app/Content.vue';
 import ExamplerRunner from './app/ExampleRunner.vue';
-import vuerunner from '../src/runnner/VueRunner'
-import uikitrunner from '../src/runnner/UIkitRunner'
-import _ from 'lodash';
+// import vuerunner from '../src/runnner/VueRunner'
+// import uikitrunner from '../src/runnner/UIkitRunner'
 
-ExamplerRunner.runners['vue'] = new vuerunner;
-ExamplerRunner.runners['uikit'] = new uikitrunner;
+
+// ExamplerRunner.runners['vue'] = new vuerunner;
+// ExamplerRunner.runners['uikit'] = new uikitrunner;
 
 Vue.use(VueRouter);
 

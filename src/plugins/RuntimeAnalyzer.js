@@ -57,12 +57,8 @@ class RuntimeAnalyzer extends Plugin {
             this.run();
         }
 
-        if (this.load()) {
-            const jobs = this.getRuntimeModules().map(resource => this.analyzeRuntime(resource));
-            return Promise.all(jobs);
-        } else {
-            return this.getScript();
-        }
+        const jobs = this.getRuntimeModules().map(resource => this.analyzeRuntime(resource));
+        return Promise.all(jobs);
     }
 
         /**
@@ -73,6 +69,7 @@ class RuntimeAnalyzer extends Plugin {
 
         this.patched = true;
         delete this.cache;
+        delete this.script;
 
     }
 
@@ -83,14 +80,7 @@ class RuntimeAnalyzer extends Plugin {
         }
     }
 
-    onGet(desc, data) {
-
-        if (this.config.serve) {
-            data[this.config.serve] = this.script;
-        }
-    }
-
-        /**
+    /**
      *
      * @param {Object} desc
      * @returns {Boolean}
@@ -111,32 +101,17 @@ class RuntimeAnalyzer extends Plugin {
     analyzeRuntime(desc) {
         const {config} = desc;
 
-        if (config.runtime) {
+        if (_.isPlainObject(config.runtime) || config.runtime === true) {
 
-            if (_.isString(config.runtime) || config.runtime === true) {
+            const runtime = _.get(config.runtime, `${desc.type}.${desc.name}`) || _.get(config.runtime, desc.name);
+            return Promise.resolve(runtime || {});
 
-                // const serv = this.getRuntimeService(desc);
-                return this.getRuntime(desc.resource).then(runtime => {
-                    desc.runtime = runtime || true;
-                });
-
-
-            } else {
-                const runtime = _.get(config.runtime, `${desc.type}.${desc.name}`) || _.get(config.runtime, desc.name);
-                return Promise.resolve(runtime || {});
-            }
+        } else {
+            return this.getRuntime(desc.resource).then(runtime => {
+                desc.runtime = runtime || true;
+            });
         }
 
-        if (config.crudeImport) {
-            try {
-                return Promise.resolve(this.crudeImport(desc.script));
-            } catch (e) {
-                console.warn('could not import runtime for: ' + desc.name);
-                console.warn(e);
-            }
-        }
-
-        return Promise.resolve({});
     }
 
 
@@ -214,16 +189,6 @@ class RuntimeAnalyzer extends Plugin {
         return this.indexFile;
     }
 
-    getScript() {
-        if (this.script) {
-            return Promise.resolve(this.script);
-        } else {
-            return new Promise(resolve => {
-                this.once('change', res => resolve(this.script));
-            })
-        }
-    }
-
     getRuntime(resource) {
 
         if (!this.config.async) {
@@ -231,7 +196,7 @@ class RuntimeAnalyzer extends Plugin {
                 return Promise.resolve(this.cache[resource]);
             } else {
                 return new Promise(resolve => {
-                    this.once('change', res => {
+                    this.once('built', res => {
                         resolve(this.cache && this.cache[resource])
                     });
                 })
@@ -265,17 +230,55 @@ class RuntimeAnalyzer extends Plugin {
     }
 
     fileChanged(file) {
-        if (this.load()) {
+
+        this.pack.log('webpack:', file);
+
+        if(this.pack.getResourceByFile(file)) {
             //if this runtime is used for analysis, inform the tree to reeanalyse
             this.pack.patchFile(file);
+        }
+    }
+
+    writeToDisk() {
+        let dir;
+        if (path.isAbsolute(this.config.output)) {
+            dir = this.config.output;
         } else {
-            //simple trigger a change after webpack
-            this.patched = true;
+            dir = path.join(this.pack.config.base, this.config.output);
+        }
+        mkpath.sync(dir);
+        const file = path.join(dir, 'index.js');
+        fs.writeFileSync(file, this.script);
+        this.pack.log(this.constructor.name, 'runtime written to:', file);
+    }
+
+    scriptChanged() {
+
+        if (this.config.output) {
+            this.writeToDisk();
+        }
+
+        this.loadScript();
+
+    }
+
+    loadScript() {
+        try {
+
+            const clear = require('jsdom-global')();
+            const rt = requireFromString(this.script);
+            setImmediate(clear);
+
+            this.cache = rt[this.config.library].default;
+
+        } catch(e) {
+
+            this.pack.log('could not load runtime');
+            this.pack.log(e);
         }
     }
 
     onWebPack(err, res) {
-
 
         const resfname = Object.keys(res.compilation.assets)[0];
         const script = this.outputFileSystem.readFileSync(resfname ,'utf8');
@@ -286,94 +289,29 @@ class RuntimeAnalyzer extends Plugin {
         const triggerChange = this.patched || scriptChanged && !this.firstBuild;
 
         this.firstBuild = false;
+        this.patched = false;
 
 
         if (scriptChanged) {
 
             this.script = script;
 
-            if (this.config.output) {
+            this.scriptChanged();
 
-                let dir;
-                if (path.isAbsolute(this.config.output)) {
-                    dir = this.config.output;
-                } else {
-                    dir = path.join(this.pack.config.base, this.config.output);
-                }
-                mkpath.sync(dir);
-                const file = path.join(dir, 'index.js');
-                fs.writeFileSync(file, script);
-                this.pack.log('runtime written to:', file);
-
-            }
-
-            if (this.load()) {
-
-                try {
-
-                    const clear = require('jsdom-global')();
-                    const rt = requireFromString(script);
-                    setImmediate(clear);
-
-                    this.cache = rt[this.config.library].default;
-
-                } catch(e) {
-
-                    this.pack.log('could not load runtime');
-                    this.pack.log(e);
-                }
-
-            }
         }
 
 
-        this.patched = false;
+        this.pack.log(this.constructor.name, 'webpack built', triggerChange);
+
+        this.emit('built');
 
         if (triggerChange) {
 
-            this.pack.log('webpack built');
             this.emit('change', this.cache);
         }
 
     }
 
-    /**
-     *
-     * @param {DoctoolsConfig} config
-     * @param {String} filename
-     * @returns {Promise} returns an object with the result of a webpacked require of the given file
-     */
-    webpackFile(config, filename) {
-
-        try {
-
-            const compiler = this.createCompiler(filename);
-
-            return new Promise(resolve => {
-
-                compiler.run((err, res) => {
-                    const resfname = Object.keys(res.compilation.assets)[0];
-                    const data = compiler.outputFileSystem.readFileSync(resfname ,'utf8');
-                    try {
-                        const rt = requireFromString(data);
-                        resolve(rt.default ? rt.default : rt);
-                        this.pack.log('webpacked:', filename);
-                    } catch(e) {
-                        this.pack.warn('could not load runtime for:', filename);
-                        resolve({});
-                    }
-                });
-            });
-
-        } catch(e) {
-            console.warn(e);
-            return Promise.reject(e);
-        }
-    }
-
-    load() {
-        return this.config.libraryTarget === 'commonjs';
-    }
 }
 
 RuntimeAnalyzer.defaultOptions = {
@@ -381,9 +319,7 @@ RuntimeAnalyzer.defaultOptions = {
     output: false,
     libraryTarget: 'commonjs',
     library: 'runtime',
-    serve: false,
     target: 'node',
-    async: false
 }
 
 module.exports = RuntimeAnalyzer;

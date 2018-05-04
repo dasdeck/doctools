@@ -78,7 +78,9 @@ const Plugin = require('../Plugin');
 module.exports = class ComponentMapper extends Plugin {
 
     onSerialize(desc, data) {
-        delete data.runtime;
+
+        data.component = desc.component;
+        // delete data.runtime;
     }
 
     onMap(desc) {
@@ -95,7 +97,7 @@ module.exports = class ComponentMapper extends Plugin {
 
         // desc.log('mapping component', desc.name);
 
-        if (!desc.jsdoc) {
+        if (!desc.module) {
             throw 'can not use Component mapper without the Module Mapper first';
         }
 

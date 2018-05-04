@@ -16,36 +16,35 @@ module.exports = class Package extends TreeItem {
 
         super(config, file, parent);
 
-
         this.type = 'package';
 
-        this.init();
+        this.load();
 
-        this.resources = {};
-        this.globals = {};
-
-        this.analyzeSubPackages();
 
     }
+
+    load() {
+        this.resources = {};
+        super.load();
+        this.scanDirectory(this.path);
+    }
+
+
 
     getPackageJsonPath() {
         return path.resolve(path.join(this.path, 'package.json'));
     }
 
-    loadPackageFile() {
+    loadAssets() {
 
         const packPath = this.getPackageJsonPath();
         if (fs.existsSync(packPath)) {
-            this.script = fs.readFileSync(packPath, 'utf8');
-            this.packageJson = JSON.parse(this.script);
-            if (_.size(this.packageJson) === 0 ) {
-                this.script = '';
-            }
+            this.watchAsset(packPath, 'packageJson');
         }
 
         const mdPath = path.join(this.path, 'README.md');
         if (fs.existsSync(mdPath)) {
-            this.readme = fs.readFileSync(mdPath, 'utf8');
+            this.watchAsset(mdPath, 'readme');
         }
 
     }
@@ -72,39 +71,12 @@ module.exports = class Package extends TreeItem {
         // this.resources[pack.resource] = pack;
     }
 
-    analyzeSubPackages() {
-
-        if (this.config.subPackages){
-
-            if (_.isString(this.config.subPackages)) {
-
-                const packages = glob.sync(path.join(this.path, this.config.subPackages));
-
-                packages.forEach(subPackage => {
-
-                    const res = new Package(this.config, subPackage, this);// parser.parse();
-                    this.addPackage(res);
-
-                });
-
-                this.loadFiles();
-
-            } else {
-
-                this.scanDirectory(this.path);
-
-            }
-
-        }
-
-    }
-
     scanDirectory(directory) {
         fs.readdirSync(directory).forEach(file => {
             file = path.resolve(path.join(directory, file));
 
             if (!util.match(this.config, file, this)) {
-                this.log('skipping file:', file);
+                // this.log('skipping file:', file);
                 return;
             }
 
@@ -128,7 +100,7 @@ module.exports = class Package extends TreeItem {
                 this.config._.loaders.some(loader => {
 
                     if (util.match(loader.match.bind(loader), file, this)) {
-                        this.addFile(file, false, loader);
+                        this.addFileToPackage(file, loader);
                         return true;
                     }
 
@@ -138,7 +110,6 @@ module.exports = class Package extends TreeItem {
     }
 
     findPackageForFile(file) {
-
 
         let res = file.includes(this.path) ? this : null;
 
@@ -153,15 +124,6 @@ module.exports = class Package extends TreeItem {
         return res;
     }
 
-    getTypeGroupedModules() {
-        const groups = {};
-        this.getPackageModules().forEach(mod => {
-            groups[mod.type] = groups[mod.type] || {};
-            groups[mod.type][mod.resource] = mod;
-        })
-
-        return groups;
-    }
 
     getPackageModules() {
         const mods = Object.values(this.resources).filter(res => res instanceof Module);
@@ -183,7 +145,7 @@ module.exports = class Package extends TreeItem {
 
     analyze() {
 
-        this.loadPackageFile();
+        this.loadAssets();
 
         return this.doRecursively('execPluginCallback', 'onPrepare')
         .then(res => this.execPluginCallback('onPrepare'))
@@ -191,7 +153,6 @@ module.exports = class Package extends TreeItem {
         .then(res => this.doRecursively('analyze'))
         .then(res => this.execPluginCallback('onAnalyze'))
 
-        // .then(res => this.getPackageModules().map(mod => mod.map()))
         .then(res => this.map())
 
         .then(() => this)
@@ -214,62 +175,47 @@ module.exports = class Package extends TreeItem {
 
         this.globals = {};
 
-         const jobs = this.getPackageModules().map(module => {
-            return module.map();
-        });
-
         return Promise.all(_.map(this.packages, pack => pack.map()))
-        .then(res => Promise.all(jobs))
+        .then(res => Promise.all(this.getPackageModules().map(module => module.map())))
         .then(() => this.execPluginCallback('onMap'))
         .catch(err => {throw err});
 
 
     }
 
-    /**
-     * @deprecated
-     */
-    loadFiles() {
 
-        const files = this.getIncludedFiles(true);
-        files.forEach(file => {
-            this.addFile(file);
-        });
 
-    }
+    addFileToPackage(file, loader) {
 
-    addFile(file, patch = false, loader) {
+        const existingResource = this.getResourceByFile(file);
 
-        this.log('adding file:', file, 'to:', this.name);
+        if (existingResource) {
 
-        const res = new Module(this.config, file , this, loader);// parser.parse();
+            throw 'file already added';
+        }
 
-        this.addModule(res, patch);
+        // this.log('adding file:', file, 'to:', this.name);
 
-        return res;
+        const module = new Module(this.config, file , this, loader);// parser.parse();
+
+        this.resources[module.resource] = module;
 
     }
 
-    addModule(module, patch = false) {
+    addModule(module) {
 
         const resource = module.resource;
 
-        const existingModule = this.resources[resource];
-
-        if (!existingModule) {
-
-            this.resources[resource] = module;
-
-        } else if (patch) {
-
-            existingModule.patch();
-
-        } else {
-
-            throw 'module already existing'
+        if (this.resources[resource]) {
+            throw 'module uri already existing'
 
         }
 
+    }
+
+
+    getResourceByFile(file) {
+        return _.find(this.getResources(), res => res.path === file);
     }
 
 
@@ -281,47 +227,14 @@ module.exports = class Package extends TreeItem {
     patchFile(file) {
         file = path.resolve(file);
 
-        if (this.getAllModules().some(module => module.path === file)) {
-            const pack = this.findPackageForFile(file);
-            if (pack) {
-                pack.patch(file);
-            }
-        }
-    }
+        const existingResource = this.getResourceByFile(file);
+        if (existingResource) {
 
-    /**
-     * patches this package
-     * @param {*} module
-     */
-    patch(file) {
-
-
-        this.execPluginCallback('onPatch');
-
-        if (_.isString(file)) {
-            this.addFile(file, true);
+            this.execPluginCallback('onPatch');
+            existingResource.patch();
         } else {
-            this.addModule(file, true);
+            throw 'can only patch already existing files';
         }
-
-    }
-
-    /**
-     * returns a list of files inculed in this package
-     * @param {*} excludeSubPackageFiles
-     */
-    getIncludedFiles(excludeSubPackageFiles = false) {
-
-        const conf = {};
-
-        if(excludeSubPackageFiles ) {
-
-            if (_.isString(this.config.subPackages)) {
-                conf.ignore = this.config.subPackages;
-            }
-        }
-
-        return glob.sync(path.join(this.path, this.config.search), conf);
 
     }
 
@@ -331,16 +244,9 @@ module.exports = class Package extends TreeItem {
      */
     serialize() {
 
-        // const types = {};
-        // _.forEach(this.resources, resource => {
-        //     const type = resource.type;
-        //     types[type] = types[type] || {};
-        //     types[type][resource.name] = resource.resource;
-
-        // });
 
         const data = {
-            ...this,
+            ...super.serialize(),
             package: this.package && this.package.resource,
             packages: _.mapValues(this.packages, pack => pack.resource),
             // types,
@@ -348,7 +254,6 @@ module.exports = class Package extends TreeItem {
             parent: this.parent && this.parent.resource
         };
 
-        delete data.config;
 
         this.execPluginCallback('onSerialize', data, true );
 
@@ -392,24 +297,19 @@ module.exports = class Package extends TreeItem {
         return _.map(children, child => {
 
             if (child.match) {
-                // if (child.label) {
 
-                    return {
-                        ...child,
-                        items: _.map(_.filter(this.getResources(), res => {
-                            return util.match(child.match, res.path, res, false);
-                        }), res => res.resource)
-                    }
-                // } else {
-                //     debugger
-                //     return _.map(_.filter(this.getResources(), res => {
-                //         return util.match(child.match, res.path, res, false);
-                //     }), res => res.resource)
-                // }
+                return {
+                    ...child,
+                    match: null,
+                    items: _.map(_.filter(this.getResources(), res => {
+                        return util.match(child.match, res.path, res, false);
+                    }), res => res.resource)
+                }
             }
 
         });
     }
+
 
     get() {
         const menu = this.config.menu ? this.createMenu() : null;
@@ -424,6 +324,8 @@ module.exports = class Package extends TreeItem {
         };
 
         this.execPluginCallback('onGet', data, true);
+
+        // util.isCyclic(data);
 
         return Promise.resolve(data);
     }

@@ -36,7 +36,7 @@ module.exports = class TreeItem extends EventEmitter {
         }
     }
 
-    init() {
+    load() {
 
         if (this.loader) {
 
@@ -48,28 +48,43 @@ module.exports = class TreeItem extends EventEmitter {
         this.execPluginCallback('onConstruct', {}, true);
     }
 
+    serialize() {
+
+        return _.pick(this, [
+            'readme',
+            'script',
+            'path',
+            'type',
+            'name',
+            'resource',
+            'fileInPackage']
+        )
+    }
+
     watchAsset(file, targetKey) {
 
         if (!this._assets[file]) {
 
-            const load = () => {
+            let init = true;
+            const load = (type, filename) => {
 
-                const newValue = fs.readFileSync(file);
+                const newValue = fs.readFileSync(file, 'utf8');
 
                 const currentValue = _.get(this, targetKey);
 
                 if (newValue !== currentValue) {
-                    this.log('asset changed', targetKey);
+                    !init && this.log('asset changed', targetKey);
 
                     _.set(this, targetKey, newValue);
 
-                    this.getRootPackage().emit('change');
+                    !init && this.getRootPackage().emit('change');
                 }
             };
 
-            load();
+            load(null, file, true);
 
-            const watcher = fs.watch(file, {}, change);
+            init = false;
+            const watcher = fs.watch(file, {}, load);
 
             this._assets[file] = {watcher};
         }
@@ -122,10 +137,6 @@ module.exports = class TreeItem extends EventEmitter {
         }
 
         // return Promise.all(jobs);
-    }
-
-    serialize() {
-        throw 'implement!';
     }
 
     analyze() {

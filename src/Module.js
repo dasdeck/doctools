@@ -13,20 +13,8 @@ class Module extends TreeItem {
 
         this.loader = loader;
 
+        this.load();
 
-
-        this.init();
-
-        // this.runtime = true;
-
-        // if (!this.type) {
-        //     throw "your loader should assign a type!"
-        // }
-        // this.type = this.type || 'module';
-
-        if (this.template && this.type !== 'VueComponent') {
-            debugger;
-        }
     }
 
     analyze() {
@@ -48,11 +36,9 @@ class Module extends TreeItem {
     serialize() {
 
         const data = {
-            ...this,
+            ...super.serialize(),
             package: this.package.resource
         };
-
-        delete data.config;
 
         this.execPluginCallback('onSerialize', data, true);
 
@@ -61,7 +47,7 @@ class Module extends TreeItem {
 
     patch() {
 
-        this.init();
+        this.load();
 
         this.execPluginCallback('onPatch', null, true);
 
