@@ -120,7 +120,7 @@
             },
 
             selectedModule() {
-                return this.resources[this.$route.params.resource];
+                return this.resources[this.$route.fullPath];
             }
 
         }

@@ -21,8 +21,8 @@
             <PropTable :key="name" v-for="(table, name) in data.tables" :name="name" :data="table" :headers="true"/>
             <template v-if="data.returns && data.returns.length">
                 <h4>returns:</h4>
-                <template v-for="ret in data.returns">
-                    <Types :type="ret.type"/>
+                <template v-for="(ret, i) in data.returns">
+                    <Types :type="ret.type" :key="i"/>
                     <!-- <h4><code>{{ret.type.names.join('|')}}</code></h4> -->
                     <p>{{ret.description}}</p>
                 </template>

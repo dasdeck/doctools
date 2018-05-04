@@ -73,7 +73,7 @@ class DevServerTools {
 
                 pack.analyze().then(() => {
                     pack.write().then(data => {
-                        this.sendDataToClient(data)
+                        this.sendDataToClient(data);
                     });
                 });
 
@@ -123,11 +123,12 @@ module.exports = {
 
         });
 
-        app.get('/:resource/:tab?', function(request, response, next) {
+        app.get('*', function(request, response, next) {
+
 
             const pack = server.getPack();
             const resources = pack.getResources();
-            if (resources[request.params.resource]) {
+            if (resources[request.url]) {
                 response.sendFile(__dirname + '/ui/index.html');
             } else {
                 next();

@@ -1,3 +1,18 @@
+-buble instead of babel
+-seperate module for big deps / runnners
+-lodash es
+-uikitonly once?
+-utils seperate?
+
+-vuepress export:
+    -folder followmenu structure
+
+-nuxt!
+
+-refactore
+    -move adapters and bridges, so compiler loads only if relevant code changes
+    -refactor out the example runners
+
 -make markdown render cachable
 -extract examples inside the vuepress exporter / markdown only once
 

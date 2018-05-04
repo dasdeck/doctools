@@ -154,7 +154,7 @@ class MarkdownExporter extends Plugin {
     onWrite(pack, data) {
 
       if (this.config.async) {
-            setImmediate(res => this.renderMarkdown(pack, data));
+            setTimeout(res => this.renderMarkdown(pack, data), 100);
       } else {
           this.renderMarkdown(pack, data);
       }

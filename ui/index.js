@@ -47,7 +47,7 @@ function setData(data) {
 }
 
 // IE compatibility?
-fetch('data.json').then(res => res.json()).then(data => {
+fetch('/data.json').then(res => res.json()).then(data => {
 
     setData(data);
     init();
@@ -61,22 +61,15 @@ function init() {
         mode: 'history',
         routes: [
             {
-                path: '/',
-                redirect(route) {
-                    //redirect to topmost package
-                    return '/' + window.$data.rootPackage;
-                }
-            },
-            {
-                path: '/:resource/:tab?',
+                path: '*',
                 component: Content,
                 beforeEnter(route, to, next) {
                     //redirect to root if packackage not found
-                    next(window.$data.resources[route.params.resource] ? undefined : '/');
+                    window.$data.resources[route.fullPath] ?
+                        next() : next(window.$data.rootPackage)
                 },
-                props: true
+                props: (route) => ({resource: route.fullPath})
             }
-
         ]
     });
 

@@ -141,7 +141,7 @@ class VuePressExporter extends Plugin {
 
     onWrite(pack, data) {
         if (this.config.async) {
-            setImmediate(res => this.write(pack, data));
+            setTimeout(res => this.write(pack, data), 100);
         } else {
             this.write(pack, data);
         }

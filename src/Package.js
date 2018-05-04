@@ -414,8 +414,8 @@ module.exports = class Package extends TreeItem {
             rootPackage: this.resource
         };
 
-        const p = this.execPluginCallback('onWrite', data);
-        return p.then(res => data);
+        this.execPluginCallback('onWrite', data, true);
+        return Promise.resolve(data);
     }
 
 
