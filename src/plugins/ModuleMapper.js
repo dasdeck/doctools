@@ -61,9 +61,9 @@ class ModuleMapper extends Plugin {
         if (desc.jsdoc) {
             return Promise.resolve();
         } else {
-            return jsdoc.explain({source: desc.script}).then(all => {
-                desc.jsdoc = all;
-                desc.log('jsdoc parsed:', desc.name, !!all);
+            return jsdoc.explain({source: desc.script}).then(jsdoc => {
+                desc.jsdoc = jsdoc;
+                desc.log('jsdoc parsed:', desc.name, !!jsdoc);
             }).catch(e => {
                 debugger;
                 desc.log('error while jsdoc:', desc.path);
@@ -83,7 +83,7 @@ class ModuleMapper extends Plugin {
     }
 
     onPatch(desc) {
-        desc.log('jsdoc cleared', desc.name, !!desc.all);
+        desc.log('jsdoc cleared', desc.name, !!desc.jsdoc);
         delete desc.jsdoc;
         delete desc.module;
         // delete desc.readme;

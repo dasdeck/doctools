@@ -110,5 +110,16 @@
                 "--server"
             ]
         }
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "example2 (dev-server)",
+            "program": "${workspaceFolder}/bin/doctools.js",
+            "args": [
+                "${workspaceFolder}/example2",
+                "--dev",
+                "--server"
+            ]
+        }
     ]
 }

@@ -206,6 +206,8 @@ VuePressExporter.defaultConfig = {
 
     outputDir: 'vuepress',
 
+    serve: 'runtime',
+
     getMDFileName(desc) {
         return desc.resource.replace(/\./g, '-') + '.md';
     }

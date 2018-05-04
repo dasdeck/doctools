@@ -246,7 +246,6 @@ module.exports = class Package extends TreeItem {
 
         const res = new Module(this.config, file , this, loader);// parser.parse();
 
-        res.loader = loader;
         this.addModule(res, patch);
 
         return res;
@@ -265,7 +264,7 @@ module.exports = class Package extends TreeItem {
 
         } else if (patch) {
 
-            existingModule.patch(module);
+            existingModule.patch();
 
         } else {
 

@@ -83,7 +83,8 @@ VueRunner.RTAConfig = {
     libraryTarget: 'umd',
     library: 'VueRunnerRuntime',
     output: 'runtime',
-    target: 'web'
+    target: 'web',
+    serve: 'runtime'
 }
 
 module.exports = VueRunner;

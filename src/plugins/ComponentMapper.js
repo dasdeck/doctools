@@ -39,7 +39,6 @@ function findProps(data, runtime) {
 }
 
 
-
 function findData(data) {
     const res = {};
     data.forEach(el => {
@@ -86,6 +85,10 @@ module.exports = class ComponentMapper extends Plugin {
         this.mapComponent(desc);
 
     }
+
+    // onPatch() {
+    //     debugger;
+    // }
 
     mapComponent(desc) {
         const data = desc.module;

@@ -1,7 +1,9 @@
 module.exports = class WebpackAdapter {
 
-    constructor(pack) {
-        this.pack = pack;
+    constructor(analyzer) {
+
+        this.analyzer = analyzer;
+        this.pack = analyzer.pack;
         this.initial = true;
     }
 
@@ -15,7 +17,7 @@ module.exports = class WebpackAdapter {
             !this.initial && compilation.hooks.buildModule.tap(this.constructor.name, info => {
                 if (info && info.rawRequest) {
                     try {
-                        this.pack.patchFile(info.rawRequest);
+                        this.analyzer.fileChanged(info.rawRequest);
                     } catch (e) {
                         console.warn(this.constructor.name, ':', e);
                     }

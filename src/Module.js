@@ -59,13 +59,12 @@ class Module extends TreeItem {
         return data;
     }
 
-    patch(module = this) {
+    patch() {
+
+        this.init();
 
         this.execPluginCallback('onPatch', null, true);
 
-        if (this !== module) {
-            _.assign(this, module);
-        }
     }
 
 }
