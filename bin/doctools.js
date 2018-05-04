@@ -66,6 +66,7 @@ if (argv.explain) {
     pack.analyze().then(() => {
         pack.get().then(res => {
             console.log(res);
+            pack.dispose();
 
         });
     });

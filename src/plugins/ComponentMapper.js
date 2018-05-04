@@ -88,9 +88,9 @@ module.exports = class ComponentMapper extends Plugin {
 
     }
 
-    // onPatch() {
-    //     debugger;
-    // }
+    matchesType(desc) {
+        return desc.type !== 'package';
+    }
 
     mapComponent(desc) {
         const data = desc.module;

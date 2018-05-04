@@ -130,10 +130,6 @@ module.exports = class Package extends TreeItem {
         return mods;
     }
 
-    getTypes() {
-
-    }
-
     getAllModules() {
         let modules = this.getPackageModules();
         _.forEach(this.packages, subPackage => {
@@ -168,6 +164,10 @@ module.exports = class Package extends TreeItem {
         .then(res => Promise.all(this.getPackageModules().map(mod => mod[method](...args))))
     }
 
+    dispose() {
+        this.doRecursively('dispose');
+        super.dispose();
+    }
         /**
      *
      */
@@ -309,6 +309,7 @@ module.exports = class Package extends TreeItem {
 
         });
     }
+
 
 
     get() {

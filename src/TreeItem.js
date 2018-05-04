@@ -86,7 +86,16 @@ module.exports = class TreeItem extends EventEmitter {
             init = false;
             const watcher = fs.watch(file, {}, load);
 
-            this._assets[file] = {watcher};
+            // this.log('watch', file);
+
+            this._assets[file] = {
+                watcher,
+                file,
+                close() {
+                    this.watcher.close();
+                    // console.log('watcher closed:', this.file);
+                }
+            };
         }
     }
 
@@ -94,13 +103,14 @@ module.exports = class TreeItem extends EventEmitter {
         const asset = this._assets[file];
         if (asset) {
             delete this._assets[file];
-            asset.watcher.close();
+            asset.close();
         }
     }
 
     dispose() {
-        _.forEach(this._assets, () => asset.watcher.close())
-        _.forEach(this.getResources(), res => res.execPluginCallback('onDispose', {}, true));
+
+        _.forEach(this._assets, asset => asset.close())
+        this.execPluginCallback('onDispose', {}, true);
     }
 
     getRootPackage() {
