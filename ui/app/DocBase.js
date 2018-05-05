@@ -1,7 +1,19 @@
 export default {
 
+    props: {
+        initialData: Object
+    },
+
     data() {
-        return {data: {}}
+        return {
+            data: this.initialData,
+            lastRuntime: null,
+            settings: {
+                private: false,
+                filter: ''
+            }
+
+        }
     },
 
     computed: {
@@ -21,6 +33,17 @@ export default {
         resources() {
             return this.data && this.data.resources || {};
         },
+
+        rootPackage() {
+            return this.resources[this.data.rootPackage];
+        },
+
+
+        repo() {
+            const root = this.rootPackage;
+            return root && root.packageJson && root.packageJson.repository;
+
+        }
 
     }
 

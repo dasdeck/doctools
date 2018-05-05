@@ -12,7 +12,7 @@
 
             <h4 class="signature">{{data.simpleName}}(
                 <template v-for="(param, index) in data.params" >
-                    <Param :param="param" :module="module" />
+                    <Param :param="param" />
                     <span v-if="index < data.params.length - 1">, </span>
                 </template>
                 )<span v-if="data.returns">

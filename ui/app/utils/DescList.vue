@@ -1,7 +1,7 @@
 <template>
     <div>
         <div v-for="desc in descs" v-if="hasKind(desc.kind)">
-            <component :is="desc.template || desc.kind" :data="desc" :module="module" headline="h2"/>
+            <component :is="desc.template || desc.kind" :data="desc" headline="h2"/>
             <DescList v-if="desc.children" :descs="desc.children"/>
             <hr>
         </div>

@@ -1,13 +1,24 @@
 export default {
 
-    inject: ['$doc'],
+    inject: {
+
+        $doc: '$doc',
+        $page: {from:'$page', default: null}
+    },
 
     props: {
-        module: {
+        moduleOverride: {
             type: Object,
             default() {
-                return this.$doc.selectedModule;
+                // debugger;
             }
+        }
+    },
+
+    computed: {
+        module() {
+            return this.$page && this.$page.module ||this.$doc.selectedModule;
+
         }
     }
 }

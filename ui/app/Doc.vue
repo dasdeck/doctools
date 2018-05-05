@@ -1,5 +1,7 @@
 <template>
     <div>
+
+        <router-link to="garbage">garbage</router-link>
         <div v-if="data" uk-grid>
             <div class="uk-width-1-4">
                 <label>
@@ -25,7 +27,6 @@
             </div>
 
             <router-view class="uk-width-3-4"/>
-
 
         </div>
         <div v-else>
@@ -54,52 +55,22 @@
 
         extends: DocBase,
 
-        props: {
-
-            /**
-             * the main data returned from the doctool parser
-             * currently ony supporting packages!
-             */
-            initialData: {
-                required: false,
-                type: Object
-            }
-
-        },
-
         provide() {
             return {
                 $doc: this
             };
         },
 
-        data() {
-            return {
-
-                data: this.initialData,
-
-                lastRuntime: null,
-
-                /**
-                 * general application wide settings
-                 */
-                settings: {
-                    private: false,
-                    filter: ''
-                }
-
-            };
-        },
 
         ref: '$doc',
 
-        watch:{
-            data(data) {
-                if(data && !this.selectedModule) {
-                    this.$router.push('/' + data.rootPackage);
-                }
-            }
-        },
+        // watch:{
+        //     data(data) {
+        //         if(data && !this.selectedModule) {
+        //             // this.$router.push('/' + data.rootPackage);
+        //         }
+        //     }
+        // },
 
         computed: {
 

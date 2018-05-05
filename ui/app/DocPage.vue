@@ -1,51 +1,51 @@
 <template>
-    <div v-if="data">
+    <div v-if="module">
 
         <h1>
-            {{data.name}}
+            {{module.name}}
         </h1>
 
-         <template v-if="data.component && data.component.extends">
+         <template v-if="module.component && module.component.extends">
                 <span class="inherited">
-                    ↳ <ModuleLink :resource="data.component.extends.resource"/>
+                    ↳ <ModuleLink :resource="module.component.extends.resource"/>
                 </span>
             </template>
 
         <!-- This is the nav containing the toggling elements -->
         <ul uk-switcher class="uk-subnav uk-subnav-pill nomd">
-            <li v-if="data.readme"><a href="">readme</a></li>
+            <li v-if="module.readme"><a href="">readme</a></li>
             <li v-if="apiHasContent"><a href="">api</a></li>
             <li v-if="globals"><a href="">globals</a></li>
-            <li v-if="data.script"><a href="" >code</a></li>
-            <li v-if="data.template"><a href="">template</a></li>
-            <li v-if="data.tests"><a href="">test</a></li>
-            <li v-if="data.markdown"><a href="">markdown</a></li>
+            <li v-if="module.script"><a href="" >code</a></li>
+            <li v-if="module.template"><a href="">template</a></li>
+            <li v-if="module.tests"><a href="">test</a></li>
+            <li v-if="module.markdown"><a href="">markdown</a></li>
         </ul>
 
         <!-- This is the container of the content items -->
         <div class="uk-switcher">
-            <Markdown v-if="data.readme" :text="data.readme"/>
-            <component v-if="apiHasContent" :is="data.type" :data="data" ref="layout"/>
-            <Globals v-if="globals" :data="data.globals"/>
-            <div v-if="data.script">
+            <Markdown v-if="module.readme" :text="module.readme"/>
+            <component v-if="apiHasContent" :is="module.type" :data="module" ref="layout"/>
+            <Globals v-if="globals"/>
+            <div v-if="module.script">
                 <h2>code:</h2>
-                <Code language="javascript">{{data.script}}</Code>
+                <Code language="javascript">{{module.script}}</Code>
             </div>
-            <div v-if="data.template">
+            <div v-if="module.template">
                 <h2>template:</h2>
-                <template v-if="data.template.inherited">
-                    : <ModuleLink :resource="data.template.inherited"/>
+                <template v-if="module.template.inherited">
+                    : <ModuleLink :resource="module.template.inherited"/>
                 </template>
-                <Code :class="data.template.inherited && 'inherited'" language="html">{{data.template.template}}</Code>
+                <Code :class="module.template.inherited && 'inherited'" language="html">{{module.template.template}}</Code>
             </div>
-            <div v-if="data.tests">
+            <div v-if="module.tests">
                 tests
             </div>
-            <Markdown class="nomd" v-if="data.markdown" :text="data.markdown"/>
+            <Markdown class="nomd" v-if="module.markdown" :text="module.markdown"/>
         </div>
 
         <hr>
-        <i v-if="data.package">package: <ModuleLink :resource="data.package"/></i>
+        <i v-if="module.package">package: <ModuleLink :resource="module.package"/></i>
         <i v-if="repoLink">source: <a :href="repoLink">test</a></i>
     </div>
     <div v-else>
@@ -84,58 +84,37 @@
 
         extends: ModuleComp,
 
-
-        props: {
-            /**
-             * the address of the current resource
-             * will be set by vue router
-             */
-            resource: [String, Object]
+        provide() {
+            return {$page: this};
         },
 
         computed: {
 
             apiHasContent() {
-                const comp = this.$options.components[_.upperFirst(this.data.type)];
-                return comp && comp.hasContent && comp.hasContent(this.data);
+                const comp = this.$options.components[_.upperFirst(this.module.type)];
+                return comp && comp.hasContent && comp.hasContent(this.module);
             },
 
             globals() {
-                return this.data.globals && _.size(this.data.globals);
+                return this.module.globals && _.size(this.module.globals);
             },
 
             repoLink() {
-                if  (this.repo) {
+                if  (this.$doc.repo) {
 
                     const shorthands = {
                         'github:': 'https://github.com'
                     }
 
-                    let url = this.repo.url;
+                    let url = this.$doc.repo.url;
 
                     if(!_.some(shorthands, (rep, ser) => url.includes(ser) && url.replace(ser, rep + '/'))) {
                         url = `${Object.values(shorthands)[0]}/${url}`;
                     }
-                    return `${url}/tree/master/${this.repo.workspace}/${this.data.fileInPackage}`;
+                    return `${url}/tree/master/${this.$doc.repo.workspace}/${this.module.fileInPackage}`;
                 }
             },
 
-            repo() {
-
-                const root = this.$doc.resources[this.$doc.data.rootPackage];
-                const repo = root && root.packageJson && root.packageJson.repository;
-
-                return repo;
-
-            },
-
-            /**
-             * the data for the current content view.
-             * the fata is dereferenced from the current's routes resource paremter
-             */
-            data() {
-                return this.module;
-            }
         }
     }
 </script>

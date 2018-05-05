@@ -16,7 +16,6 @@ import ExamplerRunner from './app/ExampleRunner.vue';
 import vuerunner from '../src/runnner/VueRunner'
 import uikitrunner from '../src/runnner/UIkitRunner'
 
-
 ExamplerRunner.runners['vue'] = new vuerunner;
 ExamplerRunner.runners['uikit'] = new uikitrunner;
 
@@ -31,42 +30,42 @@ Vue.mixin({
         }
     },
     created() {
-
         if (this.$options.ref) {
             window[this.$options.ref] = this;
         }
     }
 });
 
-
-
-const router = new VueRouter({
-    mode: 'history',
-    routes: [
-        {
-            path: '*',
-            component: DocPage,
-            beforeEnter(route, to, next) {
-                //redirect to root if packackage not found
-                const res = route.fullPath.substr(1);
-                window.$data && window.$data.resources[res] ?
-                    next() : next(window.$data && window.$data.rootPackage)
-            }
-        }
-    ]
-});
-
+const router = new VueRouter({mode: 'history'});
 const comp = Vue.extend(({...Doc}));
 const app = new comp({propsData: {initialData: window.$data}, el: '#app', router});
+const socket = new SockJS('http://localhost:8080/sockjs-node');
 
-const socket = new SockJS('http://localhost:8080/sockjs-node')
 socket.onmessage = res => {
+
     if (res.data.indexOf('{"type":"doc-changed"') === 0) {
 
         const data = JSON.parse(res.data).data;
         window.$data = data;
+
+        if (!app.data) {
+
+            router.addRoutes([{
+                path: '*',
+                component: DocPage
+            }]);
+
+            router.beforeEach((route, to, next) => {
+                const res = route.fullPath.substr(1);
+                window.$data && window.$data.resources[res] ?
+                    next() : next(window.$data && window.$data.rootPackage)
+            });
+        }
+
         app.data = data;
+
     }
+
 }
 
 socket.onopen = res => {

@@ -61,14 +61,14 @@ module.exports = class TreeItem extends EventEmitter {
         )
     }
 
-    watchAsset(file, targetKey) {
+    watchAsset(file, targetKey, transform = file => fs.readFileSync(file, 'utf8')) {
 
         if (!this._assets[file]) {
 
             let init = true;
             const load = (type, filename) => {
 
-                const newValue = fs.readFileSync(file, 'utf8');
+                const newValue = transform(file);
 
                 const currentValue = _.get(this, targetKey);
 

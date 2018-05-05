@@ -37,7 +37,7 @@
         <template v-if="methods.length">
             <h2>methods:</h2>
             <div v-for="method in methods">
-                <Function :data="method" :module="data"/>
+                <Function :data="method"/>
                 <hr>
             </div>
         </template>

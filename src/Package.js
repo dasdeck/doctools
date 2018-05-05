@@ -39,7 +39,7 @@ module.exports = class Package extends TreeItem {
 
         const packPath = this.getPackageJsonPath();
         if (fs.existsSync(packPath)) {
-            this.watchAsset(packPath, 'packageJson');
+            this.watchAsset(packPath, 'packageJson', file => JSON.parse(fs.readFileSync(file)));
         }
 
         const mdPath = path.join(this.path, 'README.md');
@@ -252,6 +252,7 @@ module.exports = class Package extends TreeItem {
 
         const data = {
             ...super.serialize(),
+            packageJson: this.packageJson,
             package: this.package && this.package.resource,
             packages: _.mapValues(this.packages, pack => pack.resource),
             // types,
