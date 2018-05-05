@@ -11,6 +11,8 @@
 <script>
 
     import Types from './Types.vue';
+    import ModuleComp from './ModuleComp.js';
+
     /**
      * document layout for constants
      */
@@ -20,12 +22,13 @@
             Types
         },
 
+        extends: ModuleComp,
+
         props: {
             /**
              * the descriptor jsodc for this constant
              */
             data: Object,
-            module: Object
         }
     }
 </script>

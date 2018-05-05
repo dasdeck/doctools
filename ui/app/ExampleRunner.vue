@@ -63,14 +63,18 @@ const ExampleRunner = {
         }
     },
     methods: {
-        createPreview() {
+        createPreview(retry = true) {
             if(this.data) {
 
                 if (!this.previewEl) {
 
-                    this.$nextTick(res => {
-                        this.createPreview();
-                    });
+                    if(retry) {
+                        this.$nextTick(res => {
+                            this.createPreview(false);
+                        });
+                    } else {
+                        debugger;
+                    }
                 } else {
                     try {
                         this.error = '';

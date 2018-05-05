@@ -14,24 +14,19 @@
 
 import ModuleLink from './ModuleLink.vue';
 import _ from 'lodash';
+import ModuleComp from './ModuleComp.js';
 
 const Type = {
-    
+
     props: {
         comma: Boolean,
-        module: {
-            type: Object,
-            default() {
-                return this.$doc.selectedModule;
-            }
-        },
         type: String
     },
 
-    inject: ['$doc'],
+    extends: ModuleComp,
 
     computed: {
-        
+
         types() {
             return this.$doc.types || {};
         },
@@ -41,7 +36,7 @@ const Type = {
         },
 
         secondaryTypes() {
-            
+
             return this.subTypes[1].replace(/</g, '').replace(/>/g, '').split(',').map(t => t.trim());
         },
 

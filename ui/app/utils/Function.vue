@@ -36,6 +36,7 @@
     import ModuleLink from './ModuleLink.vue';
     import Param from './Param.vue';
     import Types from './Types.vue';
+    import ModuleComp from './ModuleComp.js';
 
     /**
      * renders a function
@@ -50,21 +51,14 @@
             Types
         },
 
-        inject: ['$doc'],
-
+        extends: ModuleComp,
 
         props: {
             headline: {
                 type: String,
                 default: "h3"
             },
-            data: Object,
-            module: {
-                type: Object,
-                default() {
-                    return this.$doc.selectedModule;
-                }
-            }
+            data: Object
         }
     }
 </script>

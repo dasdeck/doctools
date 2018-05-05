@@ -11,16 +11,8 @@ import Vue from 'vue';
 import {$} from 'uikit-utils';
 
 import ExampleRunner from '../ExampleRunner.vue';
+import ModuleComp from './ModuleComp.js';
 
-
-function guid() {
-  function s4() {
-    return Math.floor((1 + Math.random()) * 0x10000)
-      .toString(16)
-      .substring(1);
-  }
-  return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
-}
 
 const defaultRenderer = new marked.Renderer();
 
@@ -29,20 +21,20 @@ export default {
         text: String
     },
 
-    inject: ['$doc'],
+    extends: ModuleComp,
 
     data() {
         const renderer = new marked.Renderer();
         renderer.code = (code, lang, escaped) => {
             if (lang && lang.indexOf('run:') === 0 || lang === 'run') {
-                const id = 'runner-' + guid();
+                const id = 'runner-' + this.module.resource.replace(/\./g, '-') + '-' + (this.runners.length + 1);
                 this.runners.push({
                     id,
                     lang,
                     code,
                     escaped,
-                    name: this.$doc.selectedModule.name,
-                    resource: this.$doc.selectedModule.resource
+                    name: this.module.name,
+                    resource: this.module.resource
                 });
                 return `<div id="${id}"></div>`;
             } else {
@@ -86,30 +78,34 @@ export default {
             this.runners = this.runners.filter(runner => !runner.instance);
         },
 
-        updateExampleRunners() {
+        updateExampleRunners(retry = true) {
+
             this.runners.some(data => {
+
                 if (!data.instance) {
-                    const el = $(`#${data.id}`, this.$el);
 
-                    const dynamicRuntime = this.$doc.runtime && this.$doc.runtime[this.$doc.selectedModule.resource];
+                    const id = `#${data.id}`;
+                    const el = $(id, this.$el);
 
-                    // if(!dynamicRuntime) {
-                    //     debugger;
-                    //     throw "no runtime found for examples:" + this.$doc.selectedModule.resource;
-                    // }
+                    const dynamicRuntime = this.$doc.runtime && this.$doc.runtime[this.module.resource];
 
-                    if (!el) {
-                        //not yet rendered, try next iteration
+                    if (el) {
+
+                        const ExampleRunnnerComp = Vue.extend(ExampleRunner);
+                        data.instance = new ExampleRunnnerComp({propsData: {data, dynamicRuntime}, el});
+
+                    } else if (retry) {
+
                         Vue.nextTick(res => {
-                            this.updateExampleRunners();
+                            this.updateExampleRunners(false);
                         });
-                        return true;
-                    }
-                    // if (dynamicRuntime) {
-                    const ExampleRunnnerComp = Vue.extend(ExampleRunner);
-                    data.instance = new ExampleRunnnerComp({propsData: {data, dynamicRuntime}, el});
 
-                    // }
+                    } else {
+
+                        debugger;
+
+                    }
+
                 }
             });
         }

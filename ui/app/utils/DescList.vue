@@ -13,6 +13,7 @@
 import Function from './Function.vue';
 import Constant from './Constant.vue';
 import Typedef from './Typedef.vue';
+    import ModuleComp from './ModuleComp.js';
 
 const DescList = {
     components:{
@@ -22,17 +23,10 @@ const DescList = {
         Typedef
     },
 
-    inject: ['$doc'],
-
+extends: ModuleComp,
 
     props: {
-        descs: Array,
-        module: {
-                type: Object,
-                default() {
-                    return this.$doc.selectedModule;
-                }
-            }
+        descs: Array
     },
 
     methods: {

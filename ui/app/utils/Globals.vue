@@ -9,6 +9,7 @@
 
 <script>
 import Function from './Function.vue';
+import ModuleComp from './ModuleComp.js';
 
 export default {
 
@@ -16,10 +17,10 @@ export default {
         Function
     },
 
+    extends: ModuleComp,
 
     props: {
         data: Object,
-        module: Object
     }
 
 }

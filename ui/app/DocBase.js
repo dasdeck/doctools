@@ -1,6 +1,5 @@
 export default {
 
-
     data() {
         return {data: {}}
     },
@@ -23,9 +22,6 @@ export default {
             return this.data && this.data.resources || {};
         },
 
-
-
     }
 
-
-}
+};

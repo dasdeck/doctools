@@ -7,21 +7,16 @@
 <script>
 
 import Type from './Type.vue';
+import ModuleComp from './ModuleComp.js'
 
 export default {
     components : {
         Type
     },
 
-    inject: ['$doc'],
-    
+    extends: ModuleComp,
+
     props: {
-        module: {
-            type: Object,
-            default() {
-                return this.$doc.selectedModule;
-            }
-        },
         type: Object
     },
 

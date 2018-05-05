@@ -10,6 +10,7 @@
 
 import ModuleLink from './ModuleLink.vue';
 import Types from './Types.vue';
+import ModuleComp from './ModuleComp.js';
 
 export default {
 
@@ -18,9 +19,10 @@ export default {
         Types
     },
 
+    extends: ModuleComp,
+
     props: {
-        param: Object,
-        module: Object
+        param: Object
     }
 }
 </script>

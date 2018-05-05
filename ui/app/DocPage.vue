@@ -61,6 +61,7 @@
     import ModuleLink from './utils/ModuleLink.vue';
     import Globals from './utils/Globals.vue';
     import Markdown from './utils/Markdown.vue';
+    import ModuleComp from './utils/ModuleComp.js';
     import _ from 'lodash';
 
     /**
@@ -81,8 +82,7 @@
 
         ref: '$content',
 
-        inject: ['$doc'],
-
+        extends: ModuleComp,
 
 
         props: {
@@ -134,7 +134,7 @@
              * the fata is dereferenced from the current's routes resource paremter
              */
             data() {
-                return this.resource && _.isString(this.resource) && this.$doc.resources[this.resource] || this.resource || this.$doc.selectedModule;
+                return this.module;
             }
         }
     }
