@@ -5,6 +5,7 @@ const fs = require('fs');
 const _ = require('lodash');
 
 const Turndown = require('turndown');
+const {$$, remove} = require('uikit-utils');
 
 
 const markdownAdapterSource = '../../ui/MarkdownAdapter.min.js';
@@ -62,8 +63,7 @@ class MarkdownExporter extends Plugin {
 
               const toMD = this.$el.cloneNode(true);
 
-              const UIkit = require('uikit');
-              UIkit.util.remove(UIkit.util.$$('.nomd', toMD));
+              remove($$('.nomd', toMD));
               return turndown.turndown(toMD.outerHTML);
 
             }

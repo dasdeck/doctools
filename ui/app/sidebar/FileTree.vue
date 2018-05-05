@@ -15,7 +15,7 @@ export default {
     },
 
     computed: {
-        
+
         structure() {
 
             const struct = {};
@@ -34,7 +34,7 @@ export default {
             });
 
             return struct;
-    
+
         }
 
     }

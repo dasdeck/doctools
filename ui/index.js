@@ -10,7 +10,7 @@ import _ from 'lodash';
 import Prism from 'vue-prism-component';
 
 import Doc from './app/Doc.vue';
-import Content from './app/Content.vue';
+import DocPage from './app/DocPage.vue';
 import ExamplerRunner from './app/ExampleRunner.vue';
 import vuerunner from '../src/runnner/VueRunner'
 import uikitrunner from '../src/runnner/UIkitRunner'
@@ -64,7 +64,7 @@ function init() {
         routes: [
             {
                 path: '*',
-                component: Content,
+                component: DocPage,
                 beforeEnter(route, to, next) {
                     //redirect to root if packackage not found
                     const res = route.fullPath.substr(1);

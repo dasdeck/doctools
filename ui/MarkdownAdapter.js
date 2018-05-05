@@ -1,9 +1,9 @@
 
-import Content from './app/Content.vue';
+import DocPage from './app/DocPage.vue';
 import ExampleRunner from './app/ExampleRunner.vue';
 
 
 export {
-    Content,
+    DocPage,
     ExampleRunner
 };

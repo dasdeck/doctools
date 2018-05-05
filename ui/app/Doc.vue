@@ -36,10 +36,10 @@
 
 <script>
 
-    import PackageTree from './PackageTree.vue';
-    import FileTree from './FileTree.vue';
-    import Content from './Content.vue';
-    import Menu from './Menu.vue';
+    import PackageTree from './sidebar/PackageTree.vue';
+    import FileTree from './sidebar/FileTree.vue';
+    import Menu from './sidebar/Menu.vue';
+    import DocBase from './DocBase.js';
 
     /**
      * Container Component for the doctools app ui
@@ -49,9 +49,10 @@
         components: {
             PackageTree,
             FileTree,
-            Content,
             Menu
         },
+
+        extends: DocBase,
 
         props: {
 
@@ -101,22 +102,6 @@
         },
 
         computed: {
-
-            runtime() {
-                if (this.data.runtime && this.data.runtime !== this.lastRuntime) {
-                    this.lastRuntime = this.data.runtime;
-                    eval(this.data.runtime);
-                }
-                return window.RuntimeProvider && window.RuntimeProvider.default;
-            },
-
-            types() {
-                return this.data && this.data.types || {};
-            },
-
-            resources() {
-                return this.data && this.data.resources || {};
-            },
 
             selectedPackage() {
                 const resource = this.selectedModule;

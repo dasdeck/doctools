@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import ModuleLink from './utils/ModuleLink.vue';
+import ModuleLink from '../utils/ModuleLink.vue';
 
 const Menu = {
     props: {

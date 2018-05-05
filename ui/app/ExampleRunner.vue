@@ -27,7 +27,7 @@
 
 <script>
 
-import UIkit from '../../src/uikit-node';
+import {$} from 'uikit-utils';
 
 const langMap = {
     'vue': 'text/x-vue',
@@ -94,7 +94,7 @@ const ExampleRunner = {
     computed: {
 
         previewEl() {
-            return UIkit.util.$('.preview', this.$el, this.data.resource);
+            return $('.preview', this.$el, this.data.resource);
         },
 
         runtime() {

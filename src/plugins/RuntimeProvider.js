@@ -19,7 +19,7 @@ class RuntimeProvider extends RuntimeAnalyzer {
     constructor(config = RuntimeProvider.defaultOptions) {
         super(config);
 
-        console.log(this.constructor.name);
+        // console.log(this.constructor.name);
     }
 
     /**

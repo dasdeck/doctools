@@ -22,8 +22,7 @@ const rules = [
 ];
 
 const externals = {
-    'vue': 'Vue',
-    'uikit': 'UIkit'
+    'vue': 'Vue'
 };
 
 const output = {

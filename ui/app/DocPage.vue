@@ -83,12 +83,14 @@
 
         inject: ['$doc'],
 
+
+
         props: {
             /**
              * the address of the current resource
              * will be set by vue router
              */
-            resource: String
+            resource: [String, Object]
         },
 
         computed: {

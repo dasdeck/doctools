@@ -8,7 +8,7 @@
 import marked from 'marked';
 import Prism from 'prismjs';
 import Vue from 'vue';
-import UIkit from 'uikit';
+import {$} from 'uikit-utils';
 
 import ExampleRunner from '../ExampleRunner.vue';
 
@@ -89,7 +89,7 @@ export default {
         updateExampleRunners() {
             this.runners.some(data => {
                 if (!data.instance) {
-                    const el = UIkit.util.$(`#${data.id}`, this.$el);
+                    const el = $(`#${data.id}`, this.$el);
 
                     const dynamicRuntime = this.$doc.runtime && this.$doc.runtime[this.$doc.selectedModule.resource];
 
