@@ -151,19 +151,6 @@ module.exports = {
                 const Module = require('./Module');
                 return new Module(config);
 
-                //coverage
-                // const cover = require('./coverage/coverage.sum.json');
-                // const covers = {};
-                // _.forEach(cover, (entry, name) => {
-                //     covers[name.split('/').pop().replace(/.js/g,'')] = entry;
-                // });
-                // const coverage = covers[name] && covers[name].lines.pct || 0;
-
-                //test codes (per function / member)
-                // el.tests = getTestCodes(name, el.longname);
-
-
-
             } catch (e) {
                 console.warn('error while parsing: ' + config.base);
                 if (config.strict) {

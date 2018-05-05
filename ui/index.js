@@ -48,11 +48,12 @@ function setData(data) {
 }
 
 // IE compatibility?
-fetch('/data.json').then(res => res.json()).then(data => {
+//.then(res => res.json()).then(data => {
 
-    setData(data);
+    // debugger;
+    // setData({});
     init();
-});
+// });
 
 
 
@@ -67,8 +68,8 @@ function init() {
                 beforeEnter(route, to, next) {
                     //redirect to root if packackage not found
                     const res = route.fullPath.substr(1);
-                    window.$data.resources[res] ?
-                        next() : next(window.$data.rootPackage)
+                    window.$data && window.$data.resources[res] ?
+                        next() : next(window.$data && window.$data.rootPackage)
                 }
             }
         ]
@@ -85,4 +86,9 @@ function init() {
             setData(newData);
         }
     }
+
+    socket.onopen = res => {
+        fetch('/data');
+    }
+
 }

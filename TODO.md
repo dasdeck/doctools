@@ -6,6 +6,17 @@
 -vuepress export:
     -folder followmenu structure
 
+-give each plugin reserved memeory
+-prevent multiple analysis at once
+    -busy flag?
+-assign vue templates
+    -sidebars
+    -menus
+    -types
+    -etc.
+
+-add server config to config?
+
 -nuxt!
 
 -refactore

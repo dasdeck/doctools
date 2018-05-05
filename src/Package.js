@@ -141,6 +141,8 @@ module.exports = class Package extends TreeItem {
 
     analyze() {
 
+        this.analyzes = true;
+
         this.loadAssets();
 
         return this.doRecursively('execPluginCallback', 'onPrepare')
@@ -151,7 +153,7 @@ module.exports = class Package extends TreeItem {
 
         .then(res => this.map())
 
-        .then(() => this)
+        .then(() => this.analyzes = false)
 
         .catch(err => {throw err});
 
@@ -218,11 +220,9 @@ module.exports = class Package extends TreeItem {
 
     }
 
-
     getResourceByFile(file) {
         return _.find(this.getResources(), res => res.path === file);
     }
-
 
 
     /**

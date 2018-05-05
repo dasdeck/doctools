@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div v-if="data">
 
         <h1>
             {{data.name}}
@@ -47,6 +47,9 @@
         <hr>
         <i v-if="data.package">package: <ModuleLink :resource="data.package"/></i>
         <i v-if="repoLink">source: <a :href="repoLink">test</a></i>
+    </div>
+    <div v-else>
+        select a module on the left
     </div>
 </template>
 
@@ -129,7 +132,7 @@
              * the fata is dereferenced from the current's routes resource paremter
              */
             data() {
-                return this.resource && this.$doc.resources[this.resource] || this.$doc.selectedModule;
+                return this.resource && _.isString(this.resource) && this.$doc.resources[this.resource] || this.resource || this.$doc.selectedModule;
             }
         }
     }

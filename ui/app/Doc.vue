@@ -92,6 +92,13 @@
 
         ref: '$doc',
 
+        watch:{
+            data(data) {
+                if(data && !this.selectedModule) {
+                    this.$router.push('/' + data.rootPackage);
+                }
+            }
+        },
 
         computed: {
 
@@ -113,10 +120,9 @@
 
             selectedPackage() {
                 const resource = this.selectedModule;
-                if (!resource) {
-                    debugger;
+                if (resource) {
+                    return resource && this.resources[resource.type === 'package' ? resource.resource : resource.package];
                 }
-                return resource && this.resources[resource.type === 'package' ? resource.resource : resource.package];
             },
 
             selectedModuleResource() {

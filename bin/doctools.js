@@ -1,10 +1,9 @@
 #!/usr/bin/env node
 /* eslint-env node */
 const path = require('path');
-const webpack = require('webpack');
-const devServer = require('webpack-dev-server');
-const parser = require('../src/parser');
 const _ = require('lodash');
+// const DocTools = require('../src/Doctools');
+const parser = require('../src/parser');
 
 
 let config = {};
@@ -52,10 +51,7 @@ if (process.mainModule.filename === __filename) {
  */
 
 
-config = parser.prepareConfig(config);
 
-//easy transport into devserver
-global.doctoolsConfig = config;
 
 if (argv.explain) {
 
@@ -75,10 +71,9 @@ if (argv.explain) {
 
     config.watch = true;
 
-    process.argv = [...process.argv.slice(0, 2), ...argv['--']];
-    const uiWPConfig = path.join(__dirname, '..', 'ui', 'webpack.config.js');
+    global.doctoolsConfig = parser.prepareConfig(config);
 
-    manualStart(uiWPConfig);
+    require('../src/DevServer').startWebpackDevServer();
 
 } else {
 
@@ -94,40 +89,3 @@ if (argv.explain) {
 
 }
 
-function manualStart(cfg) {
-
-    const wpConfig = require(cfg);
-    const devServerConfig = require(__dirname + '/../devServer');
-
-    devServerConfig.stats = {
-        cached: false,
-        cachedAssets: false,
-        color: true
-    };
-
-    const portfinder = require('portfinder');
-    portfinder.basePort = devServerConfig.port || 8080;
-
-    portfinder.getPort((err, port) => {
-
-        devServerConfig.port = port;
-        devServerConfig.host = devServerConfig.host || 'localhost';
-        devServer.addDevServerEntrypoints(wpConfig, devServerConfig);
-
-        const compiler = webpack(wpConfig);
-
-        const server = new devServer(compiler, devServerConfig);
-
-        global.doctoolsConfig.server = server;
-
-        server.listen(devServerConfig.port, devServerConfig.host, function(err, res) {
-            if (err) {
-                throw err;
-            }
-
-            console.log('server started');
-            console.log(`http://${devServerConfig.host}:${devServerConfig.port}`);
-        });
-    });
-
-}
