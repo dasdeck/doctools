@@ -68,6 +68,19 @@
         {
             "type": "node",
             "request": "launch",
+            "name": "uikit (explain)",
+            "program": "${workspaceFolder}/bin/doctools.js",
+            "cwd": "/Users/jms/uikit",
+            "console": "internalConsole",
+            "args": [
+                "/Users/jms/uikit",
+                "--dev",
+                "--explain"
+            ]
+        },
+        {
+            "type": "node",
+            "request": "launch",
             "name": "uikit (server)",
             "program": "${workspaceFolder}/bin/doctools.js",
             "cwd": "/Users/jms/uikit",

@@ -76,9 +76,12 @@ module.exports = class Package extends TreeItem {
             file = path.resolve(path.join(directory, file));
 
             if (!util.match(this.config, file, this)) {
-                // this.log('skipping file:', file);
+                this.log('skipping file:', file);
                 return;
             }
+
+            this.log('seeking files in:', file);
+
 
             const stats = fs.lstatSync(file);
             if (stats.isDirectory()) {

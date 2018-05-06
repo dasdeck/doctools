@@ -33,7 +33,18 @@ function match(conf, file, desc, recursive = true) {
             return matcher(file, desc);
         } else if (typeof matcher === 'string') {
             matcher = desc && !path.isAbsolute(matcher) && path.join(desc.config.base, matcher) || matcher;
-            return minimatch(file, matcher) || recursive && matcher.includes(file);
+
+            if (recursive && fs.lstatSync(file).isDirectory()) {
+                const names = file.split('/');
+                const matches = matcher.split('/');
+                return names.length < matches.length && !names.some((name, i) => {
+                    const name2 = matches[i];
+                    return !(name2 === name || minimatch(name, name2))
+                });
+
+            } else {
+                return minimatch(file, matcher,{matchBase: true});
+            }
         } else if (_.isPlainObject(matcher)) {
 
             const isDir = recursive && fs.lstatSync(file).isDirectory();

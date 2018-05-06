@@ -87,6 +87,49 @@ class ModuleMapper extends Plugin {
         delete desc.module;
     }
 
+    addMemberTo(el, target) {
+
+        let existing = target[el.longname];
+
+        if (existing) {
+
+            let current = el;
+            //prefer documented member
+            if (existing.undocumented) {
+                target[current.longname] = current;
+                [current, existing] = [existing, current];
+
+            }
+
+            if  (!existing.meta) {
+                // debugger;
+                console.warn('unhandled el:', el);
+                return;
+            }
+
+            const type = existing.meta.code.type;
+
+            existing.extras = existing.extras || {};
+
+            const existingExtra  = existing.extras[type];
+            if (existingExtra) {
+
+                if (!!_.isArray(existingExtra)) {
+                    existing.extras[type] = [existingExtra]
+                }
+
+            }
+
+            existing.extras[type] = current;
+
+            // console.error('double member in global:',desc.resource , el.longname)
+        } else {
+
+            target[el.longname] = el;//.push(el);
+
+        }
+    }
+
     /**
      * maps the jsdoc list to a sorted structure
      * @param {*} all
@@ -132,49 +175,15 @@ class ModuleMapper extends Plugin {
             if (parent) {
                 // debugger;
                 parent.children = parent.children || {}
-                if (parent.children[el.name]) console.error('double member in:',desc.resource , parent.name, el.name);
 
-                parent.children[el.name] = el;
+                this.addMemberTo(el, parent.children);
                 // el.parent = parent;
 
             } else {
 
-                let existing = res.global[el.longname];
+                this.addMemberTo(el, res.global);
 
-                if (existing) {
-
-                    let current = el;
-                    //prefer documented member
-                    if (existing.undocumented) {
-                        res.global[current.longname] = current;
-                        [current, existing] = [existing, current];
-
-                    }
-
-                    const type = existing.meta.code.type;
-
-                    existing.extras = existing.extras || {};
-
-                    const existingExtra  = existing.extras[type];
-                    if (existingExtra) {
-
-                        if (!!_.isArray(existingExtra)) {
-                            existing.extras[type] = [existingExtra]
-                        }
-
-                    }
-
-                    existing.extras[type] = current;
-
-                    // console.error('double member in global:',desc.resource , el.longname)
-                } else {
-
-                    res.global[el.longname] = el;//.push(el);
-
-                }
             }
-
-
 
             if (el.kind === 'function') {
                 this.analyseFunction(el, desc);
@@ -246,7 +255,8 @@ class ModuleMapper extends Plugin {
 
         const params = {};
         //extract default values
-        const regex = RegExp(/(?:name|function|=>|=)\s*(?:\((.*?)\)|(\w+))\s*(?:=>|{)/.source.replace('name', name));
+        //(?:name|function|=>|=|:)\s*
+        const regex = RegExp(/(?:\((.*?)\)|(\w+))\s*(?:=>|{)/.source.replace('name', name));
         const res = regex.exec(code);
         if (!res) {
             // debugger //why

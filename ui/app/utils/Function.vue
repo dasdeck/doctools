@@ -16,7 +16,7 @@
                     <span v-if="index < data.params.length - 1">, </span>
                 </template>
                 )<span v-if="data.returns">
-                    : <Types v-for="ret in data.returns" :type="ret.type"/></span></h4>
+                    : <Types v-for="(ret, i) in data.returns" :key="i" :type="ret.type"/></span></h4>
 
             <PropTable :key="name" v-for="(table, name) in data.tables" :name="name" :data="table" :headers="true"/>
             <template v-if="data.returns && data.returns.length">
