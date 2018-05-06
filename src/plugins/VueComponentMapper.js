@@ -5,7 +5,6 @@ const util = require('../util');
 
 module.exports = class VueComponentMapper extends ComponentMapper {
 
-
     /**
      *
      * @param {*} desc
@@ -13,7 +12,6 @@ module.exports = class VueComponentMapper extends ComponentMapper {
     matchesType(desc) {
         return desc.type === 'VueComponent' || _.endsWith(desc.path, '.vue');
     }
-
 
     onMap(desc) {
 
@@ -27,7 +25,10 @@ module.exports = class VueComponentMapper extends ComponentMapper {
                 trigger.resource = desc.resource;
                 trigger.template = 'function';
                 trigger.simpleName = trigger.name;
-                util.mapParams(trigger);
+                const {params, tables} = util.mapParams(trigger.params);
+
+                trigger.params = params;
+                trigger.tables = tables;
 
                 desc.package.globals.trigger = desc.package.globals.trigger || [];
                 desc.package.globals.trigger.push(trigger);

@@ -61,7 +61,7 @@ module.exports = class TreeItem extends EventEmitter {
         )
     }
 
-    watchAsset(file, targetKey, init = false) {
+    watchAsset(file, targetKey, init = true) {
 
         if (!this._assets[file]) {
 
@@ -73,33 +73,30 @@ module.exports = class TreeItem extends EventEmitter {
                 },
                 change(sendChange = true) {
 
-                    setImmediate(res => {
+                    const module = this.module;
 
-                        const module = this.module;
+                    if (_.isString(targetKey)) {
 
-                        if (_.isString(targetKey)) {
+                        const newValue = fs.readFileSync(file, 'utf8');
 
-                            const newValue = fs.readFileSync(file, 'utf8');
+                        const currentValue = _.get(module, targetKey);
 
-                            const currentValue = _.get(module, targetKey);
+                        if (newValue !== currentValue) {
 
-                            if (newValue !== currentValue) {
+                            _.set(module, targetKey, newValue);
 
-                                _.set(this, targetKey, newValue);
-
-                            } else {
-                                debugger;
-                            }
-                        } else if (_.isFunction(targetKey)) {
-                            targetKey(this, module);
+                        } else {
+                            debugger;
                         }
+                    } else if (_.isFunction(targetKey)) {
+                        targetKey(this, module);
+                    }
 
-                        if (sendChange) {
-                            module.log('asset changed', file);
-                            module.getRootPackage().emit('change');
-                        }
+                    if (sendChange) {
+                        module.log('asset changed', file);
+                        module.getRootPackage().emit('change');
+                    }
 
-                    })
                 }
             };
 
@@ -120,6 +117,11 @@ module.exports = class TreeItem extends EventEmitter {
             delete this._assets[file];
             asset.close();
         }
+    }
+
+    resolvePath(path) {
+        return path.isAbsolute(path) ? path : path.join(this.config.base, path);
+
     }
 
     dispose() {

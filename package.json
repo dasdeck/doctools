@@ -2,7 +2,7 @@
   "name": "yootheme-doctools",
   "version": "1.0.0",
   "description": "collection of helpers to generate code documentation",
-  "main": "src/parser.js",
+  "main": "exports.js",
   "module": "exports.es.js",
   "sideEffects": false,
   "bin": {
@@ -13,7 +13,8 @@
     "dev": "./bin/doctools.js examples --dev",
     "dev:help": "./bin/doctools.js --dev",
     "help": "./bin/doctools.js",
-    "example": "./bin/doctools.js examples"
+    "example": "./bin/doctools.js examples",
+    "link": "npm link uikit-utils"
   },
   "extra": {
     "binDocs": {

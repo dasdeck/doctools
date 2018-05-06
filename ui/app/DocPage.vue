@@ -111,7 +111,8 @@
                     if(!_.some(shorthands, (rep, ser) => url.includes(ser) && url.replace(ser, rep + '/'))) {
                         url = `${Object.values(shorthands)[0]}/${url}`;
                     }
-                    return `${url}/tree/master/${this.$doc.repo.workspace}/${this.module.fileInPackage}`;
+
+                    return `${url}/tree/master/${this.$doc.repo.workspace || ''}/${this.module.fileInPackage}`;
                 }
             },
 

@@ -74,9 +74,6 @@ class ModuleMapper extends Plugin {
     }
 
     onSerialize(desc, data) {
-        // delete data.jsdoc;
-        // delete data.module.all;
-        // delete data.module.documented;
         data.module = {global: desc.module.global};
     }
 
@@ -88,7 +85,6 @@ class ModuleMapper extends Plugin {
         desc.log('jsdoc cleared', desc.name, !!desc.jsdoc);
         delete desc.jsdoc;
         delete desc.module;
-        // delete desc.readme;
     }
 
     /**
@@ -102,51 +98,12 @@ class ModuleMapper extends Plugin {
         // desc.log('mapping module', desc.name, !!all);
 
         const config = desc.config;
-        const documented = all.filter(el => !el.undocumented);
-        const res = {all, documented, global: []};
+        const res =  desc.module = {all, global: {}};
 
         if (!all) debugger;
-        all.forEach(el => {
 
-            if (el.kind === 'function' && !el.undocumented) {
-                this.analyseFunction(el, desc);
-            }
+        all.forEach((el, index) => {
 
-            if (el.kind === 'file') {
-
-                res.description = el.description;
-                if (el.type) {
-                    desc.type = el.type.names[0];
-                } else if(el.ignore) {
-                    res.ignore = true;
-                }
-
-            }
-
-            if (el.kind === 'readme') {
-                debugger;
-            }
-
-            if (el.kind === 'typedef') {
-
-                const pack = desc.package;
-
-                // debugger
-                // pack.types = pack.types || {};
-
-                const name = el.type && el.type.names[0] || el.longname;
-
-                if (pack.types[name]) {
-                    // debugger;
-                    desc.log('type already defined in package:', name);
-                } else {
-
-                    desc.log('found type:', name);
-                    pack.types[name] = desc.resource;
-
-                }
-
-            }
 
             let code;
             if (el.meta && el.meta.range) {
@@ -170,21 +127,93 @@ class ModuleMapper extends Plugin {
 
             }
 
-            if (!el.undocumented) {
+            //put to hirarchy
+            const parent = _.find(all, els => els.longname === el.memberof);
+            if (parent) {
+                // debugger;
+                parent.children = parent.children || {}
+                if (parent.children[el.name]) console.error('double member in:',desc.resource , parent.name, el.name);
 
-                //!['module', 'module.exports'].includes(el.memberof)
-                if (desc.type === 'module') {
-                    const parent = _.find(documented, els => els.longname === el.memberof);
-                    if (parent) {
-                        // debugger;
-                        parent.children = parent.children || []
-                        parent.children.push(el);
-                        // el.parent = parent;
+                parent.children[el.name] = el;
+                // el.parent = parent;
 
-                    } else {
-                        res.global.push(el);
+            } else {
+
+                let existing = res.global[el.longname];
+
+                if (existing) {
+
+                    let current = el;
+                    //prefer documented member
+                    if (existing.undocumented) {
+                        res.global[current.longname] = current;
+                        [current, existing] = [existing, current];
+
                     }
+
+                    const type = existing.meta.code.type;
+
+                    existing.extras = existing.extras || {};
+
+                    const existingExtra  = existing.extras[type];
+                    if (existingExtra) {
+
+                        if (!!_.isArray(existingExtra)) {
+                            existing.extras[type] = [existingExtra]
+                        }
+
+                    }
+
+                    existing.extras[type] = current;
+
+                    // console.error('double member in global:',desc.resource , el.longname)
+                } else {
+
+                    res.global[el.longname] = el;//.push(el);
+
                 }
+            }
+
+
+
+            if (el.kind === 'function') {
+                this.analyseFunction(el, desc);
+            }
+
+            if (el.kind === 'file') {
+
+                res.description = el.description;
+                if (el.type) {
+                    desc.type = el.type.names[0];
+                } else if(el.ignore) {
+                    res.ignore = true;
+                }
+
+            }
+
+            if (el.kind === 'readme') {
+                debugger;
+            }
+
+            if (el.kind === 'typedef') {
+
+                const pack = desc.package;
+
+                const name = el.type && el.type.names[0] || el.longname;
+
+                if (pack.types[name]) {
+                    // debugger;
+                    desc.log('type already defined in package:', name);
+                } else {
+
+                    desc.log('found type:', name);
+                    pack.types[name] = desc.resource;
+
+                }
+
+            }
+
+            if (!el.undocumented) {
 
                 el.examples && el.examples.forEach(example => {
                     const marked = require('marked');
@@ -193,17 +222,7 @@ class ModuleMapper extends Plugin {
                     }});
                 });
                 if (el.kind === 'function' && el.see) {
-                    const orig = _.find(res.types[el.kind], func => func.name === el.see[0]);
-                    // debugger
-                    // _.assign(el, orig);
-                    if (!orig) {
-                        debugger;
-                    } else {
-                        el.reference = orig.longname;
-                    }
-                    // markDown.push(`## ${el.longname || el.name}`);
-                    // el.description && markDown.push(el.description);
-                    // markDown.push(`see: <a href="#${el.see}">${el.see}</a>`);
+
                 }
 
                 if (res[el.kind] && !_.isArray(res[el.kind])) {
@@ -214,51 +233,46 @@ class ModuleMapper extends Plugin {
                 res.types[el.kind] = res.types[el.kind] || [];
                 res.types[el.kind].push(el);
 
-                // res.documented.push(el);
             }
         });
 
-        desc.module = res;
-
-        // _.assign(this, desc);
-
-        // return desc;
     }
 
     /**
      * "guesses" functions default parameters by parsing the code
      * @param {Object} el - the JSDoc function descriptor
      */
-    guessDefaultParamValues(el, desc) {
+    guessDefaultParamValues(code, name = ".*") {
 
-        const script = desc.script;
+        const params = {};
         //extract default values
-        const regex = RegExp(/name\((.*?)\)\s*{/.source.replace('name', el.name));
-        const res = regex.exec(script);
-        if (!res && !el.see) {
+        const regex = RegExp(/(?:name|function|=>|=)\s*(?:\((.*?)\)|(\w+))\s*(?:=>|{)/.source.replace('name', name));
+        const res = regex.exec(code);
+        if (!res) {
             // debugger //why
-            desc.log('could not determine function name for:', el.name, 'in:', desc.path);
+            console.error('could not determine function name for:', name, 'in:', code);
         } else if (res) {
-            const args = res[1].split(',').map(v => v.trim());
+            const pars = res[1];
+            if (pars) {
 
-            args.forEach(arg => {
-                const [name, value] = arg.trim().split('=').map(v => v.trim());
-                if (value) {
-                    const param = _.find(el.params, ['name', name]);
-                    // if(!param) debugger;
-                    // @TODO auto doc undocuemted default?
-                    if (param && _.isUndefined(param.defaultvalue)) {
-                        // debugger;
-                        param.defaultvalue = value;
-                        param.optional = true;
-                    }
-                }
-            });
+                const args = pars.split(',').map(v => v.trim());
 
-            const more = regex.exec(script);
-            if (more && more.index !== res.index) {
-                throw 'could not find unique method definition for: ' + el.longname + ' in: ' + script;
+                args.forEach(arg => {
+                    const [name, value] = arg.trim().split('=').map(v => v.trim());
+
+                    params[name] = value;
+
+
+                });
             }
+
+            const more = regex.exec(code);
+
+            if (more && more.index !== res.index) {
+                throw 'could not find unique method definition for: ' + name + ' in: ' + script;
+            }
+
+            return params;
         }
 
     }
@@ -269,26 +283,28 @@ class ModuleMapper extends Plugin {
             debugger;
         }
 
+        //might be function alias?
+        if (el.see) {
+            const orig = _.find(desc.module.all, func => func.name === el.see[0]);
+
+            if (!orig) {
+                debugger;
+            } else {
+                el.reference = orig.longname;
+            }
+        }
+
         el.simpleName = el.longname === `module.exports.${el.name}` ? el.name : el.longname;
 
-        if (desc.config.inferParameterDefaults) {
-            this.guessDefaultParamValues(el, desc);
+        let params;
+        if (!el.reference && desc.config.inferParameterDefaults) {
+            params = this.guessDefaultParamValues(el.code, el.name);
         }
 
-        if (el.params) {
+        const mappedPrams = util.mapParams(el.params || [], params);
+        el.params = mappedPrams.params;
+        el.tables = mappedPrams.tables;
 
-            Object.assign(el, util.mapParams(el));
-
-        } else {
-
-            //empty default signature
-            el.signature = `${el.simpleName}()`;
-        }
-
-        //add first return statement to signature
-        if (el.returns && el.returns[0]) {
-            el.signature += ` : ${util.getTypesRaw(el.returns[0].type.names)}`;
-        }
 
         return el;
     }

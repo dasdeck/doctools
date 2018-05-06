@@ -32,7 +32,7 @@
         },
 
         hasContent(data) {
-            return data.module && (data.module.description || data.module.global && data.module.global.length);
+            return data.module && (data.module.description || data.module.global && _.size(data.module.global));
         }
 
     }

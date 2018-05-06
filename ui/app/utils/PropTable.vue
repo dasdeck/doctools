@@ -82,8 +82,14 @@
             filteredHeaders() {
                 const res = {};
                 _.forEach(this.headerToUse, (title, index) => {
-                    if (_.some(this.data, row => {
-                            return row[index];
+                    if (_.some(this.filteredData, row => {
+                            const val = row[index];
+                            if( _.isPlainObject(val)) {
+                                return _.size(val) > 1;
+
+                            } else {
+                                return val;
+                            }
                         })) {
                         res[index] = title;
                     }

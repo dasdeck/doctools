@@ -27,7 +27,8 @@ export default {
         const renderer = new marked.Renderer();
         renderer.code = (code, lang, escaped) => {
             if (lang && lang.indexOf('run:') === 0 || lang === 'run') {
-                const id = 'runner-' + this.module.resource.replace(/\./g, '-') + '-' + (this.runners.length + 1);
+
+                const id = 'runner-' + this.module.resource.replace(/[^a-zA-Z0-1]*/g, '-') + '-' + (this.runners.length + 1);
                 this.runners.push({
                     id,
                     lang,

@@ -4,8 +4,9 @@ module.exports = class UIkitComponentMapper extends ComponentMapper {
 
 
     onConstruct(desc) {
-        if (desc.script && desc.script.includes('UIkitComponent')) {
-            desc.type = 'UIkitComponent';
+        const type = 'UIkitComponent';
+        if (desc.script && desc.script.includes(type)) {
+            desc.type = type;
             desc.runtime = true;
         }
     }

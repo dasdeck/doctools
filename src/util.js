@@ -12,28 +12,6 @@ class AndMatch {
 
 }
 
-function isCyclic (obj) {
-    var seenObjects = [];
-
-    function detect (obj) {
-      if (obj && typeof obj === 'object') {
-        if (seenObjects.indexOf(obj) !== -1) {
-          return true;
-        }
-        seenObjects.push(obj);
-        for (var key in obj) {
-          if (obj.hasOwnProperty(key) && detect(obj[key])) {
-            console.log(obj, 'cycle at ' + key);
-            // debugger;
-            return true;
-          }
-        }
-      }
-      return false;
-    }
-
-    return detect(obj);
-  }
 
 function match(conf, file, desc, recursive = true) {
     conf = _.isArray(conf) ? conf : [conf];
@@ -82,15 +60,6 @@ module.exports = {
 
     AndMatch,
 
-    isCyclic,
-
-    // createExampleFinder(callback) {
-
-    //     return {
-
-    //     }
-
-    // },
 
     /**e
      * scapes a string to be a valid variable name
@@ -128,46 +97,79 @@ module.exports = {
      * util function to map function (or similar) structures into a unified format
      * @param {*} el
      */
-    mapParams(el) {
+    mapParams(params, defaults) {
 
-        const tables = el.tables = {};
+        const tables = {};
 
-        const basicArgs = el.params.filter(param => !~param.name.indexOf('.'));
 
         const options = {0: []};
-        el.params.filter(param => ~param.name.indexOf('.'))
+
+
+        const rootParams = params.filter(param => !~param.name.indexOf('.'));
+
+        if (defaults) {
+
+            _.forEach(defaults, (defaultvalue, name) => {
+                const def = _.find(params, param => param.name === name);
+                if (!def) {
+                    rootParams.push({
+                        name,
+                        defaultvalue
+                    })
+                }
+            });
+
+            //compare found params
+            rootParams.forEach(param => {
+                if (!param.name in defaults) {
+                    debugger;
+                    throw 'parameter definition mismatch'
+                } else {
+                    const value = defaults[param.name];
+
+                    if (!_.isUndefined(value)) {
+                        // @TODO auto doc undocuemted default?
+                        if (_.isUndefined(param.defaultvalue)) {
+                            param.defaultvalue = value;
+                            param.optional = true;
+                        }
+                    }
+                }
+            });
+
+        }
+
+
+        //filter out prams with sub options
+        params
+        .filter(param => ~param.name.indexOf('.'))
         .forEach(param => {
+
             const [option, key] = param.name.split('.');
+
+            const parent = _.find(params, param => param.name === option);
+            if (!parent) {
+                debugger;
+            }
+
+            parent.children = parent.children || {};
+            parent.children[key] = param;
+
             options[option] = options[option] || [];
             param.name = key;
             options[option].push(param);
+
         });
 
-        basicArgs.forEach(param => {
+
+        rootParams.forEach(param => {
             options[0].push(param);
         });
-
-        el.signature = `${el.simpleName || el.name} (${
-            basicArgs.map(param => {
-                let pString = param.name;//
-
-                pString += `: ${this.getTypesRaw(param.type.names)}`;
-
-                if (param.optional) {
-                    pString = `[${pString}]`;
-                }
-
-                return pString;
-            }).join(', ')
-
-        })`;
 
         Object.keys(options).forEach(name => {
 
             const cols = ['name', 'type', 'default', 'description'].reduce((prev, curr, index) => {prev[index] = curr; return prev;}, {});
-
             const rows = [];
-
             options[name].forEach((param, index) => {
                 const row = {
                     0: param.name,
@@ -199,7 +201,11 @@ module.exports = {
 
         });
 
-        return el;
+
+        return {
+            tables,
+            params: rootParams
+        };
 
     },
 

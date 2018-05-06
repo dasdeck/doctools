@@ -1,8 +1,10 @@
 
 <template>
     <span>
-        {{param.name}} :
-        <Types :type="param.type"/>
+        {{param.name}}
+        <template v-if="param.type"> :
+            <Types :type="param.type"/>
+        </template>
     </span>
 </template>
 

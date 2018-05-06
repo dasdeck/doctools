@@ -5,7 +5,6 @@ const fs = require('fs');
 const _ = require('lodash');
 
 const Turndown = require('turndown');
-const {$$, remove} = require('uikit-utils');
 
 
 const markdownAdapterSource = '../../ui/MarkdownAdapter.min.js';
@@ -63,6 +62,8 @@ class MarkdownExporter extends Plugin {
 
               const toMD = this.$el.cloneNode(true);
 
+              const {$$, remove} = require('uikit-utils');
+
               remove($$('.nomd', toMD));
               return turndown.turndown(toMD.outerHTML);
 
@@ -102,7 +103,7 @@ class MarkdownExporter extends Plugin {
         props:['language']
       });
 
-      const dir = this.config.output ? path.join(pack.config.base, this.config.output) : null;
+      const dir = this.config.output && pack.resolvePath(this.config.output);
       try {
         if (dir) {
           fs.mkdirSync(dir)

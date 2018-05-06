@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div v-for="desc in descs" v-if="hasKind(desc.kind)">
+        <div v-for="desc in descs" v-if="hasKind(desc.kind) && !desc.undocumented">
             <component :is="desc.template || desc.kind" :data="desc" headline="h2"/>
             <DescList v-if="desc.children" :descs="desc.children"/>
             <hr>
@@ -26,7 +26,7 @@ const DescList = {
 extends: ModuleComp,
 
     props: {
-        descs: Array
+        descs: Object
     },
 
     methods: {

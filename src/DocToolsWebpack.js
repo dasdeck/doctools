@@ -41,42 +41,54 @@ class DoctoolsWebpack extends EventEmitter {
             this.pack.config.watch = compiler.options.watch;
         }
 
-        compiler.hooks.done.tap(this.constructor.name, compilation => {
+        if(compiler.hooks) {
+            compiler.hooks.done.tap(this.constructor.name, (...args) => this.done(...args));
+            compiler.hooks.compilation.tap(this.constructor.name, (...args) => this.compilation(...args));
+        } else {
+            compiler.plugin('done', (...args) => this.done(...args));
+            compiler.plugin('compilation', (...args) => this.compilation(...args));
+        }
 
-            this.pack.analyze().then(res => {
 
-                this.pack.write().then(data => {
+    }
 
-                    // if(this.config.path) {
+    compilation(compilation) {
 
-                    // }
-                    // fs.writeFileSync(this.config.path, JSON.stringify(data, null, 2));
-                    console.log(this.constructor.name, 'updated');
+        if (compilation.hooks) {
+            compilation.hooks.buildModule.tap(this.constructor.name, info => this.buildModule(info));
+        } else {
+            compilation.plugin('buildModule', (...args) => this.buildModule(...args));
+        }
+    }
 
-                });
+    buildModule(info) {
 
-                this.initial = false;
+        debugger;
+        if (!this.initial && info && info.rawRequest) {
+
+            try {
+                this.pack.patchFile(info.rawRequest);
+
+            } catch (e) {
+                console.log(e);
+            }
+        }
+    }
+
+
+    done(compilation) {
+
+        this.initial = false;
+
+        this.pack.analyze().then(res => {
+
+            this.pack.write().then(data => {
+
+                console.log(this.constructor.name, 'updated');
+
             });
 
         });
-
-        compiler.hooks.compilation.tap(this.constructor.name, compilation => {
-
-            !this.initial && compilation.hooks.buildModule.tap(this.constructor.name, info => {
-
-                if (info && info.rawRequest) {
-
-                    try {
-                        this.pack.patchFile(info.rawRequest);
-
-                    } catch (e) {
-                        console.log(e);
-                    }
-                }
-            });
-
-        });
-
     }
 }
 

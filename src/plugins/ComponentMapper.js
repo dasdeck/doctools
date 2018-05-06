@@ -65,7 +65,6 @@ function findMethods(data) {
     const res = findMembers(data, 'methods');
     // const parser = require('./Module');
     _.forEach(res, func => {
-        // const fun = parser.analyseFunction(func, name);
         func.signature = func.signature && func.signature.split('.methods.').pop();
         res[func.name] = func;
 
@@ -104,7 +103,7 @@ module.exports = class ComponentMapper extends Plugin {
         const component = {};
         if (!data || !data.types) debugger;
 
-        const {documented: entries, types: {function: funcs}} = data;
+        const {all: entries, types: {function: funcs}} = data;
         const runtime = desc.runtime;
 
         base = 'module.exports';

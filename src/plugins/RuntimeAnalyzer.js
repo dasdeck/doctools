@@ -112,7 +112,7 @@ class RuntimeAnalyzer extends Plugin {
     analyzeRuntime(desc) {
         const {config} = desc;
 
-        if (_.isPlainObject(config.runtime) || config.runtime === true) {
+        if (_.isPlainObject(config.runtime)) {
 
             const runtime = _.get(config.runtime, `${desc.type}.${desc.name}`) || _.get(config.runtime, desc.name);
             return Promise.resolve(runtime || {});
@@ -167,6 +167,7 @@ class RuntimeAnalyzer extends Plugin {
 
         conf.plugins = [...(conf.plugins || []), plugin];
 
+        ;
         const compiler = webpack(conf);
 
         compiler.outputFileSystem = this.outputFileSystem;
@@ -253,12 +254,7 @@ class RuntimeAnalyzer extends Plugin {
     }
 
     writeToDisk() {
-        let dir;
-        if (path.isAbsolute(this.config.output)) {
-            dir = this.config.output;
-        } else {
-            dir = path.join(this.pack.config.base, this.config.output);
-        }
+        const dir = this.pack.resolvePath(this.config.output);
         mkpath.sync(dir);
         const file = path.join(dir, 'index.js');
         fs.writeFileSync(file, this.script);

@@ -3,6 +3,9 @@
 -uikitonly once?
 -utils seperate?
 
+-reactive uikit tabs
+    -v-if
+
 -vuepress export:
     -folder followmenu structure
 

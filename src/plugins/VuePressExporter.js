@@ -127,13 +127,9 @@ class VuePressExporter extends Plugin {
 
     }
 
-    getBaseDir() {
-        return path.isAbsolute(this.config.outputDir) ? this.config.outputDir : path.join(this.pack.config.base, this.config.outputDir);
-
-    }
 
     getDataDir() {
-        const dir = this.getBaseDir();
+        const dir = this.pack.resolvePath(this.config.outputDir);
         const subDir = this.config.subdir === true ? this.pack.name : this.config.subdir;
         return subDir ? path.join(dir, subDir) : dir;
     }

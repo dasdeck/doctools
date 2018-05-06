@@ -332,7 +332,6 @@ module.exports = class Package extends TreeItem {
 
         this.execPluginCallback('onGet', data, true);
 
-        // util.isCyclic(data);
 
         return Promise.resolve(data);
     }
@@ -342,6 +341,12 @@ module.exports = class Package extends TreeItem {
         const data = this.get();
 
         this.execPluginCallback('onWrite', data, true);
+
+        if (this.config.output) {
+
+            fs.writeFileSync(this.resolvePath(this.config.output), JSON.stringify(data, null, 2));
+        }
+
         return Promise.resolve(data);
     }
 

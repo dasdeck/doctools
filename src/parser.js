@@ -131,7 +131,7 @@ module.exports = {
      * @param {String|DoctoolsConfig} [config = {}] - filePath or config hash
      * @returns {Object} the parsed structure
      */
-    parse(config = defaultConfig) {
+    parse(config = {}) {
 
         if (typeof config === 'string') {
             config = {base: config};
