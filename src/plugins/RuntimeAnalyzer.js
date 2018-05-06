@@ -45,13 +45,7 @@ class RuntimeAnalyzer extends Plugin {
 
         });
 
-        if (this.config.watch) {
-            this.getRuntimeModules().forEach(module => {
 
-                module.unwatchAsset(module.path);
-
-            });
-        }
     }
 
     /**
@@ -60,6 +54,15 @@ class RuntimeAnalyzer extends Plugin {
      * @param {*} desc
      */
     onAnalyze(pack) {
+
+        //deregister all local watcher in favor of webpack's watcher
+        if (this.config.watch) {
+            this.getRuntimeModules().forEach(module => {
+
+                module.unwatchAsset(module.path);
+
+            });
+        }
 
         if (!this.cache) {
             this.run();

@@ -70,7 +70,7 @@ module.exports = {
      */
     plugins: [
         'RuntimeAnalyzer',
-        'RuntimeProvider',
+        // 'RuntimeProvider',
         'ModuleMapper',
         'UIkitComponentMapper',
         'VueComponentMapper',

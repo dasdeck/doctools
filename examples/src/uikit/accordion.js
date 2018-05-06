@@ -24,7 +24,7 @@ export default {
 
     props: {
         /**
-         * The CSS selector of the element(s) to toggle.
+         * CSSo selector of the element(s) to toggle.
          */
         targets: String,
         /**

@@ -27,6 +27,7 @@
     export default {
 
         props: {
+
             /**
              * When using the modal with a content component, you can pass the child's component properties here
              * @example

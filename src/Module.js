@@ -58,7 +58,7 @@ class Module extends TreeItem {
 
     patch() {
 
-        this.load();
+        super.load();
 
         this.execPluginCallback('onPatch', null, true);
 
