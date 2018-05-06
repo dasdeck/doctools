@@ -64,7 +64,7 @@ class RuntimeAnalyzer extends Plugin {
             });
         }
 
-        if (!this.cache) {
+        if (!this.script) {
             this.run();
         }
 
@@ -279,15 +279,24 @@ class RuntimeAnalyzer extends Plugin {
         try {
 
             const clear = require('jsdom-global')();
+
+            // eval(this.script);
             const rt = requireFromString(this.script);
             setImmediate(clear);
 
-            this.cache = rt[this.config.library].default;
+            this.cache = rt.default;
 
         } catch(e) {
 
             this.pack.log('could not load runtime');
             this.pack.log(e);
+        }
+    }
+
+    onGet(desc, data) {
+
+        if (this.config.serve) {
+            data[this.config.serve] = this.script;
         }
     }
 
@@ -330,9 +339,10 @@ class RuntimeAnalyzer extends Plugin {
 RuntimeAnalyzer.defaultOptions = {
     watch: true,
     output: false,
-    libraryTarget: 'commonjs',
-    library: 'runtime',
-    target: 'node',
+    libraryTarget: 'umd',
+    library: 'RuntimeAnalyzer',
+    target: 'web',
+    serve: 'runtime'
 }
 
 module.exports = RuntimeAnalyzer;

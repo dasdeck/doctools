@@ -176,8 +176,7 @@
 <docs name="readme">
 I can write as much as I want here because this block is called "readme"
 
-```html
-
+```run:vue
 <template>
     <div>{{test}}</div>
 </template>
@@ -198,7 +197,7 @@ export default {
 
 This is a real example that uses the actual code:
 
-```html
+```run:vue
 <template>
     <div>
         <Modal ref="modal">{{test}}</Modal>

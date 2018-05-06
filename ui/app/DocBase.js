@@ -23,7 +23,7 @@ export default {
                 this.lastRuntime = this.data.runtime;
                 eval(this.data.runtime);
             }
-            return window.RuntimeProvider && window.RuntimeProvider.default;
+            return window.RuntimeAnalyzer && window.RuntimeAnalyzer.default;
         },
 
         types() {

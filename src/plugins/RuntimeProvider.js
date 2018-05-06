@@ -32,22 +32,6 @@ class RuntimeProvider extends RuntimeAnalyzer {
         return this.getScript();
     }
 
-    scriptChanged() {
-
-        if (this.config.output) {
-            this.writeToDisk();
-        }
-
-    }
-
-
-    onGet(desc, data) {
-
-        if (this.config.serve) {
-            data[this.config.serve] = this.script;
-        }
-    }
-
 
     getScript() {
         if (this.script) {
