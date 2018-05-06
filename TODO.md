@@ -17,6 +17,9 @@
 
 -add server config to config?
 
+-re-unify runtime builds to web/umd
+-refactor out 'assets'
+
 -nuxt!
 
 -refactore

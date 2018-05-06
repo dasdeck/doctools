@@ -4,7 +4,6 @@ import Togglable from './togglable';
 const Class = Togglable;
 
 /**
- *
  * @file
  * @type {UIkitComponent}
  */
@@ -25,7 +24,7 @@ export default {
 
     props: {
         /**
-         * CSS selector of the element(s) to toggle.
+         * The CSS selector of the element(s) to toggle.
          */
         targets: String,
         /**

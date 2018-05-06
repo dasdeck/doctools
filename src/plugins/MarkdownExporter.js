@@ -76,10 +76,6 @@ class MarkdownExporter extends Plugin {
       return comp;
     };
 
-    // onPatch(desc) {
-    //   debugger;
-    // }
-
     renderMarkdown(pack, data) {
       pack.log('exporting markdown...')
       const clear = require('jsdom-global')();

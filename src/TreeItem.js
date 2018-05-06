@@ -1,8 +1,11 @@
+
 const _ = require('lodash');
 const {EventEmitter} = require('events');
 const fs = require('fs');
 const path = require('path');
 const util = require('./util');
+const chokidar = require('chokidar');
+
 /**
  * extracting some commong basics for the parsers
  */
@@ -39,10 +42,7 @@ module.exports = class TreeItem extends EventEmitter {
     load() {
 
         if (this.loader) {
-
-            const desc = this.loader.load(this.path);
-            _.assign(this, desc);
-
+            const desc = this.loader.load(this.path, this);
         }
 
         this.execPluginCallback('onConstruct', {}, true);
@@ -61,41 +61,56 @@ module.exports = class TreeItem extends EventEmitter {
         )
     }
 
-    watchAsset(file, targetKey, transform = file => fs.readFileSync(file, 'utf8')) {
+    watchAsset(file, targetKey, init = false) {
 
         if (!this._assets[file]) {
 
-            let init = true;
-            const load = (type, filename) => {
-
-                const newValue = transform(file);
-
-                const currentValue = _.get(this, targetKey);
-
-                if (newValue !== currentValue) {
-                    !init && this.log('asset changed', targetKey);
-
-                    _.set(this, targetKey, newValue);
-
-                    !init && this.getRootPackage().emit('change');
-                }
-            };
-
-            load(null, file, true);
-
-            init = false;
-            const watcher = fs.watch(file, {}, load);
-
-            // this.log('watch', file);
-
-            this._assets[file] = {
-                watcher,
+            const watcher = {
                 file,
+                module: this,
                 close() {
                     this.watcher.close();
-                    // console.log('watcher closed:', this.file);
+                },
+                change(sendChange = true) {
+
+                    setImmediate(res => {
+
+                        const module = this.module;
+
+                        if (_.isString(targetKey)) {
+
+                            const newValue = fs.readFileSync(file, 'utf8');
+
+                            const currentValue = _.get(module, targetKey);
+
+                            if (newValue !== currentValue) {
+
+                                _.set(this, targetKey, newValue);
+
+                            } else {
+                                debugger;
+                            }
+                        } else if (_.isFunction(targetKey)) {
+                            targetKey(this, module);
+                        }
+
+                        if (sendChange) {
+                            module.log('asset changed', file);
+                            module.getRootPackage().emit('change');
+                        }
+
+                    })
                 }
             };
+
+            watcher.watcher = chokidar.watch(file);
+            watcher.watcher.on('change', () => watcher.change());
+
+            if (init) {
+                watcher.change(false);
+            }
+
+            this._assets[file] = watcher;
         }
     }
 

@@ -1,4 +1,3 @@
-
 const _ = require('lodash');
 const jsdoc = require('jsdoc-api');
 const Plugin = require('../Plugin');
@@ -51,13 +50,21 @@ class ModuleMapper extends Plugin {
         if (desc.jsdoc) {
             return Promise.resolve();
         } else {
-            return jsdoc.explain({source: desc.script}).then(jsdoc => {
-                desc.jsdoc = jsdoc;
-                desc.log('jsdoc parsed:', desc.name, !!jsdoc);
-            }).catch(e => {
-                debugger;
-                desc.log('error while jsdoc:', desc.path);
-            });
+
+            if(desc.script) {
+
+                return jsdoc.explain({source: desc.script}).then(jsdoc => {
+                    desc.jsdoc = jsdoc;
+                    desc.log('jsdoc parsed:', desc.name, !!jsdoc);
+                }).catch(e => {
+                    debugger;
+                    desc.log('error while jsdoc:', desc.path);
+                });
+            } else {
+                debugger
+                //should have a script
+                return Promise.rejects('no script loaded.');
+            }
         }
     }
 

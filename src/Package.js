@@ -39,7 +39,7 @@ module.exports = class Package extends TreeItem {
 
         const packPath = this.getPackageJsonPath();
         if (fs.existsSync(packPath)) {
-            this.watchAsset(packPath, 'packageJson', file => JSON.parse(fs.readFileSync(file)));
+            this.watchAsset(packPath, (w, m) => m.packageJson = JSON.parse(fs.readFileSync(w.file)));
         }
 
         const mdPath = path.join(this.path, 'README.md');
@@ -235,7 +235,7 @@ module.exports = class Package extends TreeItem {
         const existingResource = this.getResourceByFile(file);
         if (existingResource) {
 
-            this.execPluginCallback('onPatch');
+            this.execPluginCallback('onPatch', null, true);
             existingResource.patch();
         } else {
             throw 'can only patch already existing files';

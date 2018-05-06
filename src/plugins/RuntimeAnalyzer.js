@@ -44,6 +44,14 @@ class RuntimeAnalyzer extends Plugin {
             pack.getRootPackage().emit('change');
 
         });
+
+        if (this.config.watch) {
+            this.getRuntimeModules().forEach(module => {
+
+                module.unwatchAsset(module.path);
+
+            });
+        }
     }
 
     /**
@@ -144,6 +152,8 @@ class RuntimeAnalyzer extends Plugin {
         }
 
     }
+
+
 
     createCompiler(filename = this.indexFile) {
 

@@ -1,7 +1,5 @@
 <template>
     <div>
-
-        <router-link to="garbage">garbage</router-link>
         <div v-if="data" uk-grid>
             <div class="uk-width-1-4">
                 <label>

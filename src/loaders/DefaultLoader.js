@@ -12,15 +12,16 @@ class DefaultLoader {
         return this.config.match.bind(this)(file, desc);
     }
 
-    load(file) {
+    load(file, desc) {
 
-        const desc = {
-            script: fs.readFileSync(file, 'utf8'),
+        let script = fs.readFileSync(file, 'utf8');
+
+        _.assign(desc, {
+            script,
             type: this.config.type,
             ...this.config.desc
-        };
+        });
 
-        return desc;
     }
 
 }

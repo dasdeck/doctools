@@ -8,17 +8,17 @@ module.exports = class VueLoader {
         return _.endsWith(file, '.vue');
     }
 
-    load(file) {
+    load(file, desc) {
 
         try {
-            return this.unpack(file);
+            return this.unpack(file, desc);
         } catch (e) {
             console.warn('error loading vue component', file);
         }
         return {script: ''};
     }
 
-    unpack(file) {
+    unpack(file, desc) {
 
         const text = fs.readFileSync(file, 'utf8');
         const res = vueComiler.parseComponent(text);
@@ -26,12 +26,12 @@ module.exports = class VueLoader {
         const template = res.template && res.template.content.trim() !== '' && {template: res.template.content.trim()};
         const script = res.script && res.script.content.trim();
 
-        const desc = {
+        _.assign(desc, {
             type: 'VueComponent',
             template,
             script,
             runtime: true
-        };
+        });
 
         res.customBlocks.forEach(el => {
             if (el.type === 'docs' && !el.attrs || el.attrs.name === 'readme') {
@@ -39,7 +39,6 @@ module.exports = class VueLoader {
             }
         });
 
-        return desc;
 
     }
 };
