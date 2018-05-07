@@ -336,7 +336,7 @@ module.exports = class Package extends TreeItem {
         this.execPluginCallback('onGet', data, true);
 
 
-        return Promise.resolve(data);
+        return data;
     }
 
     write() {

@@ -60,19 +60,15 @@ if (argv.explain) {
     const pack = parser.parse(config);
 
     pack.analyze().then(() => {
-        pack.get().then(res => {
-            console.log(res);
-            pack.dispose();
-
-        });
+        const data = pack.get();
+        console.log(data);
+        pack.dispose();
     });
 
 } else if (config.server) {
 
     config.watch = true;
-
     global.doctoolsConfig = parser.prepareConfig(config);
-
     require('../src/DevServer').startWebpackDevServer();
 
 } else {
@@ -82,7 +78,7 @@ if (argv.explain) {
     pack.on('change', res => {
         console.log('package changed, updating...')
         pack.analyze().then(() => {
-            pack.get().then(res => console.log('package updated!'));
+            const data = pack.write().then(res => console.log('package updated!'));
         });
     });
     pack.emit('change');

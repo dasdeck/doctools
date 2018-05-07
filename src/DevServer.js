@@ -33,11 +33,10 @@ class DevServer {
             const pack = server.getPack();
 
             pack.analyze().then(() => {
-                pack.get().then(data => {
-                    pack.logFile('output', data);
-                    res.json(data);
-                    next();
-                });
+                const data = pack.get();
+                pack.logFile('output', data);
+                res.json(data);
+                next();
             });
 
         });
@@ -123,9 +122,8 @@ class DevServer {
                 }
 
                 pack.analyze().then(() => {
-                    pack.get().then(data => {
-                        this.sendDataToClient(data);
-                    });
+                    const data = pack.get();
+                    this.sendDataToClient(data);
                 });
 
             });

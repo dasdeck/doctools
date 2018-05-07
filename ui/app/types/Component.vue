@@ -1,7 +1,6 @@
 <template>
     <div>
-        {{data.module.description}}
-        <hr>
+
         <template v-if="component.components">
             <h2>components:</h2>
             <div v-for="comp in component.components">

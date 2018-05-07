@@ -137,7 +137,17 @@ class ModuleMapper extends Plugin {
      */
     onMap(desc) {
 
-        const all = _.cloneDeep(desc.jsdoc);
+        const all = _.cloneDeep(desc.jsdoc)
+                        .filter(el => el.kind !== 'package');
+
+
+        all.forEach(el => {
+            if(el.meta) {
+                delete el.meta.filename
+                delete el.meta.path
+                // delete el.meta.code
+            }
+        })
         // desc.log('mapping module', desc.name, !!all);
 
         const config = desc.config;
@@ -173,16 +183,12 @@ class ModuleMapper extends Plugin {
             //put to hirarchy
             const parent = _.find(all, els => els.longname === el.memberof);
             if (parent) {
-                // debugger;
-                parent.children = parent.children || {}
 
+                parent.children = parent.children || {}
                 this.addMemberTo(el, parent.children);
-                // el.parent = parent;
 
             } else {
-
                 this.addMemberTo(el, res.global);
-
             }
 
             if (el.kind === 'function') {
@@ -211,7 +217,6 @@ class ModuleMapper extends Plugin {
                 const name = el.type && el.type.names[0] || el.longname;
 
                 if (pack.types[name]) {
-                    // debugger;
                     desc.log('type already defined in package:', name);
                 } else {
 
@@ -224,12 +229,6 @@ class ModuleMapper extends Plugin {
 
             if (!el.undocumented) {
 
-                el.examples && el.examples.forEach(example => {
-                    const marked = require('marked');
-                    marked(example, {highlight(code) {
-                        //TODO collect example
-                    }});
-                });
                 if (el.kind === 'function' && el.see) {
 
                 }
@@ -237,13 +236,33 @@ class ModuleMapper extends Plugin {
                 if (res[el.kind] && !_.isArray(res[el.kind])) {
                     debugger
                 }
-                res.types = res.types || {};
-
-                res.types[el.kind] = res.types[el.kind] || [];
-                res.types[el.kind].push(el);
 
             }
         });
+
+        res.global = this.filterDocumented(res.global);
+
+    }
+
+    filterDocumented(els) {
+        const res = {};
+
+        _.forEach(els, (el, key) => {
+            if (this.isDocumented(el)) {
+                res[key] = el;
+                if (el.children) {
+                    el.children = this.filterDocumented(el.children);
+                }
+            }
+
+        })
+
+        return res;
+    }
+
+    isDocumented(el) {
+
+        return !el.undocumented || el.children && _.some(el.children, child => this.isDocumented(child));
 
     }
 

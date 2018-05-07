@@ -119,8 +119,8 @@ module.exports = class TreeItem extends EventEmitter {
         }
     }
 
-    resolvePath(path) {
-        return path.isAbsolute(path) ? path : path.join(this.config.base, path);
+    resolvePath(dir) {
+        return path.isAbsolute(dir) ? dir : path.join(this.config.base, dir);
 
     }
 

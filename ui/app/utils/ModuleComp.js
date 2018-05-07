@@ -7,17 +7,12 @@ export default {
     },
 
     props: {
-        moduleOverride: {
-            type: Object,
-            default() {
-                // debugger;
-            }
-        }
+        moduleOverride: Object
     },
 
     computed: {
         module() {
-            return this.$page && this.$page.module ||this.$doc.selectedModule;
+            return this.moduleOverride || this.$page && this.$page.module ||this.$doc.selectedModule;
 
         }
     }

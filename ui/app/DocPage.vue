@@ -5,6 +5,10 @@
             {{module.name}}
         </h1>
 
+        {{module.description}}
+        <hr>
+
+
          <template v-if="module.component && module.component.extends">
                 <span class="inherited">
                     ↳ <ModuleLink :resource="module.component.extends.resource"/>

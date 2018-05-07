@@ -101,10 +101,11 @@ module.exports = class ComponentMapper extends Plugin {
         }
 
         const component = {};
-        if (!data || !data.types) debugger;
+        if (!data) debugger;
 
-        const {all: entries, types: {function: funcs}} = data;
+        const entries = data.all.filter(el => !el.undocumented);
         const runtime = desc.runtime;
+
 
         base = 'module.exports';
         data.all.forEach(entry => {
@@ -112,6 +113,8 @@ module.exports = class ComponentMapper extends Plugin {
                 base = entry.longname;
             }
         });
+
+
 
         [
             {props: findProps},
@@ -132,10 +135,6 @@ module.exports = class ComponentMapper extends Plugin {
             if (_.size(members)) {
                 component[name] = members;
 
-                //remove functions form the general function list
-                _.forEach(members, member => {
-                    _.remove(funcs, func => func === member);
-                });
             }
 
         });
