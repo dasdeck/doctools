@@ -14,12 +14,12 @@
             </div>
             <div>
                 <!-- <Code ref="code" v-model="code" :options="codemirrorOpts" :language="language">{{code}}</Code> -->
-                <Code v-if="language" ref="code" :language="language">{{code}}</Code>
+                <Code v-if="language" :language="language">{{code}}</Code>
             </div>
         </div>
       </div>
       <div style="display:none;">
-          {{`&lt;ExampleRunner id="${data.id}" resource="${data.resource}"/>`}}
+          {{`&lt;ExampleRunner id="<!-- $ -->{data.id}" resource="${data.resource}"/>`}}
       </div>
   </div>
   <div v-else>could not load example data</div>

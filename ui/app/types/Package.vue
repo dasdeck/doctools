@@ -47,7 +47,7 @@
 <script>
     import Function from '../utils/Function.vue';
     import Base from './Base';
-
+    import _ from 'lodash';
     /**
      * view for package overviews
      */

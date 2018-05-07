@@ -208,20 +208,15 @@ module.exports = class Package extends TreeItem {
 
         const module = new Module(this.config, file , this, loader);// parser.parse();
 
+        if (this.resources[module.resource]) {
+            throw 'module uri ' + module.resource + ' already existing'
+
+        }
+
         this.resources[module.resource] = module;
 
     }
 
-    addModule(module) {
-
-        const resource = module.resource;
-
-        if (this.resources[resource]) {
-            throw 'module uri already existing'
-
-        }
-
-    }
 
     getResourceByFile(file) {
         return _.find(this.getResources(), res => res.path === file);

@@ -51,7 +51,7 @@ class ModuleMapper extends Plugin {
             return Promise.resolve();
         } else {
 
-            if(desc.script) {
+            if (desc.script) {
 
                 return jsdoc.explain({source: desc.script}).then(jsdoc => {
                     desc.jsdoc = jsdoc;

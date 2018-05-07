@@ -33,6 +33,15 @@ class DoctoolsWebpack extends EventEmitter {
         this.initial = true;
     }
 
+
+    registerHook(name) {
+        if (compiler.hooks) {
+            compiler.hooks[name].tap(this.constructor.name, (...args) => this[name](...args));
+        } else {
+            compiler.plugin(name, (...args) => this[name](...args));
+        }
+    }
+
     apply(compiler) {
 
         if (!this.pack) {
@@ -41,55 +50,14 @@ class DoctoolsWebpack extends EventEmitter {
             this.pack.config.watch = compiler.options.watch;
         }
 
-        if(compiler.hooks) {
-            compiler.hooks.done.tap(this.constructor.name, (...args) => this.done(...args));
-            compiler.hooks.compilation.tap(this.constructor.name, (...args) => this.compilation(...args));
-        } else {
-            compiler.plugin('done', (...args) => this.done(...args));
-            compiler.plugin('compilation', (...args) => this.compilation(...args));
-        }
-
+        this.registerHook('beforeRun');
 
     }
 
-    compilation(compilation) {
-
-        if (compilation.hooks) {
-            compilation.hooks.buildModule.tap(this.constructor.name, info => this.buildModule(info));
-        } else {
-            compilation.plugin('buildModule', (...args) => this.buildModule(...args));
-        }
-    }
-
-    buildModule(info) {
-
-        debugger;
-        if (!this.initial && info && info.rawRequest) {
-
-            try {
-                this.pack.patchFile(info.rawRequest);
-
-            } catch (e) {
-                console.log(e);
-            }
-        }
-    }
-
-
-    done(compilation) {
-
-        this.initial = false;
-
-        this.pack.analyze().then(res => {
-
-            this.pack.write().then(data => {
-
-                console.log(this.constructor.name, 'updated');
-
-            });
-
-        });
+    beforeRun() {
+        return this.pack.analyze().then(res => this.pack.write());
     }
 }
+
 
 module.exports = DoctoolsWebpack;
