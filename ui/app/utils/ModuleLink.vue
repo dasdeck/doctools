@@ -1,5 +1,5 @@
 <template>
-    <router-link v-if="!_.isUndefined(resource) && $doc.resources[resource]" :to="`/${resource}`">
+    <router-link v-if="!_.isUndefined(resource) && $doc.resources[resource]" :to="`${$doc.uriPrefix}${resource}`">
         {{prefix}}{{name || $doc.resources[resource].name || fallback}}
     </router-link>
     <span v-else>{{prefix}}{{(name || fallback)}}</span>

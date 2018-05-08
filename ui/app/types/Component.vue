@@ -110,9 +110,9 @@ export default {
 
   inject: ["$doc"],
 
-        hasContent(data) {
-                return data.component && _.size(data.component) || data.module.description;
-        },
+    hasContent(data) {
+            return data.component && _.size(data.component) || data.module.description;
+    },
 
   computed: {
     component() {

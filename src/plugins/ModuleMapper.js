@@ -28,10 +28,7 @@ class ModuleMapper extends Plugin {
         }
     }
 
-
     onAnalyze(desc) {
-
-
 
         if (desc.jsdoc) {
             return Promise.resolve();

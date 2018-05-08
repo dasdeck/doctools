@@ -1,21 +1,34 @@
 <template>
   <div v-if="data">
-      <div class="nomd">
+      <div class="nomd uk-position-relative uk-margin-medium">
 
-        <ul uk-switcher class="uk-subnav uk-subnav-pill">
-            <li><a href="">preview</a></li>
-            <li><a href="">code</a></li>
+        <ul uk="tab">
+            <li><a href="#">Preview</a></li>
+            <li><a href="#">Markup</a></li>
         </ul>
 
-        <div class="uk-switcher">
+        <div class="uk-switcher uk-margin">
             <div v-if="error" class="error">{{error}}</div>
             <div v-else class="preview" >
                 <div v-html="preview"></div>
             </div>
             <div>
-                <!-- <Code ref="code" v-model="code" :options="codemirrorOpts" :language="language">{{code}}</Code> -->
                 <Code v-if="language" :language="language">{{code}}</Code>
             </div>
+        </div>
+
+        <div class="uk-position-top-right uk-margin-small-top">
+            <ul class="uk-iconnav">
+                <li>
+                    <a @click="copyToCB(code)" uk-tooltip="Copy to Clipboard" rel="#${id}">
+                        <img class="uk-icon" src="../images/icon-clipboard.svg" >
+                        </a>
+                    </li>
+                <li v-if="runner.edit">
+                    <a @click="runner.edit(code)" class="js-codepen" uk-tooltip="Edit on Codepen">
+                    <img class="uk-icon" src="../images/icon-flask.svg" ></a>
+                </li>
+            </ul>
         </div>
       </div>
       <div style="display:none;">
@@ -28,6 +41,7 @@
 <script>
 
 import '../uikit-node';
+import copyToCB from 'copy-text-to-clipboard';
 
 const langMap = {
     'vue': 'text/x-vue',
@@ -62,7 +76,14 @@ const ExampleRunner = {
             this.createPreview();
         }
     },
+
     methods: {
+
+        copyToCB(code) {
+
+            copyToCB(code);
+        },
+
         createPreview(retry = true) {
             if(this.data) {
 

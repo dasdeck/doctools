@@ -228,8 +228,9 @@ module.exports = {
         return eval(script.replace(/import/g, '//import').replace('export default', 'global.res = '));
     },
 
+
     /**
-     * helper funciton to find property defaults
+     * helper funciton to find property defaults, required and type
      * works for UIkit and Vue
      * @param {*} props
      * @param {*} runtime
@@ -245,8 +246,7 @@ module.exports = {
                 const realProp = realProps[prop.name];
                 if (typeof realProp !== 'undefined') {
 
-
-                    prop.required = prop.required || prop.meta.code.value && ~prop.meta.code.value.indexOf('{"required":true}') || realProp && realProp.required;
+                    prop.required = prop.required || realProp && realProp.required || prop.meta.code.value && ~prop.meta.code.value.indexOf('{"required":true}');
 
                     if (!prop.type) {
                         if (realProp === null) {

@@ -12,11 +12,14 @@ import {$} from 'uikit-utils';
 
 import ExampleRunner from '../ExampleRunner.vue';
 import ModuleComp from './ModuleComp.js';
+import _ from 'lodash';
 
 
-const defaultRenderer = new marked.Renderer();
+const Markdown = {
 
-export default {
+    baseRenderer: new marked.Renderer(),
+    extendRenderer: {},
+
     props:{
         text: String
     },
@@ -39,13 +42,19 @@ export default {
                 });
                 return `<div id="${id}"></div>`;
             } else {
-                if (Prism.languages[lang]) {
+
+                if (Markdown.extendRenderer.code) {
+                    return Markdown.extendRenderer.code(code, lang, escaped);
+                } else if (Prism.languages[lang]) {
                     return `<pre><code class="language-${lang}">${Prism.highlight(code, Prism.languages[lang], lang)}</code></pre>`;
                 } else {
-                    return defaultRenderer.code(code, lang, escaped);;
+                    return Markdown.baseRenderer.code(code, lang, escaped);;
                 }
             }
         };
+
+        Object.assign(renderer,_.omit(Markdown.extendRenderer, ['code']));
+
         return {
             renderer,
             runners: []
@@ -118,6 +127,8 @@ export default {
         }
     }
 }
+
+export default Markdown;
 </script>
 
 <style>

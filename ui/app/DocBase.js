@@ -18,6 +18,10 @@ export default {
 
     computed: {
 
+        uriPrefix() {
+            return "/";
+        },
+
         runtime() {
             if (this.data.runtime && this.data.runtime !== this.lastRuntime) {
                 this.lastRuntime = this.data.runtime;
