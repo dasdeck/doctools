@@ -18,7 +18,7 @@ module.exports = class ComponentLinker extends Plugin {
 
     }
 
-    onConstruct(pack) {
+    onLoad(pack) {
         this.pack = pack;
     }
 

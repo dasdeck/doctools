@@ -22,7 +22,7 @@ module.exports = class Plugin extends EventEmitter {
      *
      * @param {Object} desc
      */
-    onConstruct(desc) {}
+    onLoad(desc) {}
 
     onPrepare(desc) {}
 

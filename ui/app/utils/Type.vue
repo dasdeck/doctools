@@ -51,7 +51,7 @@ const Type = {
         },
 
         apiDocLink() {
-            if(this.$doc.data.globals.includes(this.primeType)) {
+            if(this.$doc.nodeGlobals.includes(this.primeType)) {
                 return `https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/${this.type}`;
             } else if(window[this.primeType]) {
                 return `https://developer.mozilla.org/docs/Web/API/${this.type}`;

@@ -26,6 +26,10 @@ export default {
             return window.RuntimeAnalyzer && window.RuntimeAnalyzer.default;
         },
 
+        nodeGlobals() {
+            return this.data.globals;
+        },
+
         types() {
             return this.data && this.data.types || {};
         },

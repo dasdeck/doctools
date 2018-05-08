@@ -10,6 +10,8 @@
 
 <script>
 
+import _ from 'lodash';
+
 import Function from './Function.vue';
 import Constant from './Constant.vue';
 import Typedef from './Typedef.vue';

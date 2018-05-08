@@ -32,7 +32,7 @@ class RuntimeAnalyzer extends Plugin {
      *assozciate the package to build and watch
      * @param {Object} desc
      */
-    onConstruct(pack) {
+    onLoad(pack) {
 
         this.pack = pack;
 

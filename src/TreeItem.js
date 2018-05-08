@@ -45,14 +45,14 @@ module.exports = class TreeItem extends EventEmitter {
             const desc = this.loader.load(this.path, this);
         }
 
-        this.execPluginCallback('onConstruct', {}, true);
+        this.execPluginCallback('onLoad', {}, true);
     }
 
     serialize() {
 
         return _.pick(this, [
             'readme',
-            'script',
+            // 'script',
             'path',
             'type',
             'name',

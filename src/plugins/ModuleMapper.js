@@ -14,27 +14,7 @@ class ModuleMapper extends Plugin {
         this.watchers = [];
     }
 
-    /**
-     *
-     * @param {Object} desc
-     * @returns {Boolean}
-     */
-    matchesType(desc) {
-        return desc.type !== 'package';
-    }
-
-    getReadmeFile(desc) {
-        return this.config.getReadme && this.config.getReadme(desc) || desc.path + '.md';
-    }
-    getReadme(desc) {
-        const filename = this.getReadmeFile(desc);
-
-        const readme = fs.readFileSync(filename, 'utf8');
-
-        return readme;
-    }
-
-    onAnalyze(desc) {
+    onLoad(desc) {
 
         if (typeof desc.readme === 'undefined') {
 
@@ -46,6 +26,12 @@ class ModuleMapper extends Plugin {
             }
 
         }
+    }
+
+
+    onAnalyze(desc) {
+
+
 
         if (desc.jsdoc) {
             return Promise.resolve();
@@ -87,50 +73,29 @@ class ModuleMapper extends Plugin {
         delete desc.module;
     }
 
-    addMemberTo(el, target) {
-
-        let existing = target[el.longname];
-
-        if (existing) {
-
-            let current = el;
-            //prefer documented member
-            if (existing.undocumented) {
-                target[current.longname] = current;
-                [current, existing] = [existing, current];
-
-            }
-
-            if  (!existing.meta) {
-                // debugger;
-                console.warn('unhandled el:', el);
-                return;
-            }
-
-            const type = existing.meta.code.type;
-
-            existing.extras = existing.extras || {};
-
-            const existingExtra  = existing.extras[type];
-            if (existingExtra) {
-
-                if (!!_.isArray(existingExtra)) {
-                    existing.extras[type] = [existingExtra]
-                }
-
-            }
-
-            existing.extras[type] = current;
-
-            // console.error('double member in global:',desc.resource , el.longname)
-        } else {
-
-            target[el.longname] = el;//.push(el);
-
-        }
-    }
 
     /**
+     *
+     * @param {Object} desc
+     * @returns {Boolean}
+     */
+    matchesType(desc) {
+        return desc.type !== 'package';
+    }
+
+    getReadmeFile(desc) {
+        return this.config.getReadme && this.config.getReadme(desc) || desc.path + '.md';
+    }
+
+    getReadme(desc) {
+        const filename = this.getReadmeFile(desc);
+
+        const readme = fs.readFileSync(filename, 'utf8');
+
+        return readme;
+    }
+
+        /**
      * maps the jsdoc list to a sorted structure
      * @param {*} all
      * @param {*} config
@@ -244,6 +209,51 @@ class ModuleMapper extends Plugin {
 
     }
 
+    addMemberTo(el, target) {
+
+        let existing = target[el.longname];
+
+        if (existing) {
+
+            let current = el;
+            //prefer documented member
+            if (existing.undocumented) {
+                target[current.longname] = current;
+                [current, existing] = [existing, current];
+
+            }
+
+            if  (!existing.meta) {
+                // debugger;
+                console.warn('unhandled el:', el);
+                return;
+            }
+
+            const type = existing.meta.code.type;
+
+            existing.extras = existing.extras || {};
+
+            const existingExtra  = existing.extras[type];
+            if (existingExtra) {
+
+                if (!!_.isArray(existingExtra)) {
+                    existing.extras[type] = [existingExtra]
+                }
+
+            }
+
+            existing.extras[type] = current;
+
+            // console.error('double member in global:',desc.resource , el.longname)
+        } else {
+
+            target[el.longname] = el;//.push(el);
+
+        }
+    }
+
+
+
     filterDocumented(els) {
         const res = {};
 
@@ -328,6 +338,8 @@ class ModuleMapper extends Plugin {
         let params;
         if (!el.reference && desc.config.inferParameterDefaults) {
             params = this.guessDefaultParamValues(el.code, el.name);
+            delete el.code;
+            //delete code to save space
         }
 
         const mappedPrams = util.mapParams(el.params || [], params);
