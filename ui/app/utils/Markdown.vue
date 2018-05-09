@@ -8,7 +8,6 @@
 import marked from 'marked';
 import Prism from 'prismjs';
 import Vue from 'vue';
-import {$} from 'uikit-utils';
 
 import ExampleRunner from '../ExampleRunner.vue';
 import ModuleComp from './ModuleComp.js';
@@ -95,7 +94,7 @@ const Markdown = {
                 if (!data.instance) {
 
                     const id = `#${data.id}`;
-                    const el = $(id, this.$el);
+                    const el = UIkit.util.$(id, this.$el);
 
                     const dynamicRuntime = this.$doc.runtime && this.$doc.runtime[this.module.resource];
 

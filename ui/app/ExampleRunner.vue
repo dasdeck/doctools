@@ -2,7 +2,7 @@
   <div v-if="data">
       <div class="nomd uk-position-relative uk-margin-medium">
 
-        <ul uk="tab">
+        <ul uk-tab>
             <li><a href="#">Preview</a></li>
             <li><a href="#">Markup</a></li>
         </ul>

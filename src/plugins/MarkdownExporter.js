@@ -62,7 +62,7 @@ class MarkdownExporter extends Plugin {
 
               const toMD = this.$el.cloneNode(true);
 
-              const {$$, remove} = require('uikit-utils');
+              const {$$, remove} = require('uikit').util;
 
               remove($$('.nomd', toMD));
               return turndown.turndown(toMD.outerHTML);

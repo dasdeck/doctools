@@ -16,7 +16,7 @@ The Accordion component consists of a parent container with the `uk-accordion` a
 </ul>
 ```
 
-```run:uikit
+```html : uikit : run
 
 <ul uk-accordion>
     <li class="uk-open">

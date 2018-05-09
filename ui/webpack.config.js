@@ -15,6 +15,10 @@ const rules = [
           }
     },
     {
+        test: /\.svg$/,
+        loader: 'raw-loader'
+    },
+    {
         test: /\.js$/,
         exclude: /node_modules/,
         use: ['babel-loader']
