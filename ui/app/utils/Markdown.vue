@@ -16,7 +16,12 @@ import _ from 'lodash';
 
 const Markdown = {
 
+    components: {
+        ExampleRunner
+    },
+
     baseRenderer: new marked.Renderer(),
+
     extendRenderer: {},
 
     props:{
@@ -28,27 +33,34 @@ const Markdown = {
     data() {
         const renderer = new marked.Renderer();
         renderer.code = (code, lang, escaped) => {
-            if (lang && lang.indexOf('run:') === 0 || lang === 'run') {
 
-                const id = 'runner-' + this.module.resource.replace(/[^a-zA-Z0-1]*/g, '-') + '-' + (this.runners.length + 1);
-                this.runners.push({
-                    id,
-                    lang,
-                    code,
-                    escaped,
-                    name: this.module.name,
-                    resource: this.module.resource
-                });
-                return `<div id="${id}"></div>`;
+            const [run, runnerName] = lang.split(':').map(el => el.trim());
+            if (run === 'run' && runnerName && ExampleRunner.runners[runnerName]) {
+
+                const runner = ExampleRunner.runners[runnerName];
+
+                if (runner && runner.plain) {
+
+                    return runner.plain(code, this);
+
+                } else {
+
+                    const id = 'runner-' + this.module.resource.replace(/[^a-zA-Z0-1]*/g, '-') + '-' + (this.runners.length + 1);
+                    this.runners.push({
+                        id,
+                        lang,
+                        code,
+                        escaped,
+                        name: this.module.name,
+                        resource: this.module.resource
+                    });
+
+                    return `<div id="${id}"></div>`;
+
+                  }
             } else {
 
-                if (Markdown.extendRenderer.code) {
-                    return Markdown.extendRenderer.code(code, lang, escaped);
-                } else if (Prism.languages[lang]) {
-                    return `<pre><code class="language-${lang}">${Prism.highlight(code, Prism.languages[lang], lang)}</code></pre>`;
-                } else {
-                    return Markdown.baseRenderer.code(code, lang, escaped);;
-                }
+                return this.renderCode(code, lang, escaped);
             }
         };
 
@@ -117,12 +129,26 @@ const Markdown = {
 
                 }
             });
+        },
+
+        renderCode(code, lang, escaped) {
+                if (Markdown.extendRenderer.code) {
+                    return Markdown.extendRenderer.code(code, lang, escaped);
+                } else if (Prism.languages[lang]) {
+                    return `<pre><code class="language-${lang}">${Prism.highlight(code, Prism.languages[lang], lang)}</code></pre>`;
+                } else {
+                    return Markdown.baseRenderer.code(code, lang, escaped);;
+                }
+        },
+
+        markdown(code) {
+            return marked(code, {renderer: this.renderer})
         }
     },
 
     computed: {
         html() {
-            return this.text && marked(this.text, {renderer: this.renderer});
+            return this.text && this.markdown(this.text);
         }
     }
 }
