@@ -95,7 +95,7 @@ import ModuleLink from "../utils/ModuleLink.vue";
 import Types from "../utils/Types.vue";
 import Base from './Base';
 
-import _ from "lodash";
+import {size, filter, forEach, orderBy, mapValues} from "lodash";
 
 export default {
 
@@ -111,7 +111,7 @@ export default {
   inject: ["$doc"],
 
     hasContent(data) {
-            return data.component && _.size(data.component) || data.module.description;
+            return data.component && size(data.component) || data.module.description;
     },
 
   computed: {
@@ -123,7 +123,7 @@ export default {
      * the filtered list of methods
      */
     methods() {
-      return _.filter(
+      return filter(
         this.component.methods,
         method => this.$doc.settings.private || method.access !== "private"
       );
@@ -135,7 +135,7 @@ export default {
     props() {
       const props = this.component.props;
 
-      _.forEach(
+      forEach(
         props,
         prop =>
           (prop._style = {
@@ -145,8 +145,8 @@ export default {
           })
       );
 
-      return _.orderBy(
-        _.mapValues(props, prop => ({
+      return orderBy(
+        mapValues(props, prop => ({
           ...prop,
           type: prop.type && {template: 'types', type: prop.type}
         })),

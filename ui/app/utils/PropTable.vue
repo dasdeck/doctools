@@ -35,7 +35,7 @@
 </template>
 
 <script>
-    import _ from 'lodash';
+    import {forEach, some, isPlainObject, size} from 'lodash-es';
     import Types from './Types.vue';
 
     /**
@@ -81,11 +81,11 @@
              */
             filteredHeaders() {
                 const res = {};
-                _.forEach(this.headerToUse, (title, index) => {
-                    if (_.some(this.filteredData, row => {
+                forEach(this.headerToUse, (title, index) => {
+                    if (some(this.filteredData, row => {
                             const val = row[index];
-                            if( _.isPlainObject(val)) {
-                                return _.size(val) > 1;
+                            if( isPlainObject(val)) {
+                                return size(val) > 1;
 
                             } else {
                                 return val;
@@ -97,7 +97,7 @@
                 return this.headerToUse ? res : this.data[0];
             },
             numCols() {
-                return _.size(this.filteredHeaders);
+                return size(this.filteredHeaders);
             },
             filteredData() {
                 return this.headers === true ? this.data.slice(1) : this.data;

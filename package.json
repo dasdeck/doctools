@@ -49,6 +49,7 @@
     "jsdom": "^11.9.0",
     "jsdom-global": "^3.0.2",
     "lodash": "^4.17.5",
+    "lodash-es": "^4.17.10",
     "marked": "^0.3.19",
     "minimatch": "^3.0.4",
     "minimist": "^1.2.0",

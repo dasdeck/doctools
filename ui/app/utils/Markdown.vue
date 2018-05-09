@@ -7,11 +7,11 @@
 
 import marked from 'marked';
 import Prism from 'prismjs';
+import {omit} from 'lodash-es';
 import Vue from 'vue';
 
 import ExampleRunner from '../ExampleRunner.vue';
 import ModuleComp from './ModuleComp.js';
-import _ from 'lodash';
 
 
 const Markdown = {
@@ -64,7 +64,7 @@ const Markdown = {
             }
         };
 
-        Object.assign(renderer,_.omit(Markdown.extendRenderer, ['code']));
+        Object.assign(renderer, omit(Markdown.extendRenderer, ['code']));
 
         return {
             renderer,

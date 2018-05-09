@@ -14,6 +14,7 @@
 <script>
 
     import ModuleLink from '../utils/ModuleLink.vue';
+    import {pickBy, reduce, size} from 'lodash-es';
 
     export default {
 
@@ -42,12 +43,12 @@
             },
 
             filteredCategories() {
-                return _.pickBy(this.categories, (cat, name) => _.size(this.types[name]));
+                return pickBy(this.categories, (cat, name) => size(this.types[name]));
             },
 
             types() {
 
-                const types = _.reduce(this.data.resources, (acc, val, key) => {
+                const types = reduce(this.data.resources, (acc, val, key) => {
 
                     const entry = this.$doc.resources[val];
 

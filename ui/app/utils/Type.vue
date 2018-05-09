@@ -13,7 +13,7 @@
 <script>
 
 import ModuleLink from './ModuleLink.vue';
-import _ from 'lodash';
+import {upperFirst} from 'lodash-es';
 import ModuleComp from './ModuleComp.js';
 
 const Type = {
@@ -43,7 +43,7 @@ const Type = {
         primeType() {
             const type = this.subTypes[0].trim();
             const wrongCase = ['function'].includes(type);
-            return wrongCase ? _.upperFirst(type) : type;
+            return wrongCase ? upperFirst(type) : type;
         },
 
         isComplexType() {

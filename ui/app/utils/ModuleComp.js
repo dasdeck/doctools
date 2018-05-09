@@ -2,7 +2,7 @@ export default {
 
     inject: {
 
-        $doc: '$doc',
+        $doc:  {from:'$doc', default: {}},
         $page: {from:'$page', default: null}
     },
 

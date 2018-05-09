@@ -10,8 +10,9 @@
 </template>
 
 <script>
+    import {size} from 'lodash-es';
+
     import DescList from '../utils/DescList.vue';
-    import _ from 'lodash';
     import Base from './Base';
 
     /**
@@ -32,7 +33,7 @@
         },
 
         hasContent(data) {
-            return data.module && (data.module.description || data.module.global && _.size(data.module.global));
+            return data.module && (data.module.description || data.module.global && size(data.module.global));
         }
 
     }

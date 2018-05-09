@@ -1,11 +1,14 @@
 <template>
-    <router-link v-if="!_.isUndefined(resource) && $doc.resources[resource]" :to="`${$doc.uriPrefix}${resource}`">
+    <router-link v-if="!isUndefined(resource) && $doc.resources[resource]" :to="`${$doc.uriPrefix}${resource}`">
         {{prefix}}{{name || $doc.resources[resource].name || fallback}}
     </router-link>
     <span v-else>{{prefix}}{{(name || fallback)}}</span>
 </template>
 
 <script>
+
+import {isUndefined} from 'lodash-es';
+
 export default {
     props: {
         resource: String,
@@ -14,6 +17,10 @@ export default {
         fallback: String
     },
 
-    inject: ['$doc']
+    inject: ['$doc'],
+
+    methods: {
+        isUndefined
+    }
 }
 </script>

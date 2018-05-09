@@ -5,7 +5,7 @@ import SockJS from 'sockjs-client';
 
 import 'prismjs'
 import 'prismjs/themes/prism.css'
-import _ from 'lodash';
+import _ from 'lodash-es';
 
 import Prism from 'vue-prism-component';
 

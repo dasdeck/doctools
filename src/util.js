@@ -12,7 +12,6 @@ class AndMatch {
 
 }
 
-
 function match(conf, file, desc, recursive = true) {
     conf = _.isArray(conf) ? conf : [conf];
 
@@ -37,9 +36,10 @@ function match(conf, file, desc, recursive = true) {
             if (recursive && fs.lstatSync(file).isDirectory()) {
                 const names = file.split('/');
                 const matches = matcher.split('/');
-                return names.length < matches.length && !names.some((name, i) => {
+                return names.length <= matches.length && !names.some((name, i) => {
                     const name2 = matches[i];
-                    return !(name2 === name || minimatch(name, name2))
+                    const doesMatch = name2 === name || minimatch(name, name2);
+                    return !doesMatch;
                 });
 
             } else {

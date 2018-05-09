@@ -66,7 +66,7 @@
     import Globals from './utils/Globals.vue';
     import Markdown from './utils/Markdown.vue';
     import ModuleComp from './utils/ModuleComp.js';
-    import _ from 'lodash';
+    import {some, size, upperFirst} from 'lodash-es';
 
     /**
      * component wrapper for the vue-router
@@ -95,12 +95,12 @@
         computed: {
 
             apiHasContent() {
-                const comp = this.$options.components[_.upperFirst(this.module.type)];
+                const comp = this.$options.components[upperFirst(this.module.type)];
                 return comp && comp.hasContent && comp.hasContent(this.module);
             },
 
             globals() {
-                return this.module.globals && _.size(this.module.globals);
+                return this.module.globals && size(this.module.globals);
             },
 
             repoLink() {
@@ -112,7 +112,7 @@
 
                     let url = this.$doc.repo.url;
 
-                    if(!_.some(shorthands, (rep, ser) => url.includes(ser) && url.replace(ser, rep + '/'))) {
+                    if(!some(shorthands, (rep, ser) => url.includes(ser) && url.replace(ser, rep + '/'))) {
                         url = `${Object.values(shorthands)[0]}/${url}`;
                     }
 

@@ -10,7 +10,7 @@
 
 <script>
 
-import _ from 'lodash';
+import {upperFirst} from 'lodash-es';
 
 import Function from './Function.vue';
 import Constant from './Constant.vue';
@@ -33,7 +33,7 @@ extends: ModuleComp,
 
     methods: {
         hasKind(kind) {
-            return this.$options.components[_.upperFirst(kind)];
+            return this.$options.components[upperFirst(kind)];
         }
     }
 }

@@ -6,6 +6,8 @@ const glob = require('glob');
 const TreeItem = require('./TreeItem');
 const Module = require('./Module');
 const defaultConfig = require('./Config');
+const mkpath = require('mkpath');
+
 /**
  * the Package parser
  */
@@ -342,7 +344,24 @@ module.exports = class Package extends TreeItem {
 
         if (this.config.output) {
 
-            fs.writeFileSync(this.resolvePath(this.config.output), JSON.stringify(data, null, 2));
+            if (this.config.output.split) {
+
+                mkpath.sync(this.config.output.path);
+
+                const p = this.resolvePath(this.config.output.path);
+                fs.writeFileSync(path.join(p, '_menu.json'), JSON.stringify(data.menu, null, 2));
+
+                _.forEach(data.resources, module => {
+                    fs.writeFileSync(path.join(p, `${module.resource}.json`), JSON.stringify(module, null, 2));
+                });
+
+
+            } else {
+
+                const p = this.config.output.path || this.config.output;
+                fs.writeFileSync(this.resolvePath(p), JSON.stringify(data, null, 2));
+
+            }
         }
 
         return Promise.resolve(data);

@@ -47,7 +47,7 @@
 <script>
     import Function from '../utils/Function.vue';
     import Base from './Base';
-    import _ from 'lodash';
+    import {size, omit} from 'lodash-es';
     /**
      * view for package overviews
      */
@@ -60,7 +60,7 @@
 
 
         hasContent(data) {
-                return data.packageJson && !!_.size(_.omit(data.packageJson, 'name'));
+                return data.packageJson && !!size(omit(data.packageJson, 'name'));
         }
     }
 </script>
