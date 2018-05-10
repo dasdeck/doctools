@@ -239,7 +239,7 @@ module.exports = {
         if (runtime && runtime['props']) {
 
             const realProps = runtime['props'];
-            const ukDefaults = runtime['defaults'];
+            const ukDefaults = runtime['data'];
 
             _.forEach(props, prop => {
 

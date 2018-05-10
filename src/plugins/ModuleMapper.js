@@ -14,19 +14,29 @@ class ModuleMapper extends Plugin {
         this.watchers = [];
     }
 
-    onLoad(desc) {
 
-        if (typeof desc.readme === 'undefined') {
-
-            const readme = this.getReadmeFile(desc);
-            if (fs.existsSync(readme)) {
-                desc.watchAsset(readme, 'readme');
-            } else {
-                desc.readme = null;
-            }
-
-        }
+    /**
+     *
+     * @param {Object} desc
+     * @returns {Boolean}
+     */
+    matchesType(desc, call) {
+        return desc.type !== 'package' && desc.script || (desc.isRootPackage() && call === 'onLink');
     }
+
+    // onLoad(desc) {
+
+    //     if (typeof desc.readme === 'undefined') {
+
+    //         const readme = this.getReadmeFile(desc);
+    //         if (fs.existsSync(readme)) {
+    //             desc.watchAsset(readme, 'readme');
+    //         } else {
+    //             desc.readme = null;
+    //         }
+
+    //     }
+    // }
 
     onAnalyze(desc) {
 
@@ -70,27 +80,6 @@ class ModuleMapper extends Plugin {
         delete desc.module;
     }
 
-
-    /**
-     *
-     * @param {Object} desc
-     * @returns {Boolean}
-     */
-    matchesType(desc) {
-        return desc.type !== 'package';
-    }
-
-    getReadmeFile(desc) {
-        return this.config.getReadme && this.config.getReadme(desc) || desc.path + '.md';
-    }
-
-    getReadme(desc) {
-        const filename = this.getReadmeFile(desc);
-
-        const readme = fs.readFileSync(filename, 'utf8');
-
-        return readme;
-    }
 
         /**
      * maps the jsdoc list to a sorted structure
@@ -200,11 +189,62 @@ class ModuleMapper extends Plugin {
                 }
 
             }
+
+            delete el.code;
+            // delete el.meta;
+            delete el.extras;
+            delete el.comment;
         });
 
         res.global = this.filterDocumented(res.global);
 
     }
+
+    onLink(desc) {
+        if (this.config.getAssets) {
+
+            // const module = data.files
+            const resources = desc.getResources();
+
+            const files = _.reduce(resources, (res, mod) =>  {
+                res[mod.path] = mod.resource;
+                return res;
+            }, {})
+
+            _.forEach(resources, resource => {
+               const assets = this.config.getAssets(resource);
+               _.forEach(assets, (file, name) => {
+
+                    const assetsResource = files[file];
+                    if (assetsResource) {
+
+                        const assetModule = resources[assetsResource];
+                        assetModule.isAsset = true;
+
+                        resource.assets = resource.assets || {};
+                        resource.assets[name] = assetsResource;
+
+                   }
+
+               })
+            });
+        }
+        // debugger
+    }
+
+
+
+    // getReadmeFile(desc) {
+    //     return this.config.getReadme && this.config.getReadme(desc) || desc.path + '.md';
+    // }
+
+    // getReadme(desc) {
+    //     const filename = this.getReadmeFile(desc);
+
+    //     const readme = fs.readFileSync(filename, 'utf8');
+
+    //     return readme;
+    // }
 
     addMemberTo(el, target) {
 

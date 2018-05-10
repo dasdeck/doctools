@@ -26,7 +26,7 @@ module.exports = class ComponentLinker extends Plugin {
      *
      * @param {*} desc
      */
-    onMap(pack) {
+    onLink(pack) {
 
         const resources = _.keyBy(pack.getAllModules(), 'resource');
 

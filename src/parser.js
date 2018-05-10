@@ -84,6 +84,8 @@ function prepareConfig(config) {
                 throw 'use config option only on cli';
             }
             _.defaults(config, confFromFile);
+            //override base
+            config.base = confFromFile.base || config.base;
         }
 
         _.defaults(config, defaultConfig);

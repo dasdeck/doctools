@@ -70,10 +70,10 @@
             "request": "launch",
             "name": "uikit-site (explain)",
             "program": "${workspaceFolder}/bin/doctools.js",
-            "cwd": "/Applications/MAMP/htdocs/uikit-site",
+            "cwd": "/Users/jms/uikit-site",
             "console": "internalConsole",
             "args": [
-                "/Applications/MAMP/htdocs/uikit-site",
+                "/Users/jms/uikit-site",
                 "--dev",
                 "--explain"
             ]

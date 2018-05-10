@@ -19,11 +19,11 @@ class Module extends TreeItem {
 
     load() {
 
-        this.watchAsset(this.path, watcher => {
+        // this.watchAsset(this.path, watcher => {
 
-            this.patch();
+        //     this.patch();
 
-        }, false);
+        // }, false);
 
         super.load();
     }

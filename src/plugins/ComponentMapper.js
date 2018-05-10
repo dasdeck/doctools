@@ -88,7 +88,7 @@ module.exports = class ComponentMapper extends Plugin {
     }
 
     matchesType(desc) {
-        return desc.type !== 'package';
+        return desc.type !== 'package' && desc.script;
     }
 
     mapComponent(desc) {

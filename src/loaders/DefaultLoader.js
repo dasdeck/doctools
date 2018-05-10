@@ -14,10 +14,11 @@ class DefaultLoader {
 
     load(file, desc) {
 
-        let script = fs.readFileSync(file, 'utf8');
+        // let script = fs.readFileSync(file, 'utf8');
+
+        desc.watchAsset(file, this.config.member);
 
         _.assign(desc, {
-            script,
             type: this.config.type,
             ...this.config.desc
         });
@@ -35,6 +36,8 @@ DefaultLoader.defaultOptions = {
     match(file, desc) {
         return util.match(this.config, file, desc, false);
     },
+
+    member: 'script',
 
     type: 'module',
 

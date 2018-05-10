@@ -52,6 +52,7 @@ module.exports = class TreeItem extends EventEmitter {
 
         return _.pick(this, [
             'readme',
+            'assets',
             // 'script',
             'path',
             'type',
@@ -61,7 +62,7 @@ module.exports = class TreeItem extends EventEmitter {
         )
     }
 
-    watchAsset(file, targetKey, init = true) {
+    watchAsset(file, targetKey, init = true, patch = false) {
 
         if (!this._assets[file]) {
 
@@ -94,6 +95,9 @@ module.exports = class TreeItem extends EventEmitter {
 
                     if (sendChange) {
                         module.log('asset changed', file);
+                        if (patch) {
+                            module.patch();
+                        }
                         module.getRootPackage().emit('change');
                     }
 
@@ -149,7 +153,7 @@ module.exports = class TreeItem extends EventEmitter {
         }
 
         const jobs = this.config._.plugins.map(plugin => {
-            return () => plugin.matchesType(this) && plugin[name] && plugin[name](this, data) || Promise.resolve();
+            return () => plugin.matchesType(this, name) && plugin[name] && plugin[name](this, data) || Promise.resolve();
         });
 
         if (sync) {

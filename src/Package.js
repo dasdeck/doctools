@@ -158,6 +158,8 @@ module.exports = class Package extends TreeItem {
 
         .then(res => this.map())
 
+        .then(res => this.execPluginCallback('onLink'))
+
         .then(() => this.analyzes = false)
 
         .catch(err => {throw err});
@@ -297,33 +299,42 @@ module.exports = class Package extends TreeItem {
         return types;
     }
 
-    createMenu(children = this.config.menu) {
+    createMenu(children = this.config.menu, resources = this.getResources()) {
         const res = [];
 
-        return _.map(children, child => {
+        return _.reduce(children, (res, child, key) => {
 
-            if (child.match) {
-
-                return {
-                    ...child,
-                    match: null,
-                    items: _.map(_.filter(this.getResources(), res => {
-                        return util.match(child.match, res.path, res, false);
-                    }), res => res.resource)
-                }
+            const entry = {
+                ...child,
+                label: child.label || key,
             }
 
-        });
+            if (_.isFunction(child.items)) {
+
+                entry.items = _.reduce(child.items(this), (res, val) => {
+                    res[val.resource] = val.name;
+                    return res;
+                }, {});
+
+            }
+
+            res[key] = entry;
+
+            return res;
+
+        }, {});
+
     }
 
 
 
     get() {
-        const menu = this.config.menu ? this.createMenu() : null;
+
+        const menu = this.config.menu ? this.createMenu(this.config.menu) : null;
 
         const data = {
-            config: _.pick(this.config, ['menus']),
             menu,
+            config: _.pick(this.config, ['menus']),
             types: this.getAllTypes(),
             globals: Object.getOwnPropertyNames(global),
             resources: _.mapValues(this.getResources(), res => res.serialize()),
@@ -331,7 +342,6 @@ module.exports = class Package extends TreeItem {
         };
 
         this.execPluginCallback('onGet', data, true);
-
 
         return data;
     }
@@ -350,6 +360,7 @@ module.exports = class Package extends TreeItem {
 
                 const p = this.resolvePath(this.config.output.path);
                 fs.writeFileSync(path.join(p, '_menu.json'), JSON.stringify(data.menu, null, 2));
+                fs.writeFileSync(path.join(p, '_index.json'), JSON.stringify(_.mapValues(data.resources, res => res.name), null, 2));
 
                 _.forEach(data.resources, module => {
                     fs.writeFileSync(path.join(p, `${module.resource}.json`), JSON.stringify(module, null, 2));
