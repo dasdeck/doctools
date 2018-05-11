@@ -17,7 +17,7 @@
 
         <!-- This is the nav containing the toggling elements -->
         <ul uk-switcher class="uk-subnav uk-subnav-pill nomd">
-            <li v-if="module.readme"><a href="">readme</a></li>
+            <li v-if="module.assets"><a href="">assets</a></li>
             <li v-if="apiHasContent"><a href="">api</a></li>
             <li v-if="globals"><a href="">globals</a></li>
             <li v-if="module.script"><a href="" >code</a></li>
@@ -28,7 +28,7 @@
 
         <!-- This is the container of the content items -->
         <div class="uk-switcher">
-            <Markdown v-if="module.readme" :text="module.readme"/>
+            <Assets v-if="module.assets" :assets="module.assets"/>
             <component v-if="apiHasContent" :is="module.type" :data="module" ref="layout"/>
             <Globals v-if="globals"/>
             <div v-if="module.script">
@@ -66,6 +66,7 @@
     import Globals from './utils/Globals.vue';
     import Markdown from './utils/Markdown.vue';
     import ModuleComp from './utils/ModuleComp.js';
+    import Assets from './Assets.vue';
     import {some, size, upperFirst} from 'lodash-es';
 
     /**
@@ -81,7 +82,8 @@
             Package,
             ModuleLink,
             Globals,
-            Markdown
+            Markdown,
+            Assets
         },
 
         ref: '$content',

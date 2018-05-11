@@ -71,6 +71,22 @@ module.exports = {
 
     AndMatch,
 
+    getCodeBlocks(text, fences = ['```']) {
+
+        const blocks = [];
+        fences = Array.isArray(fences) && fences || [fences];
+        const reg = new RegExp(/(fences)(.*)\n(.*)\n\1/g.source.replace('fences', fences.join()));
+        let res;
+        while (res = reg.exec(text)) {
+            blocks.push({
+                lang: res[2],
+                code: res[3]
+            });
+        }
+
+        return blocks;
+
+    },
 
     /**e
      * scapes a string to be a valid variable name

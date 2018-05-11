@@ -25,7 +25,14 @@ const Markdown = {
     extendRenderer: {},
 
     props:{
-        text: String
+        data: Object,
+        text: {
+            type: String,
+            default() {
+                return this.data.reademe;
+            }
+        },
+
     },
 
     extends: ModuleComp,

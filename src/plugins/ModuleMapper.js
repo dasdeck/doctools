@@ -80,7 +80,6 @@ class ModuleMapper extends Plugin {
         delete desc.module;
     }
 
-
         /**
      * maps the jsdoc list to a sorted structure
      * @param {*} all
@@ -91,14 +90,13 @@ class ModuleMapper extends Plugin {
         const all = _.cloneDeep(desc.jsdoc)
                         .filter(el => el.kind !== 'package');
 
-
         all.forEach(el => {
             if(el.meta) {
                 delete el.meta.filename
                 delete el.meta.path
                 // delete el.meta.code
             }
-        })
+        });
         // desc.log('mapping module', desc.name, !!all);
 
         const config = desc.config;
@@ -107,7 +105,6 @@ class ModuleMapper extends Plugin {
         if (!all) debugger;
 
         all.forEach((el, index) => {
-
 
             let code;
             if (el.meta && el.meta.range) {
@@ -390,8 +387,8 @@ class ModuleMapper extends Plugin {
 };
 
 ModuleMapper.defaultConfig = {
-    getReadme(desc) {
-        return desc.path + '.md';
+    getAssets(desc) {
+        return [{readme: desc.path + '.md'}];
     }
 }
 
