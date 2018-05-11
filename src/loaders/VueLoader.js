@@ -24,7 +24,7 @@ module.exports = class VueLoader {
 
         desc.watchAsset(file, watcher => {
             const module = watcher.module;
-            const text = fs.readFileSync(file);
+            const text = fs.readFileSync(file, 'utf8');
 
             const res = vueComiler.parseComponent(text);
 

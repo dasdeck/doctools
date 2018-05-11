@@ -63,7 +63,8 @@ module.exports = {
      *
      */
     loaders: [
-        'VueLoader'
+        'VueLoader',
+        'MarkdownLoader'
     ],
     /**
      * extra mapping plugins
@@ -74,7 +75,7 @@ module.exports = {
         'UIkitComponentMapper',
         'VueComponentMapper',
         'ComponentLinker',
-        // 'MarkdownExporter',
+        'ComponentExporter',
         // 'VuePressExporter',
     ],
 
@@ -91,6 +92,8 @@ module.exports = {
      * @type {Boolean}
      */
     strict: false,
+
+    output: 'docs.json',
 
      /**
      * a glob to search for subpackages (recursively) to be included, or false

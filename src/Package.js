@@ -354,7 +354,7 @@ module.exports = class Package extends TreeItem {
 
         if (this.config.output) {
 
-            if (this.config.output.split) {
+            if (this.config.output.split === true) {
 
                 mkpath.sync(this.config.output.path);
 
