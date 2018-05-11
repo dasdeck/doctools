@@ -31,7 +31,7 @@ export default {
         },
 
         nodeGlobals() {
-            return this.data.globals;
+            return this.data.nodeGlobals;
         },
 
         types() {

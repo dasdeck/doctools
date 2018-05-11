@@ -70,9 +70,12 @@
             "request": "launch",
             "name": "uikit-site (explain)",
             "program": "${workspaceFolder}/bin/doctools.js",
-            "cwd": "/Users/jms/uikit-site",
+            // "cwd": "/Users/jms/uikit-site",
+            "cwd": "/Applications/MAMP/htdocs/uikit-site",
             "console": "internalConsole",
             "args": [
+                // "/Users/jms/uikit-site",
+                "/Applications/MAMP/htdocs/uikit-site",
                 "/Users/jms/uikit-site",
                 "--dev",
                 "--explain"
@@ -107,11 +110,22 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "examples (watch)",
+            "name": "examples",
             "program": "${workspaceFolder}/bin/doctools.js",
             "args": [
                 "${workspaceFolder}/examples",
                 "--dev"
+            ]
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "examples (watch)",
+            "program": "${workspaceFolder}/bin/doctools.js",
+            "args": [
+                "${workspaceFolder}/examples",
+                "--dev",
+                "--watch"
             ]
         },
         {
@@ -133,7 +147,8 @@
             "args": [
                 "${workspaceFolder}/examples",
                 "--dev",
-                "--server"
+                "--server",
+                "--watch"
             ]
         },
         {

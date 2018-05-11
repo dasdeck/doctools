@@ -1,7 +1,7 @@
 <template>
 
     <div>
-        <component v-for="asset in assets" :is="$doc.resources[asset].type" :data="$doc.resources[asset]"/>
+        <component v-for="(asset, name) in assets" :is="$doc.resources[asset].type" :key="name" :data="$doc.resources[asset]"/>
     </div>
 
 </template>
@@ -19,7 +19,7 @@ export default {
     extends: ModuleComp,
 
     props: {
-        assetes: Object
+        assets: Object
     }
 }
 </script>

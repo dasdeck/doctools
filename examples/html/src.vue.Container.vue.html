@@ -1,0 +1,27 @@
+<div><h1>
+        Container
+    </h1>
+
+    
+    <hr> <!---->  <div class="uk-switcher"><!----> <div><h2>components:</h2> <div><a href="undefinedsrc-vue-Modal-vue.html">
+    Modal
+</a></div> <hr> <!----> <!----> <!----> <!----> <!----> <!----> <!----> <!----></div> <!----> <div><h2>code:</h2> <pre><code class="language-javascript">import Modal from './Modal.vue';
+
+export default {
+
+    components: {
+        Modal
+    },
+
+    created()&nbsp;{
+        
+        /**
+         * @event test
+         * @kind Trigger
+         * @param {String} a - parameter a
+         * 
+         **/
+        this.$trigger('test', ['a', 'b']);
+    }
+
+}</code></pre></div> <div><h2>template:</h2> <!----> <pre><code class="language-html">&lt;Modal&gt;super simple modal&lt;/Modal&gt;</code></pre></div> <!----> <!----></div> <hr> <i>package: <span></span></i> <!----></div>

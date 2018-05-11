@@ -77,7 +77,7 @@ module.exports = class Package extends TreeItem {
         fs.readdirSync(directory).forEach(file => {
             file = path.resolve(path.join(directory, file));
 
-            if (!util.match(this.config, file, this)) {
+            if (!util.match(this.config, file, {data: this})) {
                 this.log('skipping file:', file);
                 return;
             }
@@ -104,7 +104,7 @@ module.exports = class Package extends TreeItem {
 
                 this.config._.loaders.some(loader => {
 
-                    if (util.match(loader.match.bind(loader), file, this)) {
+                    if (loader.match(file, this)) {
                         this.addFileToPackage(file, loader);
                         return true;
                     }
@@ -336,7 +336,7 @@ module.exports = class Package extends TreeItem {
             menu,
             config: _.pick(this.config, ['menus']),
             types: this.getAllTypes(),
-            globals: Object.getOwnPropertyNames(global),
+            nodeGlobals: Object.getOwnPropertyNames(global),
             resources: _.mapValues(this.getResources(), res => res.serialize()),
             rootPackage: this.resource
         };

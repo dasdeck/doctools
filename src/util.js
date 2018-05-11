@@ -12,7 +12,10 @@ class AndMatch {
 
 }
 
-function match(conf, file, desc, recursive = true) {
+function match(conf, file, opts = {}) {
+
+    _.defaults(opts, {recursive: true, matchBase: true});
+
     conf = _.isArray(conf) ? conf : [conf];
 
     return conf.some(matcher => {
@@ -20,7 +23,7 @@ function match(conf, file, desc, recursive = true) {
         if (matcher instanceof AndMatch || matcher.and) {
             for (let i = 0 ; i < matcher.and.length; i++) {
                 const subMatcher = matcher.and[i];
-                if (!match(subMatcher, file, desc, recursive)) {
+                if (!match(subMatcher, file, opts)) {
                     return false;
                 }
             }
@@ -29,11 +32,11 @@ function match(conf, file, desc, recursive = true) {
         } else if (matcher instanceof RegExp) {
             return matcher.exec(file);
         } else if (typeof matcher === 'function') {
-            return matcher(file, desc);
+            return matcher(file, opts);
         } else if (typeof matcher === 'string') {
-            matcher = desc && !path.isAbsolute(matcher) && path.join(desc.config.base, matcher) || matcher;
+            matcher = _.isString(opts.matchBase) && !path.isAbsolute(matcher) && path.join(opts.matchBase, matcher) || matcher;
 
-            if (recursive && fs.lstatSync(file).isDirectory()) {
+            if (opts.recursive && fs.lstatSync(file).isDirectory()) {
                 const names = file.split('/');
                 const matches = matcher.split('/');
                 return names.length <= matches.length && !names.some((name, i) => {
@@ -43,13 +46,13 @@ function match(conf, file, desc, recursive = true) {
                 });
 
             } else {
-                return minimatch(file, matcher,{matchBase: true});
+                return minimatch(file, matcher, opts);
             }
         } else if (_.isPlainObject(matcher)) {
 
-            const isDir = recursive && fs.lstatSync(file).isDirectory();
-            const include = this.match(matcher.include, file, desc, isDir);
-            const res = include && (!matcher.exclude || !this.match(matcher.exclude, file, desc, false));
+            // const recursive = opts.recursive && fs.lstatSync(file).isDirectory();
+            const include = match(matcher.include, file, opts);
+            const res = include && (!matcher.exclude || !match(matcher.exclude, file, opts));
 
             return res;
 

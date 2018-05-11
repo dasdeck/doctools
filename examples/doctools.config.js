@@ -7,27 +7,42 @@
 // uikitShim.clear();
 
 // runtime.UIkitComponent = {..._.mapValues(UIkit.components, comp => comp.options), ...UIkit.mixin};
-
+const _ = require('lodash');
+const DefaultLoader = require('../src/loaders/DefaultLoader');
 /* eslint-env node */
 module.exports = {
+
+    watch: false,
+
     include: [/src/, /packages/],
+
     runtime: __dirname + '/webpack.config.js',
+
+    loaders: [
+        new DefaultLoader({
+            include: ['accordion.js', 'togglable.js' ],
+            type: 'UIkitComponent',
+            desc: {runtime: true}
+        }),
+        'DefaultLoader',
+        'VueLoader'
+    ],
     menu: [
         {
             label: 'Packages',
-            match: (file, desc) => desc.type === 'package'
+            items: (pack) => _.filter(pack.getResources(), desc => desc.type === 'package')
         },
         {
             label: 'VueComponents',
-            match: (file, desc) => desc.type === 'VueComponent'
+            items: (pack) => _.filter(pack.getResources(), desc => desc.type === 'VueComponent')
         },
         {
             label: 'UIkitComponents',
-            match: (file, desc) => desc.type === 'UIkitComponent'
+            items: (pack) => _.filter(pack.getResources(), desc => desc.type === 'UIkitComponent')
         },
         {
             label: 'Modules',
-            match: (file, desc) => desc.type === 'module'
+            items: (pack) => _.filter(pack.getResources(), desc => desc.type === 'module')
         }
     ]
 };

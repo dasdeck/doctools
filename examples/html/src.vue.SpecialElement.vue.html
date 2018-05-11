@@ -1,0 +1,83 @@
+<div><h1>
+        SpecialElement
+    </h1>
+
+    
+    <hr> <span class="inherited">
+                ↳ <a href="undefinedsrc-vue-Element-vue.html">
+    Element
+</a></span>  <div class="uk-switcher"><!----> <div><!----> <!----> <!----> <!----> <h2>methods:</h2> <div><div class="inherited"><h3 id="findId">
+        findId:
+    </h3> <!----> <p>Determines the uniquie Id for this component</p> <h4 class="signature">findId(
+            <span>
+    root
+     :
+        <span><span><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Node">Node</a> <!----></span></span></span> <span>, </span><span>
+    id
+     :
+        <span><span><a href="undefinedsrc-uikit-types-js.html">
+    Integer
+</a> <!----></span></span></span> <!---->
+            )<span>
+                : <span><span><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a> <!----></span></span></span></h4> <div><h4>arguments</h4> <table class="uk-table uk-table-striped"><thead><tr><th>name</th><th>type</th><th>default</th><th>description</th></tr></thead> <tbody><tr><td><span>root</span></td><td><span template="types"><span><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Node">Node</a> <!----></span></span></td><td><span>this.builder.layout</span></td><td><span>The root node to start counting from</span></td></tr> <tr><td><span>id</span></td><td><span template="types"><span><a href="undefinedsrc-uikit-types-js.html">
+    Integer
+</a> <!----></span></span></td><td><span>1</span></td><td><span>The ID to start counting from</span></td></tr> </tbody></table></div> <h4>returns:</h4> <span><span><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a> <!----></span></span> <p>Returns the id of this component</p></div> <hr></div> <h2>computed:</h2> <div><h3>nodeId</h3> <h4 class="inherited"> ↳ <a href="undefinedsrc-vue-Element-vue.html">
+    Element
+</a>.nodeId</h4> <span><span><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a> <!----></span></span> <p>
+                The uniquie continous ID if this component
+            </p></div><div><h3>myPrivateMember</h3> <!----> <span><span><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">String</a> <!----></span></span> <p>
+                a fucking test memebers
+            </p></div> <!----> <!----> <h2>trigger:</h2> <div><h3>elementHover</h3>
+            triggered when an element in the layout editor is hovered
+        </div><div><h3>elementLeave</h3>
+            triggered when the mouse leaves a layout editor element
+        </div><div><h3>saveElement</h3>
+            triggered when the save save button is clicked
+        </div></div> <!----> <div><h2>code:</h2> <pre><code class="language-javascript">import Element from './Element.vue';
+
+export default {
+    extends: Element,
+    computed: {
+
+        /**
+         * a fucking test memebers
+         * @private
+         * @type {String}
+        */
+        myPrivateMember() {
+            return "test"
+        }
+    }
+}</code></pre></div> <div><h2>template:</h2> 
+                : <a href="undefinedsrc-vue-Element-vue.html">
+    Element
+</a> <pre class="inherited"><code class="language-html">&lt;div class="yo-builder-element uk-flex-1 uk-width-1-1 uk-flex uk-flex-center uk-flex-middle"&gt;
+
+    &lt;div class="uk-text-center"&gt;
+        &lt;img :alt="title" :src="icon" class="uk-svg" width="20" height="20" uk-svg&gt;
+        &lt;span class="uk-margin-small-left uk-text-middle"&gt;
+
+            &lt;template v-if="exists"&gt;{{ title }}&lt;/template&gt;
+            &lt;i v-else&gt;{{ title }}&lt;/i&gt;
+        &lt;/span&gt;
+    &lt;/div&gt;
+    &lt;!-- @trigger elementHover triggered when an element in the layout editor is hovered--&gt;
+    &lt;!-- @param {Number} nodeId - the id of the node that has been hovered --&gt;
+
+    &lt;!-- @trigger elementLeave triggered when the mouse leaves a layout editor element --&gt;
+    &lt;!-- @param {Number} nodeId - the id of the node that has been hovered --&gt;
+    &lt;a v-if="exists" class="uk-position-cover" @mouseover="$trigger('elementHover', nodeId)" @mouseout="$trigger('elementLeave', nodeId)" @click.prevent="builder.edit(node)"&gt;&lt;/a&gt;
+
+    &lt;div class="yo-builder-nav-element uk-builder-element-hover"&gt;
+        &lt;ul class="uk-grid uk-grid-collapse"&gt;
+            &lt;li&gt;&lt;a :title="$trans('Copy')" class="yo-builder-icon-copy" uk-tooltip="delay: 1000" @click.prevent="builder.clone(node)"&gt;&lt;/a&gt;&lt;/li&gt;
+            &lt;!-- @trigger saveElement triggered when the save save button is clicked --&gt;
+            &lt;!-- @param {Node} node - the node to be saved --&gt;
+            &lt;li&gt;&lt;a :title="$trans('Save in library')" class="yo-builder-icon-save" uk-tooltip="delay: 1000" @click.prevent="$trigger('saveElement', node)"&gt;&lt;/a&gt;&lt;/li&gt;
+            &lt;li&gt;&lt;a :title="$trans('Delete')" class="yo-builder-icon-delete" uk-tooltip="delay: 1000" @click.prevent="builder.remove(node)"&gt;&lt;/a&gt;&lt;/li&gt;
+        &lt;/ul&gt;
+    &lt;/div&gt;
+
+    &lt;a :title="$trans('Add Element')" class="uk-icon-button yo-builder-button-element yo-builder-icon-add uk-builder-element-hover" uk-tooltip="delay: 1000; pos: right" @click.prevent="$parent.chooseAndAddEntity(index + 1)"&gt;&lt;/a&gt;
+
+&lt;/div&gt;</code></pre></div> <!----> <!----></div> <hr> <i>package: <span></span></i> <!----></div>

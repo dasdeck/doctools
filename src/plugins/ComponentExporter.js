@@ -115,7 +115,7 @@ class ComponentExporter extends Plugin {
 
         const CompDesc = this.getShallowContet(data, resource);
         const Comp = Vue.extend(CompDesc);
-        const vm = new Comp({propsData: {resource: resource.resource}});
+        const vm = new Comp({propsData: {moduleOverride: resource}});
         vm.$mount(appEl);
         const html = vm.toHtml();
 

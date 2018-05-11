@@ -29,8 +29,8 @@ MarkdownLoader.defaultOptions = {
 
     exclude: '',
 
-    match(file, desc) {
-        return util.match(this.config, file, desc, false);
+    match(file, data) {
+        return util.match(this.config, file, {data});
     },
 }
 

@@ -1,6 +1,9 @@
 <template>
+<div>
+    <nuxt-link to="/page">page</nuxt-link>
   <div v-html="html">
   </div>
+</div>
 </template>
 
 <script>
@@ -20,7 +23,7 @@ const Markdown = {
         ExampleRunner
     },
 
-    baseRenderer: new marked.Renderer(),
+    baseRenderer: marked.Renderer && new marked.Renderer(),
 
     extendRenderer: {},
 
@@ -29,7 +32,7 @@ const Markdown = {
         text: {
             type: String,
             default() {
-                return this.data.reademe;
+                return this.data.readme;
             }
         },
 
@@ -41,7 +44,8 @@ const Markdown = {
         const renderer = new marked.Renderer();
         renderer.code = (code, lang, escaped) => {
 
-            const [run, runnerName] = lang.split(':').map(el => el.trim());
+
+            const [run, runnerName] = lang && lang.split(':').map(el => el.trim()) || [];
             if (run === 'run' && runnerName && ExampleRunner.runners[runnerName]) {
 
                 const runner = ExampleRunner.runners[runnerName];

@@ -9,6 +9,7 @@ class DefaultLoader {
     }
 
     match(file, desc) {
+
         return this.config.match.bind(this)(file, desc);
     }
 
@@ -33,8 +34,8 @@ DefaultLoader.defaultOptions = {
 
     exclude: '',
 
-    match(file, desc) {
-        return util.match(this.config, file, desc, false);
+    match(file, data) {
+        return util.match(this.config, file, {data});
     },
 
     member: 'script',

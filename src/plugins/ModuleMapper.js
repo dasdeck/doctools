@@ -91,12 +91,13 @@ class ModuleMapper extends Plugin {
                         .filter(el => el.kind !== 'package');
 
         all.forEach(el => {
-            if(el.meta) {
-                delete el.meta.filename
-                delete el.meta.path
+            if (el.meta) {
+                delete el.meta.filename;
+                delete el.meta.path;
                 // delete el.meta.code
             }
         });
+
         // desc.log('mapping module', desc.name, !!all);
 
         const config = desc.config;
@@ -213,7 +214,7 @@ class ModuleMapper extends Plugin {
                _.forEach(assets, (file, name) => {
 
                     const assetsResource = files[file];
-                    if (assetsResource) {
+                    if (assetsResource && assetsResource !== resource.resource) {
 
                         const assetModule = resources[assetsResource];
                         assetModule.isAsset = true;
@@ -388,7 +389,7 @@ class ModuleMapper extends Plugin {
 
 ModuleMapper.defaultConfig = {
     getAssets(desc) {
-        return [{readme: desc.path + '.md'}];
+        return {readme: desc.path + '.md'};
     }
 }
 

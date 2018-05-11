@@ -1,10 +1,10 @@
 <template>
     <div>
         <ul class="uk-list">
-            <li v-for="entry in menu">
+            <li v-for="(entry, resource) in menu">
                 {{entry.label}}
-                <Menu v-if="entry.items && entry.items.length" :menu="entry.items"/>
-                <ModuleLink v-else-if="!entry.items" :resource="entry"/>
+                <Menu v-if="entry.items" :menu="entry.items"/>
+                <ModuleLink v-else-if="!entry.items" :resource="resource"/>
             </li>
         </ul>
     </div>
@@ -15,7 +15,7 @@ import ModuleLink from '../utils/ModuleLink.vue';
 
 const Menu = {
     props: {
-        menu: Array
+        menu: [Array, Object]
     }
 }
 
