@@ -1,14 +1,7 @@
-// const _ = require('lodash');
-// const uikitShim = require('../src/uikitShims');
 
-// uikitShim.registerGlobal();
-// uikitShim.install();
-// const runtime = require('./index.min');
-// uikitShim.clear();
-
-// runtime.UIkitComponent = {..._.mapValues(UIkit.components, comp => comp.options), ...UIkit.mixin};
 const _ = require('lodash');
 const DefaultLoader = require('../src/loaders/DefaultLoader');
+
 /* eslint-env node */
 module.exports = {
 
@@ -24,6 +17,7 @@ module.exports = {
             type: 'UIkitComponent',
             desc: {runtime: true}
         }),
+        'MarkdownLoader',
         'DefaultLoader',
         'VueLoader'
     ],

@@ -1,5 +1,4 @@
-const RuntimeAnalyzer = require('./plugins/RuntimeAnalyzer');
-const VueRunner = require('./runnner/VueRunner');
+// const RuntimeAnalyzer = require('./plugins/RuntimeAnalyzer');
 
 /**
  * @file
@@ -70,12 +69,12 @@ module.exports = {
      * extra mapping plugins
      */
     plugins: [
-        'RuntimeAnalyzer',
+        // 'RuntimeAnalyzer',
         'ModuleMapper',
         'UIkitComponentMapper',
         'VueComponentMapper',
         'ComponentLinker',
-        'ComponentExporter',
+        // 'ComponentExporter',
         // 'VuePressExporter',
     ],
 

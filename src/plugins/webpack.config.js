@@ -31,6 +31,7 @@ const externals = {
 };
 
 const output = {
+    libraryTarget: 'commonjs',
     path: __dirname,
     filename: '[name].min.js',
     publicPath: '/',
@@ -38,31 +39,22 @@ const output = {
     hotUpdateMainFilename: 'hot/[hash].hot-update.json'
 };
 
-const DevServer = require('../src/DevServer');
-
-const base = {
-
+const MarkdownAdapter = {
     context: __dirname,
 
-    entry: {
-        'index': './index.js'
-    },
-
-    output,
-
-    devServer: DevServer.webPackConfig,
-
     mode: 'development',
-
-    // devtool: 'inline-sourcemap',
 
     externals,
 
     module: {
         rules
+    },
+    output,
+    entry: {
+        'MarkdownAdapter': './MarkdownAdapter.js'
     }
-};
+
+}
 
 
-
-module.exports = base;
+module.exports = MarkdownAdapter;

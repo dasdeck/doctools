@@ -24,20 +24,6 @@ class ModuleMapper extends Plugin {
         return desc.type !== 'package' && desc.script || (desc.isRootPackage() && call === 'onLink');
     }
 
-    // onLoad(desc) {
-
-    //     if (typeof desc.readme === 'undefined') {
-
-    //         const readme = this.getReadmeFile(desc);
-    //         if (fs.existsSync(readme)) {
-    //             desc.watchAsset(readme, 'readme');
-    //         } else {
-    //             desc.readme = null;
-    //         }
-
-    //     }
-    // }
-
     onAnalyze(desc) {
 
         if (desc.jsdoc) {
@@ -67,7 +53,8 @@ class ModuleMapper extends Plugin {
     }
 
     onSerialize(desc, data) {
-        data.module = {global: desc.module.global};
+        // debugger;
+        data.module = _.pick(desc.module, ['global', 'description', 'type']);
     }
 
     onPrepare(desc) {
@@ -229,20 +216,6 @@ class ModuleMapper extends Plugin {
         }
         // debugger
     }
-
-
-
-    // getReadmeFile(desc) {
-    //     return this.config.getReadme && this.config.getReadme(desc) || desc.path + '.md';
-    // }
-
-    // getReadme(desc) {
-    //     const filename = this.getReadmeFile(desc);
-
-    //     const readme = fs.readFileSync(filename, 'utf8');
-
-    //     return readme;
-    // }
 
     addMemberTo(el, target) {
 

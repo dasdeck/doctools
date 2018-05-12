@@ -1,6 +1,9 @@
 <template>
     <div>
 
+        <p>
+            {{component.description}}
+        </p>
         <template v-if="component.components">
             <h2>components:</h2>
             <div v-for="comp in component.components">
@@ -95,7 +98,7 @@ import ModuleLink from "../utils/ModuleLink.vue";
 import Types from "../utils/Types.vue";
 import Base from './Base';
 
-import {size, filter, forEach, orderBy, mapValues} from "lodash";
+import {size, filter, forEach, orderBy, mapValues} from "lodash-es";
 
 export default {
 

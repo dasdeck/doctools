@@ -94,6 +94,20 @@
             return {$page: this};
         },
 
+        methods: {
+
+            toHtml() {
+
+                const toMD = this.$el.cloneNode(true);
+
+                const {$$, remove} = require('uikit').util;
+
+                UIkit.util.remove(UIkit.util.$$('.nomd', toMD));
+
+                return toMD.outerHTML;
+            }
+        },
+
         computed: {
 
             apiHasContent() {

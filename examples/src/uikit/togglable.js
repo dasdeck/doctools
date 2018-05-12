@@ -10,10 +10,14 @@
  */
 
 /**
+ * the greated component
  * @file
  * @type {UIkitComponent}
  */
 
+/**
+ * a great compnent
+ */
 export default {
 
     props: {
@@ -30,7 +34,7 @@ export default {
          */
         duration: Number,
         /**
-         *
+         * missing
          */
         origin: String,
         /**

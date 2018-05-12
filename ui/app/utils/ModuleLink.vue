@@ -7,7 +7,7 @@
 
 <script>
 
-import {isUndefined} from 'lodash-es';
+import {isUndefined, isString} from 'lodash-es';
 
 export default {
     props: {
@@ -18,6 +18,12 @@ export default {
     },
 
     inject: ['$doc'],
+
+    // created() {
+    //     if (!isString(this.resource)) {
+    //         debugger;
+    //     }
+    // },
 
     methods: {
         isUndefined

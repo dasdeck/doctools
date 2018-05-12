@@ -7,7 +7,7 @@ const _ = require('lodash');
 const Turndown = require('turndown');
 
 
-const markdownAdapterSource = '../../ui/MarkdownAdapter.min.js';
+const markdownAdapterSource = './MarkdownAdapter.min.js';
 
 
 const turndown = new Turndown({

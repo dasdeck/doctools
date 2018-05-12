@@ -1,5 +1,11 @@
 
-const babel = require('@babel/standalone');
+import babel from '@babel/standalone';
+
+import umdPlugin from 'babel-plugin-transform-es2015-modules-umd';
+import vueTemplateCompiler from 'vue-template-compiler';
+
+import Vue from 'vue' //hack for vuepress
+
 
 //fake weird bug in vuepress
 if (typeof process === 'undefined') {
@@ -7,12 +13,6 @@ if (typeof process === 'undefined') {
         platform: 'browser'
     }
 }
-
-const umdPlugin = require('babel-plugin-transform-es2015-modules-umd');
-const Vue = require('vue').default || require('vue'); //hack for vuepress
-Vue.config.productionTip = false;
-
-const vueTemplateCompiler = require('vue-template-compiler');
 
 class VueRunner {
 
@@ -78,4 +78,4 @@ class VueRunner {
 }
 
 
-module.exports = VueRunner;
+export default VueRunner;

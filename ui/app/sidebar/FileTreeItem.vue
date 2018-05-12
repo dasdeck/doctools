@@ -13,6 +13,8 @@
 <script>
 
 import ModuleLink from '../utils/ModuleLink.vue';
+import {size, pickBy} from 'lodash'
+
  const FileTreeItem = {
 
     props: {
@@ -32,10 +34,10 @@ import ModuleLink from '../utils/ModuleLink.vue';
     computed: {
 
         hasChilren() {
-            return _.size(this.children);
+            return size(this.children);
         },
         children() {
-            return _.pickBy(this.data, (val, key) => key !== '::');
+            return pickBy(this.data, (val, key) => key !== '::');
         },
 
         desc() {

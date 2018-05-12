@@ -12,12 +12,12 @@
                     <input type="text" v-model="settings.filter">
                 </label>
 
-                <ul v-if="_.size(data.config.menus) > 1" uk-switcher class="uk-subnav uk-subnav-pill">
+                <ul v-if="size(data.config.menus) > 1" uk-switcher class="uk-subnav uk-subnav-pill">
                     <li v-if="data.menu && data.config.menus.menu"><a href="">menu</a></li>
                     <li v-if="data.config.menus.packages"><a href="">packages</a></li>
                     <li v-if="data.config.menus.files"><a href="">files</a></li>
                 </ul>
-                <div :class="(_.size(data.config.menus) > 1) && 'uk-switcher'">
+                <div :class="size(data.config.menus) > 1 && 'uk-switcher'">
                     <Menu v-if="data.menu && data.config.menus.menu" :menu="data.menu"/>
                     <PackageTree v-if="data.config.menus.packages" :data="resources[data.rootPackage]"/>
                     <FileTree v-if="data.config.menus.files" :resources="resources"/>
@@ -39,6 +39,7 @@
     import FileTree from './sidebar/FileTree.vue';
     import Menu from './sidebar/Menu.vue';
     import DocBase from './DocBase.js';
+    import {size} from 'lodash'
 
     /**
      * Container Component for the doctools app ui
@@ -53,22 +54,7 @@
 
         extends: DocBase,
 
-        provide() {
-            return {
-                $doc: this
-            };
-        },
-
-
         ref: '$doc',
-
-        // watch:{
-        //     data(data) {
-        //         if(data && !this.selectedModule) {
-        //             // this.$router.push('/' + data.rootPackage);
-        //         }
-        //     }
-        // },
 
         computed: {
 
@@ -87,6 +73,10 @@
                 return this.resources[this.selectedModuleResource];
             }
 
+        },
+
+        methods: {
+            size
         }
 
 

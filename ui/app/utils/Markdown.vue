@@ -1,15 +1,13 @@
 <template>
-<div>
-    <nuxt-link to="/page">page</nuxt-link>
-  <div v-html="html">
-  </div>
+    <div>
+        <div v-html="html">
+    </div>
 </div>
 </template>
 
 <script>
 
-import marked from 'marked';
-import Prism from 'prismjs';
+import markdown from 'markdown-it';
 import {omit} from 'lodash-es';
 import Vue from 'vue';
 
@@ -22,8 +20,6 @@ const Markdown = {
     components: {
         ExampleRunner
     },
-
-    baseRenderer: marked.Renderer && new marked.Renderer(),
 
     extendRenderer: {},
 
@@ -41,39 +37,24 @@ const Markdown = {
     extends: ModuleComp,
 
     data() {
-        const renderer = new marked.Renderer();
-        renderer.code = (code, lang, escaped) => {
-
-
-            const [run, runnerName] = lang && lang.split(':').map(el => el.trim()) || [];
-            if (run === 'run' && runnerName && ExampleRunner.runners[runnerName]) {
-
-                const runner = ExampleRunner.runners[runnerName];
-
-                if (runner && runner.plain) {
-
-                    return runner.plain(code, this);
-
-                } else {
-
-                    const id = 'runner-' + this.module.resource.replace(/[^a-zA-Z0-1]*/g, '-') + '-' + (this.runners.length + 1);
-                    this.runners.push({
-                        id,
-                        lang,
-                        code,
-                        escaped,
-                        name: this.module.name,
-                        resource: this.module.resource
-                    });
-
-                    return `<div id="${id}"></div>`;
-
-                  }
-            } else {
-
-                return this.renderCode(code, lang, escaped);
+        const renderer = new markdown({
+            highlight:(code, lang) => {
+                return this.renderCode(code, lang);
             }
-        };
+        });
+
+        const fence = renderer.renderer.rules['fence'];
+        const component = this;
+        renderer.renderer.rules['fence'] = function(tokens, idx) {
+            const token = tokens[idx];
+            if(token.info.includes(':')) {
+                return component.addRunner(token.content, token.info.split(':').map(e => e.trim()));
+            } else {
+                return fence.apply(this, arguments);
+            }
+
+        }
+
 
         Object.assign(renderer, omit(Markdown.extendRenderer, ['code']));
 
@@ -82,6 +63,8 @@ const Markdown = {
             runners: []
         };
     },
+
+
 
     mounted() {
         this.updateExampleRunners();
@@ -99,6 +82,35 @@ const Markdown = {
     },
 
     methods: {
+        addRunner(code, [lang, runnerName]) {
+
+            if (ExampleRunner.runners[runnerName]) {
+
+                const runner = ExampleRunner.runners[runnerName];
+
+                if (runner && runner.plain) {
+
+                    return runner.plain(code, this);
+
+                } else {
+
+                    const id = 'runner-' + this.module.resource.replace(/[^a-zA-Z0-1]*/g, '-') + '-' + (this.runners.length + 1);
+
+                    this.runners.push({
+                        id,
+                        lang,
+                        code,
+                        name: this.module.name,
+                        resource: this.module.resource
+                    });
+
+                    return `<div id="${id}"></div>`;
+
+                }
+            } else {
+                return this.renderCode(code, lang);
+            }
+        },
 
         clearRunners() {
             this.runners.forEach(runner => {
@@ -142,18 +154,21 @@ const Markdown = {
             });
         },
 
-        renderCode(code, lang, escaped) {
-                if (Markdown.extendRenderer.code) {
-                    return Markdown.extendRenderer.code(code, lang, escaped);
-                } else if (Prism.languages[lang]) {
-                    return `<pre><code class="language-${lang}">${Prism.highlight(code, Prism.languages[lang], lang)}</code></pre>`;
-                } else {
-                    return Markdown.baseRenderer.code(code, lang, escaped);;
-                }
+        renderCode(code, lang) {
+
+                return this.$doc.highlight(code, lang);
+
+                // if (Markdown.extendRenderer.code) {
+                //     return Markdown.extendRenderer.code(code, lang);
+                // } else if (Prism.languages[lang]) {
+                //     return `<pre><code class="language-${lang}">${Prism.highlight(code, Prism.languages[lang], lang)}</code></pre>`;
+                // } else {
+                //     return Markdown.baseRenderer.code(code, lang);
+                // }
         },
 
         markdown(code) {
-            return marked(code, {renderer: this.renderer})
+            return this.renderer.render(code)
         }
     },
 

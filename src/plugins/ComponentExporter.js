@@ -3,9 +3,10 @@ const Package = require('../Package');
 const path = require('path');
 const fs = require('fs');
 const _ = require('lodash');
+const pretty = require('pretty');
+const {DocPage, DocBase} = require('./MarkdownAdapter.min.js');
 
-
-const markdownAdapterSource = '../../ui/MarkdownAdapter.min.js';
+// const markdownAdapterSource = './MarkdownAdapter.min.js';
 
 
 /**
@@ -20,55 +21,36 @@ class ComponentExporter extends Plugin {
       _.defaults(this.config, ComponentExporter.defaultConfig);
     }
 
-    getShallowContet(data, resource) {
-
-      const {DocPage} = require(markdownAdapterSource);
-
-      const $doc = {
-          selectedModule:  resource,
-          ...data,
-          data,
-          settings: {
-            private: true,
-            filter: ''
-          }
-      }
+    // getShallowContet(data, resource) {
 
 
+    //   const $doc = {
+    //       selectedModule:  resource,
+    //       ...data,
+    //       data,
+    //       settings: {
+    //         private: true,
+    //         filter: ''
+    //       }
+    //   }
 
-      const comp = {
-          ...DocPage,
-          provide: {
-              $doc
-          },
-          computed: {
-              ...DocPage.computed,
-              '$doc'() {
-                  return $doc;
-              }
-          },
-          methods: {
+    //   const comp = {
+    //       ...DocPage,
+    //       provide: {
+    //           $doc
+    //       },
+    //       computed: {
+    //           ...DocPage.computed,
+    //           '$doc'() {
+    //               return $doc;
+    //           }
+    //       }
+    //   };
 
-            ...DocPage.methods,
+    //   delete comp.inject;
 
-            toHtml(){
-
-              const toMD = this.$el.cloneNode(true);
-
-              const {$$, remove} = require('uikit').util;
-//
-              remove($$('.nomd', toMD));
-
-              return toMD.outerHTML;
-            }
-          }
-      };
-
-      delete comp.inject;
-      delete comp.watch;
-
-      return comp;
-    };
+    //   return comp;
+    // };
 
     renderHTML(pack, data) {
       pack.log('exporting HTML...')
@@ -76,10 +58,17 @@ class ComponentExporter extends Plugin {
 
       document.body.innerHTML = `<div id="app"></div>`;
 
+
       const appEl = document.getElementById('app');
 
+
       const Vue = require('vue/dist/vue');
-      Vue.config.productionTip = false;
+
+      const Page = Vue.extend(DocPage);
+
+      const docBase = new Vue(DocBase);
+      docBase.data = data;
+
 
       Vue.component('RouterLink', {
         template: '<a :href="`${toClean}.html`"><slot/></a>',
@@ -106,18 +95,17 @@ class ComponentExporter extends Plugin {
 
       }
 
-      const res = pack.getResources();
-      _.forEach(res, resource => {
+      // const res = pack.getResources();
+      _.forEach(data.resources, resource => {
 
         if (this.config.cache && resource.html) {
           return;
         }
 
-        const CompDesc = this.getShallowContet(data, resource);
-        const Comp = Vue.extend(CompDesc);
-        const vm = new Comp({propsData: {moduleOverride: resource}});
+        // const CompDesc = this.getShallowContet(data, resource);
+        const vm = new Page({propsData: {moduleOverride: resource}, parent: docBase});
         vm.$mount(appEl);
-        const html = vm.toHtml();
+        const html = pretty(vm.toHtml());
 
         const changed = resource.html !== html;
 

@@ -227,12 +227,14 @@ class RuntimeAnalyzer extends Plugin {
         this.compiler = this.compiler || this.createCompiler(this.writeIndex());
 
         // ignored: '**/*'
+
+        this.firstBuild = true;
+
         if(this.config.watch) {
 
             if (this.watcher){
                 return;
             }
-            this.firstBuild = true;
             this.pack.log('watching package:', this.pack.name);
             this.watcher = this.compiler.watch({}, (...args) => this.onWebPack(...args));
         } else {

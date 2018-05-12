@@ -1,3 +1,5 @@
+import Prism from 'prismjs';
+
 export default {
 
     props: {
@@ -13,6 +15,21 @@ export default {
                 filter: ''
             }
 
+        }
+    },
+
+    provide() {
+        return {$doc: this}
+    },
+
+    methods: {
+        highlight(code, lang) {
+
+             if (Prism.languages[lang]) {
+                return `<pre><code class="language-${lang}">${Prism.highlight(code, Prism.languages[lang], lang)}</code></pre>`;
+            }
+
+            return code;
         }
     },
 

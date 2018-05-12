@@ -139,13 +139,16 @@ module.exports = class ComponentMapper extends Plugin {
 
         });
 
-        entries.forEach(el => {
-            if (el.longname === base) {
-                data.description = el.description;
-            }
-        });
-
         desc.component = _.pickBy(component, type => _.size(type));
+        desc.component.description = desc.module.global[base] && desc.module.global[base].description;
+
+        // debugger;
+        // entries.forEach(el => {
+        //     if (el.longname === base) {
+        //         data.description = el.description;
+        //     }
+        // });
+
     }
 
 };
