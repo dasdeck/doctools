@@ -40,7 +40,7 @@
 
 <script>
 
-import '../uikit-node';
+import 'uikit-ssr';
 import copyToCB from 'copy-text-to-clipboard';
 
 const langMap = {

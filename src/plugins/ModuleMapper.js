@@ -21,7 +21,7 @@ class ModuleMapper extends Plugin {
      * @returns {Boolean}
      */
     matchesType(desc, call) {
-        return desc.type !== 'package' && desc.script || (desc.isRootPackage() && call === 'onLink');
+        return desc.type !== 'package' && desc.script;
     }
 
     onAnalyze(desc) {
@@ -183,38 +183,6 @@ class ModuleMapper extends Plugin {
 
         res.global = this.filterDocumented(res.global);
 
-    }
-
-    onLink(desc) {
-        if (this.config.getAssets) {
-
-            // const module = data.files
-            const resources = desc.getResources();
-
-            const files = _.reduce(resources, (res, mod) =>  {
-                res[mod.path] = mod.resource;
-                return res;
-            }, {})
-
-            _.forEach(resources, resource => {
-               const assets = this.config.getAssets(resource);
-               _.forEach(assets, (file, name) => {
-
-                    const assetsResource = files[file];
-                    if (assetsResource && assetsResource !== resource.resource) {
-
-                        const assetModule = resources[assetsResource];
-                        assetModule.isAsset = true;
-
-                        resource.assets = resource.assets || {};
-                        resource.assets[name] = assetsResource;
-
-                   }
-
-               })
-            });
-        }
-        // debugger
     }
 
     addMemberTo(el, target) {
