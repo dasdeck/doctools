@@ -1,0 +1,6 @@
+{
+    "name": "uikit-ssr",
+    "version": "1.0.0",
+    "browser": "browser.js",
+    "main": "node.js"
+}

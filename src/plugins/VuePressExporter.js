@@ -30,7 +30,7 @@ class VuePressExporter extends Plugin {
     }
 
     matchesType(desc) {
-        return desc.type === 'package' && desc.isRootPackage();
+        return desc.isRootPackage();
     }
 
     onPrepare(desc) {

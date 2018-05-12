@@ -19,12 +19,6 @@ class Module extends TreeItem {
 
     load() {
 
-        // this.watchAsset(this.path, watcher => {
-
-        //     this.patch();
-
-        // }, false);
-
         super.load();
     }
 

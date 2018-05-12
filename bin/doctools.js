@@ -16,7 +16,6 @@ const minimistConf = {
     alias: {
         config: ['c', '--config'],
         server: ['serv', '--server'],
-        search: ['s', '--search'],
         dev: ['d', '--dev'],
         explain: ['e', '--explain']
     }
@@ -29,7 +28,6 @@ if (process.mainModule.filename === __filename) {
 
     config.base = argv._[0];
      //set base default early, for webpack dev server
-    config.search = argv.search;
     config.dev = argv.dev;
     config.config = argv.config;
     config.server = argv.server;

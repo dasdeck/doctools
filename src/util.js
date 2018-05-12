@@ -69,9 +69,7 @@ module.exports = {
 
         const tables = {};
 
-
         const options = {0: []};
-
 
         const rootParams = params.filter(param => !~param.name.indexOf('.'));
 
@@ -184,7 +182,6 @@ module.exports = {
     crudeImport(script) {
         return eval(script.replace(/import/g, '//import').replace('export default', 'global.res = '));
     },
-
 
     /**
      * helper funciton to find property defaults, required and type

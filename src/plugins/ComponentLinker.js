@@ -12,9 +12,7 @@ module.exports = class ComponentLinker extends Plugin {
      * @returns {Boolean}
      */
     matchesType(desc) {
-        const isPackage = desc.type === 'package' || desc instanceof Package;
-        const matches = isPackage && desc.isRootPackage();
-        return matches;
+        return desc.isRootPackage();
 
     }
 
@@ -56,13 +54,10 @@ module.exports = class ComponentLinker extends Plugin {
                         comp[name] = _.map(runtime[name], (mixin, index) => {
                             return this.getLink(mixin, 'could not link/find  mixin ' + index + ' for: ' + desc.path);
                         });
-                        // debugger;
                     }
 
                 });
 
-
-                // debugger;
                 //merge inherited props, methods, computeds  to component
                 ['props', 'methods', 'computed'].forEach(type => {
 

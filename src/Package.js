@@ -167,7 +167,6 @@ module.exports = class Package extends TreeItem {
     }
 
 
-
     doRecursivelySync(method, ...args) {
         _.forEach(this.packages, pack => pack[method](...args));
         this.getPackageModules().forEach(mod => mod[method](...args));
@@ -194,9 +193,7 @@ module.exports = class Package extends TreeItem {
         .then(() => this.execPluginCallback('onMap'))
         .catch(err => {throw err});
 
-
     }
-
 
 
     addFileToPackage(file, loader) {
@@ -257,7 +254,6 @@ module.exports = class Package extends TreeItem {
             packageJson: this.packageJson,
             package: this.package && this.package.resource,
             packages: _.mapValues(this.packages, pack => pack.resource),
-            // types,
             resources: _.pickBy(_.mapValues(this.resources, resource => resource.resource), res => !res.ignore),
             parent: this.parent && this.parent.resource
         };
@@ -325,8 +321,6 @@ module.exports = class Package extends TreeItem {
         }, {});
 
     }
-
-
 
     get() {
 

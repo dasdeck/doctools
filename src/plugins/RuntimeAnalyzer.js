@@ -97,8 +97,7 @@ class RuntimeAnalyzer extends Plugin {
      * @returns {Boolean}
      */
     matchesType(desc) {
-        const isPackage = desc.type === 'package' || desc instanceof Package;
-        return isPackage && desc.isRootPackage();
+        return desc.isRootPackage();
 
     }
 
@@ -112,9 +111,9 @@ class RuntimeAnalyzer extends Plugin {
     analyzeRuntime(desc) {
         const {config} = desc;
 
-        if (_.isPlainObject(config.runtime)) {
+        if (_.isPlainObject(this.config.runtime)) {
 
-            const runtime = _.get(config.runtime, `${desc.type}.${desc.name}`) || _.get(config.runtime, desc.name);
+            const runtime = _.get(this.config.runtime, `${desc.type}.${desc.name}`) || _.get(this.config.runtime, desc.name);
             return Promise.resolve(runtime || {});
 
         } else {
@@ -136,7 +135,7 @@ class RuntimeAnalyzer extends Plugin {
             entry[name] = name;
         });
 
-        const p = this.pack.config.runtime === true ? path.join(this.pack.config.base, 'webpack.config.js') : this.pack.config.runtime;
+        const p = this.config.runtime === true ? path.join(this.pack.config.base, 'webpack.config.js') : this.config.runtime;
         try {
             const runtime = require(p);
             const origConf = _.isArray(runtime) ? runtime[0] : (_.isFunction(runtime) ? runtime({}) : runtime);
@@ -335,6 +334,14 @@ class RuntimeAnalyzer extends Plugin {
 }
 
 RuntimeAnalyzer.defaultOptions = {
+
+    /**
+     * provide a hash for the doctools to introspect on the actual code
+     * or a path to a webpack config to build modules on the fly
+     * if set to true, doctools will attempt to autoload your webpack config
+     * @type {Object|String|Boolean}
+     */
+    runtime: true,
     watch: true,
     output: false,
     libraryTarget: 'umd',

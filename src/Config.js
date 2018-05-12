@@ -30,13 +30,6 @@ module.exports = {
      */
     inferParameterDefaults: true,
 
-    /**
-     * provide a hash for the doctools to introspect on the actual code
-     * or a path to a webpack config to build modules on the fly
-     * if set to true, doctools will attempt to autoload your webpack config
-     * @type {Object|String|Boolean}
-     */
-    runtime: true,
 
     /**
      * weather to watch and patch the documentation on changes (much faster then complete rebuilds)
@@ -100,11 +93,6 @@ module.exports = {
      */
     subPackages: true,
 
-        /**
-     * a glob to search for files to be included
-     * @type {GlobString}
-     */
-    search: 'src/**/*.+(js|vue)',
 
     getResourceName(desc) {
         return desc.fileInPackage.substr(1).replace(/\//g, '.').substr(1) || desc.name;
