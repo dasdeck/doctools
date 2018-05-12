@@ -4,6 +4,7 @@
         <p>
             {{component.description}}
         </p>
+
         <template v-if="component.components">
             <h2>components:</h2>
             <div v-for="comp in component.components">
@@ -86,8 +87,8 @@
                 <h3>{{trigger.name}}</h3>
                 {{trigger.description}}
             </div>
-
         </template>
+
     </div>
 </template>
 
