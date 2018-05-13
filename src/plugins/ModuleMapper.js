@@ -14,51 +14,43 @@ class ModuleMapper extends Plugin {
         this.watchers = [];
     }
 
-    /**
-     *
-     * @param {Object} desc
-     * @returns {Boolean}
-     */
-    matchesType(desc, call) {
-        return desc.type !== 'package' && desc.script;
-    }
 
-    onAnalyze(desc) {
+    onAnalyze(app) {
 
-        if (desc.jsdoc) {
-            return Promise.resolve();
-        } else {
+        return Promise.all(_.map(app.resources, desc => {
 
-            if (desc.script) {
-
-                return jsdoc.explain({source: desc.script}).then(jsdoc => {
-                    desc.jsdoc = jsdoc;
-                    desc.log('jsdoc parsed:', desc.name, !!jsdoc);
-                }).catch(e => {
-                    debugger;
-                    desc.log('error while jsdoc:', desc.path);
-                });
+            if (desc.jsdoc) {
+                return Promise.resolve();
             } else {
-                debugger
-                //should have a script
-                return Promise.rejects('no script loaded.');
+
+                if (desc.script) {
+
+                    return jsdoc.explain({source: desc.script}).then(jsdoc => {
+                        desc.jsdoc = jsdoc;
+                        app.log('jsdoc parsed:', desc.name, !!jsdoc);
+                    }).catch(e => {
+                        debugger;
+                        app.log('error while jsdoc:', desc.path);
+                    });
+
+                }
             }
-        }
+        }));
     }
 
     onDispose() {
+
         this.watchers.forEach(watcher => watcher.close());
         this.watchers = [];
+
     }
 
     onSerialize(desc, data) {
-        // debugger;
+
         data.module = _.pick(desc.module, ['global', 'description', 'type']);
+
     }
 
-    onPrepare(desc) {
-        desc.package.types = {};
-    }
 
     onPatch(desc) {
         desc.log('jsdoc cleared', desc.name, !!desc.jsdoc);
@@ -66,12 +58,20 @@ class ModuleMapper extends Plugin {
         delete desc.module;
     }
 
+
+    onMap(app) {
+        _.forEach(app.resources, res => {
+            if(res.jsdoc) {
+                this.onMapModule(res);
+            }
+        });
+    }
         /**
      * maps the jsdoc list to a sorted structure
      * @param {*} all
      * @param {*} config
      */
-    onMap(desc) {
+    onMapModule(desc) {
 
         const all = _.cloneDeep(desc.jsdoc)
                         .filter(el => el.kind !== 'package');
@@ -87,7 +87,7 @@ class ModuleMapper extends Plugin {
         // desc.log('mapping module', desc.name, !!all);
 
         const config = desc.config;
-        const res =  desc.module = {all, global: {}};
+        const res =  desc.module = {all, global: {}, types: {}};
 
         if (!all) debugger;
 
@@ -147,16 +147,16 @@ class ModuleMapper extends Plugin {
 
             if (el.kind === 'typedef') {
 
-                const pack = desc.package;
+                // const pack = desc.package;
 
                 const name = el.type && el.type.names[0] || el.longname;
 
-                if (pack.types[name]) {
+                if (res.types[name]) {
                     desc.log('type already defined in package:', name);
                 } else {
 
                     desc.log('found type:', name);
-                    pack.types[name] = desc.resource;
+                    res.types[name] = desc.resource;
 
                 }
 

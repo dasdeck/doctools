@@ -3,7 +3,7 @@ const fs = require('fs');
 const util = require('../util');
 const path = require('path');
 const Loader = require('../Loader');
-const Package = require('../Package');
+// const Package = require('../Package');
 
 class PackageLoader extends Loader {
 
@@ -12,15 +12,17 @@ class PackageLoader extends Loader {
         return path.basename(file) === 'package.json';
     }
 
-    getPackageFile(dir) {
-        return path.resolve(path.join(dir, 'package.json'));
-    }
+    // getPackageFile(dir) {
+    //     return path.resolve(path.join(dir, 'package.json'));
+    // }
 
     load(file, desc) {
 
         const app = desc.app;
 
-        desc.watchAsset(this.getPackageFile(file), 'packageJson');
+        desc.watchAsset(file, (watcher, module) => {
+            module.packageJson = JSON.parse(fs.readFileSync(file));
+        });
         // desc.watchAsset(path.join(file, 'READEME.md'), 'readme');
 //
         // app.scanDirectory(file, desc);

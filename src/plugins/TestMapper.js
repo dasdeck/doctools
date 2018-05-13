@@ -15,11 +15,6 @@ const Plugin = require('../Plugin');
 
 module.exports = class TestMapper extends Plugin {
 
-    onSerialize(desc, data) {
-    }
-
-    onMap(desc) {
-    }
 
 };
 

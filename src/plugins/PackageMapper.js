@@ -3,6 +3,7 @@ const jsdoc = require('jsdoc-api');
 const Plugin = require('../Plugin');
 const util = require('../util');
 const fs = require('fs');
+const path = require('path');
 
 class PackageMapper extends Plugin {
 
@@ -11,27 +12,13 @@ class PackageMapper extends Plugin {
         this.config = config;
     }
 
-    /**
-     *
-     * @param {Object} desc
-     * @returns {Boolean}
-     */
-    matchesType(desc, call) {
-        return desc.type === 'package';
-    }
-
-    onAnalyze(desc) {
-
-    }
-
     onDispose() {
     }
 
     onSerialize(desc, data) {
-        data.module = _.pick(desc.module, ['global', 'description', 'type']);
-    }
-
-    onPrepare(desc) {
+        if (desc.type === 'package') {
+            data.module = _.pick(desc.module, ['global', 'description', 'type']);
+        }
     }
 
     onPatch(desc) {
@@ -43,14 +30,31 @@ class PackageMapper extends Plugin {
      * @param {*} all
      * @param {*} config
      */
-    onMap(desc) {
+    onMap(app) {
 
-        debugger;
+        const packages = _.sortBy(_.filter(app.resources, res => res.type === 'package'), desc => -desc.path.length);
+        // const resources = _.filter(desc.app.resources, res => res.type !== 'package'));
 
-        const packages = _.sortBy(_.filter(desc.app.resource, res => res.type === 'package'), desc => -desc.path.length);
+        _.forEach(app.resources, res => {
 
-        const dir = path.dirname(desc.path);
-        desc.packages =  &&  res.path.includes(dir));
+            _.some(packages, pack => {
+
+                const packDir = path.dirname(pack.path);
+
+                if(pack !== res && _.startsWith(res.path, packDir)) {
+                    res.package = pack.resource;
+                    if (res.type === 'package') {
+                        pack.packages = pack.packages || {};
+                        pack.packages[res.resource] = res.resource;
+                    } else {
+                        pack.resources = pack.resources || {};
+                        pack.resources[res.resource] = res.resource;
+                    }
+                }
+            })
+
+        })
+
     }
 
 };

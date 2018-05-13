@@ -41,6 +41,7 @@ function loadPlugins(config) {
         return plugin;
     });
 
+    forcePlugin('PackageMapper', config._.plugins, 'plugins');
     forcePlugin('ModuleMapper', config._.plugins, 'plugins');
 
 
@@ -60,6 +61,8 @@ function loadPlugins(config) {
 
     forcePlugin('PackageLoader', config._.loaders, 'loaders');
     forcePlugin('DefaultLoader', config._.loaders, 'loaders');
+
+
 
 }
 
@@ -148,6 +151,7 @@ module.exports = {
 
        app.parse(config);
 
+       return app;
 
         // if (fs.lstatSync(config.base).isDirectory()) {
 

@@ -82,26 +82,20 @@ module.exports = class ComponentMapper extends Plugin {
         // delete data.runtime;
     }
 
-    onMap(desc) {
-        this.mapComponent(desc);
+    onMap(app) {
 
-    }
+        _.forEach(app.resource, res => {
+            if(res.module) {
+                this.mapComponent(res);
+            }
+        })
 
-    matchesType(desc) {
-        return desc.type !== 'package' && desc.script;
     }
 
     mapComponent(desc) {
         const data = desc.module;
 
-        // desc.log('mapping component', desc.name);
-
-        if (!desc.module) {
-            throw 'can not use Component mapper without the Module Mapper first';
-        }
-
         const component = {};
-        if (!data) debugger;
 
         const entries = data.all.filter(el => !el.undocumented);
         const runtime = desc.runtime;
@@ -142,12 +136,6 @@ module.exports = class ComponentMapper extends Plugin {
         desc.component = _.pickBy(component, type => _.size(type));
         desc.component.description = desc.module.global[base] && desc.module.global[base].description;
 
-        // debugger;
-        // entries.forEach(el => {
-        //     if (el.longname === base) {
-        //         data.description = el.description;
-        //     }
-        // });
 
     }
 

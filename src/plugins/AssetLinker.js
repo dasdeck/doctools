@@ -9,21 +9,12 @@ class ModuleMapper extends Plugin {
         this.config = config;
     }
 
-    /**
-     *
-     * @param {Object} desc
-     * @returns {Boolean}
-     */
-    matchesType(desc, call) {
-        return desc.isRootPackage();
-    }
 
-
-    onLink(desc) {
+    onLink(app) {
         if (this.config.getAssets) {
 
             // const module = data.files
-            const resources = desc.getResources();
+            const resources = app.resources;
 
             const files = _.reduce(resources, (res, mod) =>  {
                 res[mod.path] = mod.resource;

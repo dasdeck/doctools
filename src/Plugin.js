@@ -22,25 +22,29 @@ module.exports = class Plugin extends EventEmitter {
      *
      * @param {Object} desc
      */
-    onLoad(desc) {}
+    onLoad(app) {}
 
-    onPrepare(desc) {}
 
-    onAnalyze(desc) {}
+    onPrepare(app) {}
+
+    onAnalyze(app) {}
 
     /**
      *
      * @param {Object} desc
      */
-    onMap(desc) {}
+    onMap(app) {}
 
+    //single module!
     onPatch(desc) {}
 
+    //single module
     onSerialize(desc) {}
 
-    onGet(data) {}
+    //app
+    onGet(app) {}
 
-    onWrite(data) {}
+    onWrite(app) {}
 
     onDispose() {}
 

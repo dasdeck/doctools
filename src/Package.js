@@ -128,9 +128,7 @@ module.exports = class Package extends TreeItem {
     }
 
 
-    getResourceByFile(file) {
-        return _.find(this.getResources(), res => res.path === file);
-    }
+
 
 
     /**

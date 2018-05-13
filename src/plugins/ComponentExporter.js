@@ -21,46 +21,14 @@ class ComponentExporter extends Plugin {
       _.defaults(this.config, ComponentExporter.defaultConfig);
     }
 
-    // getShallowContet(data, resource) {
 
-
-    //   const $doc = {
-    //       selectedModule:  resource,
-    //       ...data,
-    //       data,
-    //       settings: {
-    //         private: true,
-    //         filter: ''
-    //       }
-    //   }
-
-    //   const comp = {
-    //       ...DocPage,
-    //       provide: {
-    //           $doc
-    //       },
-    //       computed: {
-    //           ...DocPage.computed,
-    //           '$doc'() {
-    //               return $doc;
-    //           }
-    //       }
-    //   };
-
-    //   delete comp.inject;
-
-    //   return comp;
-    // };
-
-    renderHTML(pack, data) {
-      pack.log('exporting HTML...')
+    renderHTML(app, data) {
+      // app.log('exporting HTML...')
       const clear = require('jsdom-global')();
 
       document.body.innerHTML = `<div id="app"></div>`;
 
-
       const appEl = document.getElementById('app');
-
 
       const Vue = require('vue/dist/vue');
 
@@ -68,7 +36,6 @@ class ComponentExporter extends Plugin {
 
       const docBase = new Vue(DocBase);
       docBase.data = data;
-
 
       Vue.component('RouterLink', {
         template: '<a :href="`${toClean}.html`"><slot/></a>',
@@ -95,14 +62,12 @@ class ComponentExporter extends Plugin {
 
       }
 
-      // const res = pack.getResources();
       _.forEach(data.resources, resource => {
 
         if (this.config.cache && resource.html) {
           return;
         }
 
-        // const CompDesc = this.getShallowContet(data, resource);
         const vm = new Page({propsData: {moduleOverride: resource}, parent: docBase});
         vm.$mount(appEl);
         const html = pretty(vm.toHtml());
@@ -122,19 +87,20 @@ class ComponentExporter extends Plugin {
 
       });
 
-      pack.log('exporting HTML...done!')
+      // pack.log('exporting HTML...done!')
     }
+
     /**
      * helper function to load the runtime for a component or module
      * @param {*} config
      * @param {*} desc
      */
-    onWrite(pack, data) {
+    onWrite(app, data) {
 
       if (this.config.async) {
-            setTimeout(res => this.renderHTML(pack, data), 100);
+            setTimeout(res => this.renderHTML(app, data), 100);
       } else {
-          this.renderHTML(pack, data);
+          this.renderHTML(app, data);
       }
 
     }

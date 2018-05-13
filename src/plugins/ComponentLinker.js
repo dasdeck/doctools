@@ -6,27 +6,13 @@ const Package = require('../Package');
 module.exports = class ComponentLinker extends Plugin {
 
 
-    /**
-     *
-     * @param {Object} desc
-     * @returns {Boolean}
-     */
-    matchesType(desc) {
-        return desc.isRootPackage();
-
-    }
-
-    onLoad(pack) {
-        this.pack = pack;
-    }
-
        /**
      *
      * @param {*} desc
      */
-    onLink(pack) {
+    onLink(app) {
 
-        const resources = _.keyBy(pack.getAllModules(), 'resource');
+        const resources = app.resources;// _.keyBy(app.getAllModules(), 'resource');
 
         _.forEach(resources, desc => {
 
@@ -112,17 +98,14 @@ module.exports = class ComponentLinker extends Plugin {
             desc.component = _.pickBy(comp, type => _.size(type));
 
         });
+    }
     // this.linked = true;
-}
-
-
 
     getLink(runtime, warning = null) {
 
         if (runtime !== undefined) {
 
-            const resources = _.keyBy(this.pack.getAllModules(), 'resource');
-            const res = _.find(resources, res => res.runtime === runtime);
+            const res = _.find(this.app.resources, res => res.runtime === runtime);
 
             if(res && res.runtime !== runtime) {
                 debugger
@@ -135,6 +118,5 @@ module.exports = class ComponentLinker extends Plugin {
             return {resource: res && res.resource};
         }
     }
-
 
 }

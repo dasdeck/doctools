@@ -71,15 +71,15 @@ if (argv.explain) {
 
 } else {
 
-    const pack = parser.parse(config);
+    const app = parser.parse(config);
 
-    pack.on('change', res => {
+    app.on('change', res => {
         console.log('package changed, updating...')
-        pack.analyze().then(() => {
-            const data = pack.write().then(res => console.log('package updated!'));
+        app.analyze().then(() => {
+            const data = app.write().then(res => console.log('package updated!'));
         });
     });
-    pack.emit('change');
+    app.emit('change');
 
 }
 

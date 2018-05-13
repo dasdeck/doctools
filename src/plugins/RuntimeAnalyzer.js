@@ -26,26 +26,35 @@ class RuntimeAnalyzer extends Plugin {
 
         this.indexFile = tempfile('.js');
 
+
+
+
+
     }
 
     /**
      *assozciate the package to build and watch
      * @param {Object} desc
      */
-    onLoad(pack) {
-
-        this.pack = pack;
-
-        this.config.watch = this.config.watch && this.pack.config.watch;
+    onLoad() {
 
         this.outputFileSystem = new MemFs;
 
         this.on('change', () => {
-            pack.getRootPackage().emit('change');
-
+            this.app.emit('change');
         });
 
+        this.config.watch = this.config.watch && this.app.config.watch;
 
+    }
+
+    onPrepare(app) {
+        //deregister all local watcher in favor of webpack's watcher
+        if (this.config.watch) {
+            this.getRuntimeModules().forEach(module => {
+                module.unwatchAsset(module.path);
+            });
+        }
     }
 
     /**
@@ -53,16 +62,7 @@ class RuntimeAnalyzer extends Plugin {
      * @param {*} config
      * @param {*} desc
      */
-    onAnalyze(pack) {
-
-        //deregister all local watcher in favor of webpack's watcher
-        if (this.config.watch) {
-            this.getRuntimeModules().forEach(module => {
-
-                module.unwatchAsset(module.path);
-
-            });
-        }
+    onAnalyze(app) {
 
         if (!this.script) {
             this.run();
@@ -91,18 +91,8 @@ class RuntimeAnalyzer extends Plugin {
         }
     }
 
-    /**
-     *
-     * @param {Object} desc
-     * @returns {Boolean}
-     */
-    matchesType(desc) {
-        return desc.isRootPackage();
-
-    }
-
     getRuntimeModules() {
-        return this.pack.getAllModules().filter(mod => mod.runtime);
+        return _.filter(this.app.resources, mod => mod.runtime);
     }
 
     /**
@@ -135,7 +125,7 @@ class RuntimeAnalyzer extends Plugin {
             entry[name] = name;
         });
 
-        const p = this.config.runtime === true ? path.join(this.pack.config.base, 'webpack.config.js') : this.config.runtime;
+        const p = this.config.runtime === true ? path.join(this.app.config.base, 'webpack.config.js') : this.config.runtime;
         try {
             const runtime = require(p);
             const origConf = _.isArray(runtime) ? runtime[0] : (_.isFunction(runtime) ? runtime({}) : runtime);
@@ -175,7 +165,7 @@ class RuntimeAnalyzer extends Plugin {
 
     }
 
-    writeIndex(pack = this.pack) {
+    writeIndex(app = this.app) {
 
         const files = this.getRuntimeModules();//_.filter(, res => res.type !== 'package');
 
@@ -195,8 +185,8 @@ class RuntimeAnalyzer extends Plugin {
 
         const res = [imports, 'const exp = {};', assigns, 'export default exp;'].join('\n');
 
-        pack.log('writing index:');
-        pack.logFile('index.js', res);
+        app.log('writing index:');
+        app.logFile('index.js', res);
         fs.writeFileSync(this.indexFile, res);
 
         return this.indexFile;
@@ -234,32 +224,33 @@ class RuntimeAnalyzer extends Plugin {
             if (this.watcher){
                 return;
             }
-            this.pack.log('watching package:', this.pack.name);
+            this.app.log('watching package:', this.app.name);
             this.watcher = this.compiler.watch({}, (...args) => this.onWebPack(...args));
         } else {
 
             // TODO dont run if cache is valid ?
-            this.pack.log('building package:', this.pack.name);
+            this.app.log('building package:', this.app.name);
             this.compiler.run((...args) => this.onWebPack(...args));
         }
     }
 
     fileChanged(file) {
 
-        this.pack.log('webpack:', file);
+        this.app.log('webpack:', file);
 
-        if(this.pack.getResourceByFile(file)) {
+        //TODO
+        if(this.app.getResourceByFile(file)) {
             //if this runtime is used for analysis, inform the tree to reeanalyse
-            this.pack.patchFile(file);
+            this.app.patchFile(file);
         }
     }
 
     writeToDisk() {
-        const dir = this.pack.resolvePath(this.config.output);
+        const dir = this.app.resolvePath(this.config.output);
         mkpath.sync(dir);
         const file = path.join(dir, 'index.js');
         fs.writeFileSync(file, this.script);
-        this.pack.log(this.constructor.name, 'runtime written to:', file);
+        this.app.log(this.constructor.name, 'runtime written to:', file);
     }
 
     scriptChanged() {
@@ -285,8 +276,8 @@ class RuntimeAnalyzer extends Plugin {
 
         } catch(e) {
 
-            this.pack.log('could not load runtime');
-            this.pack.log(e);
+            this.app.log('could not load runtime');
+            this.app.log(e);
         }
     }
 
@@ -320,7 +311,7 @@ class RuntimeAnalyzer extends Plugin {
         }
 
 
-        this.pack.log(this.constructor.name, 'webpack built', triggerChange);
+        this.app.log(this.constructor.name, 'webpack built', triggerChange);
 
         this.emit('built');
 

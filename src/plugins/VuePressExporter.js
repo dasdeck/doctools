@@ -29,13 +29,14 @@ class VuePressExporter extends Plugin {
 
     }
 
-    matchesType(desc) {
-        return desc.isRootPackage();
+    onWrite(app, data) {
+        if (this.config.async) {
+            setTimeout(res => this.write(app, data), 100);
+        } else {
+            this.write(app, data);
+        }
     }
 
-    onPrepare(desc) {
-        for (const member in this.examples) delete this.examples[member];
-    }
 
     getResourcFileName(res) {
 
@@ -135,13 +136,6 @@ class VuePressExporter extends Plugin {
     }
 
 
-    onWrite(pack, data) {
-        if (this.config.async) {
-            setTimeout(res => this.write(pack, data), 100);
-        } else {
-            this.write(pack, data);
-        }
-    }
 
     /**
      * helper function to load the runtime for a component or module

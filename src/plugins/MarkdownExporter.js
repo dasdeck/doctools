@@ -43,8 +43,6 @@ class MarkdownExporter extends Plugin {
           }
       }
 
-
-
       const comp = {
           ...Content,
           provide: {

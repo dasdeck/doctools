@@ -22,7 +22,10 @@ module.exports = class TreeItem extends EventEmitter {
 
         this.package = parent;
 
-        this.path = file;
+        this.resources = {};
+
+        this.path = path.resolve(file);
+
         this.fileInPackage = this.path.replace(this.config.base, '.');
         if (this.fileInPackage === '.') {
             this.fileInPackage += '/';
@@ -42,13 +45,11 @@ module.exports = class TreeItem extends EventEmitter {
 
     load() {
 
-        this.resources = {};
 
         if (this.loader) {
             const desc = this.loader.load(this.path, this);
         }
 
-        this.execPluginCallback('onLoad', {}, true);
     }
 
     serialize() {
@@ -156,7 +157,7 @@ module.exports = class TreeItem extends EventEmitter {
         }
 
         const jobs = this.config._.plugins.map(plugin => {
-            return () => plugin.matchesType(this, name) && plugin[name] && plugin[name](this, data) || Promise.resolve();
+            return () => plugin[name] && plugin[name](this, data) || Promise.resolve();
         });
 
         if (sync) {
