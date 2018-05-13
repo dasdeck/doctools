@@ -49,7 +49,7 @@ import {size, pickBy} from 'lodash'
         },
 
         realName() {
-            return this.name.replace(/::/g, '.');
+            return this.name && this.name.replace(/::/g, '.');
         }
     }
 

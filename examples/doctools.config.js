@@ -7,7 +7,7 @@ module.exports = {
 
     watch: false,
 
-    include: [/src/, /packages/],
+    include: ['@(src|packages)/**/*', '@(package.json|README.md)'],
 
     runtime: __dirname + '/webpack.config.js',
 

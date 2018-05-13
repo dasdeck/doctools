@@ -6,18 +6,12 @@ const util = require('../util');
 module.exports = class VueComponentMapper extends ComponentMapper {
 
 
-    onMap(app) {
-        _.forEach(app.resources, res => {
-            if (res.type === 'VueComponent') {
-                this.onMapModule(res);
-            }
-
-        })
-    }
-
     onMapModule(desc) {
 
-        this.mapComponent(desc);
+        if(desc.type !== 'VueComponent') {
+            return;
+        }
+        super.onMapModule(desc);
 
         if (desc.template) {
             this.parseTemplate(desc);

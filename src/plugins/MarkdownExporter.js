@@ -101,7 +101,7 @@ class MarkdownExporter extends Plugin {
         props:['language']
       });
 
-      const dir = this.config.output && pack.resolvePath(this.config.output);
+      const dir = this.config.output && this.app.resolvePath(this.config.output);
       try {
         if (dir) {
           fs.mkdirSync(dir)

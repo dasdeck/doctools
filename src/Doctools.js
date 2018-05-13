@@ -1,13 +1,25 @@
 const util = require('./util');
 const _ = require('lodash');
 const glob = require('glob');
+const path = require('path');
+const fs = require('fs');
 const {EventEmitter} = require('events');
+const mkpath = require('mkpath');
+
 module.exports = class DocTools extends EventEmitter {
 
-    constructor() {
+    constructor(config) {
 
         super();
+        this.config = config;
+
+        this.config._.plugins.forEach(plugin => plugin.app = this);
+
+        this.execPluginCallback('onLoad', this, true);
+
         this.resources = {};
+
+        this.scanFile(this.config.base);
 
     }
 
@@ -19,30 +31,6 @@ module.exports = class DocTools extends EventEmitter {
 
         _.forEach(this.resources, res => res.dispose());
         this.execPluginCallback('onDispose', this);
-
-    }
-
-    parse(config = {}) {
-
-        this.config = config;
-
-        this.config._.plugins.forEach(plugin => plugin.app = this);
-
-        this.execPluginCallback('onLoad', {}, true);
-
-        // this.scanFile(this.config.base);
-        const contentFiles = `@(src|packages)/**/*.@(js|md|vue|json)`;
-        // const content = __dirname + `/../examples/@(package.json|${contentFiles})`
-        const content = __dirname + `/../examples/${contentFiles}`
-        // const pack = '/@()'
-
-        const files = [...glob.sync(content),  __dirname + `/../examples/package.json`];
-
-        // debugger;
-        files.forEach(file => {
-            this.loadFile(file);
-            // debugger
-        })
 
     }
 
@@ -77,7 +65,6 @@ module.exports = class DocTools extends EventEmitter {
         };
 
         this.execPluginCallback('onGet', this, data);
-        debugger;
 
         return data;
 
@@ -86,10 +73,38 @@ module.exports = class DocTools extends EventEmitter {
     write() {
 
         const data = this.get();
+
+        this.execPluginCallback('onWrite', this, data, true);
+
+        if (this.config.output) {
+
+            if (this.config.output.split === true) {
+
+                mkpath.sync(this.config.output.path);
+
+                const p = this.resolvePath(this.config.output.path);
+                // fs.writeFileSync(path.join(p, '_menu.json'), JSON.stringify(data.menu, null, 2));
+                fs.writeFileSync(path.join(p, '_index.json'), JSON.stringify(_.mapValues(data.resources, res => res.name), null, 2));
+
+                _.forEach(data.resources, module => {
+                    fs.writeFileSync(path.join(p, `${module.resource}.json`), JSON.stringify(module, null, 2));
+                });
+
+            } else {
+
+                const p = this.config.output.path || this.config.output;
+                fs.writeFileSync(this.resolvePath(p), JSON.stringify(data, null, 2));
+
+            }
+        }
+
         return Promise.resolve(data);
 
     }
 
+    resolvePath(dir) {
+        return path.isAbsolute(dir) ? dir : path.join(this.config.base, dir);
+    }
 
     execPluginCallback(name, module = this, data = null, sync = true) {
 
@@ -130,22 +145,21 @@ module.exports = class DocTools extends EventEmitter {
 
     scanFile(file) {
 
-        if (!util.match(this.config, file)) {
+        // debugger
+        if (!util.match(this.config, file, {matchBase: this.config.base})) {
             this.log('skipping file:', file);
             return;
         }
 
         this.log('seeking files in:', file);
 
-        const module = this.loadFile(file);
+        this.loadFile(file);
 
         if(fs.lstatSync(file).isDirectory()) {
 
             this.scanDirectory(file);
 
         }
-
-        return module;
 
     }
 

@@ -16,10 +16,15 @@ class PackageMapper extends Plugin {
     onSerialize(desc, data) {
         if (desc.type === 'package') {
 
-            data = _.pick(desc, ['global', 'description', 'type']);
+            _.assign(data, _.pick(desc, ['global', 'description', 'type', 'packages', 'resources']));
+
         }
     }
 
+    onGet(app, data) {
+        const packages = _.sortBy(_.filter(app.resources, res => res.type === 'package'), desc => desc.path.length);
+        data.rootPackage = _.first(packages).resource;
+    }
 
     /**
      * maps the jsdoc list to a sorted structure

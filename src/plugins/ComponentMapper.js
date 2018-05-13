@@ -84,15 +84,15 @@ module.exports = class ComponentMapper extends Plugin {
 
     onMap(app) {
 
-        _.forEach(app.resource, res => {
+        _.forEach(app.resources, res => {
             if(res.module) {
-                this.mapComponent(res);
+                this.onMapModule(res);
             }
         })
 
     }
 
-    mapComponent(desc) {
+    onMapModule(desc) {
         const data = desc.module;
 
         const component = {};

@@ -56,10 +56,19 @@ socket.onmessage = res => {
             }]);
 
             router.beforeEach((route, to, next) => {
+
                 const res = route.fullPath.substr(1);
+
                 window.$data && window.$data.resources[res] ?
+
                     next() : next(window.$data && window.$data.rootPackage)
+
             });
+
+            if (app.$route.path === '/' && data.rootPackage) {
+                router.push(`/${data.rootPackage}`);
+            }
+
         }
 
         app.data = data;

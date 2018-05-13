@@ -2,9 +2,9 @@ const _ = require('lodash');
 const path = require('path');
 const Plugin = require('../Plugin');
 
-class ModuleMapper extends Plugin {
+class AssetLinker extends Plugin {
 
-    constructor(config = ModuleMapper.defaultConfig) {
+    constructor(config = AssetLinker.defaultConfig) {
         super();
         this.config = config;
     }
@@ -44,7 +44,7 @@ class ModuleMapper extends Plugin {
 
 };
 
-ModuleMapper.defaultConfig = {
+AssetLinker.defaultConfig = {
     getAssets(desc) {
         switch(desc.type) {
             case 'package': {
@@ -60,4 +60,4 @@ ModuleMapper.defaultConfig = {
     }
 }
 
-module.exports = ModuleMapper;
+module.exports = AssetLinker;

@@ -108,8 +108,10 @@ module.exports = class TreeItem extends EventEmitter {
                 }
             };
 
-            watcher.watcher = chokidar.watch(file);
-            watcher.watcher.on('change', () => watcher.change());
+            if (this.app.config.watch) {
+                watcher.watcher = chokidar.watch(file);
+                watcher.watcher.on('change', () => watcher.change());
+            }
 
             if (init) {
                 watcher.change(false);
@@ -127,10 +129,7 @@ module.exports = class TreeItem extends EventEmitter {
         }
     }
 
-    resolvePath(dir) {
-        return path.isAbsolute(dir) ? dir : path.join(this.config.base, dir);
 
-    }
 
     dispose() {
         _.forEach(this._assets, asset => asset.close())
