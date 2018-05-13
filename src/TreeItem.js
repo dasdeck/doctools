@@ -102,7 +102,7 @@ module.exports = class TreeItem extends EventEmitter {
                         if (patch) {
                             module.patch();
                         }
-                        module.getRootPackage().emit('change');
+                        module.app.emit('change', module);
                     }
 
                 }
@@ -133,49 +133,8 @@ module.exports = class TreeItem extends EventEmitter {
     }
 
     dispose() {
-
         _.forEach(this._assets, asset => asset.close())
-        this.execPluginCallback('onDispose', {}, true);
     }
 
-    getRootPackage() {
-        if (this.package) {
-            return this.package.getRootPackage();
-        } else {
-            return this;
-        }
-    }
-
-    isRootPackage() {
-        return this === this.getRootPackage() && this.package === null;
-    }
-
-    execPluginCallback(name, data = null, sync = false) {
-
-        if (!this.config._) {
-            // debugger;
-        }
-
-        const jobs = this.config._.plugins.map(plugin => {
-            return () => plugin[name] && plugin[name](this, data) || Promise.resolve();
-        });
-
-        if (sync) {
-            jobs.forEach(job => {
-                job();
-            });
-        } else {
-            return jobs.reduce(function(p, fn) {
-                return p = p.then(fn);
-            }, Promise.resolve());
-
-        }
-
-        // return Promise.all(jobs);
-    }
-
-    analyze() {
-        throw 'implement';
-    }
 
 };

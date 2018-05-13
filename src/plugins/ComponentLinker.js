@@ -5,8 +5,7 @@ const Package = require('../Package');
 
 module.exports = class ComponentLinker extends Plugin {
 
-
-       /**
+    /**
      *
      * @param {*} desc
      */
@@ -99,7 +98,6 @@ module.exports = class ComponentLinker extends Plugin {
 
         });
     }
-    // this.linked = true;
 
     getLink(runtime, warning = null) {
 

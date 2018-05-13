@@ -22,6 +22,7 @@ class PackageLoader extends Loader {
 
         desc.watchAsset(file, (watcher, module) => {
             module.packageJson = JSON.parse(fs.readFileSync(file));
+            module.name = module.packageJson.name;
         });
         // desc.watchAsset(path.join(file, 'READEME.md'), 'readme');
 //

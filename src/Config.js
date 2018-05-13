@@ -62,11 +62,12 @@ module.exports = {
      * extra mapping plugins
      */
     plugins: [
-        'RuntimeAnalyzer',
+        // 'RuntimeAnalyzer',
         'ModuleMapper',
         'UIkitComponentMapper',
         'VueComponentMapper',
         'ComponentLinker',
+        'TypeMapper'
 
         // 'ComponentExporter',
         // 'VuePressExporter',

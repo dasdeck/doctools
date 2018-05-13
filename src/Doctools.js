@@ -15,7 +15,15 @@ module.exports = class DocTools extends EventEmitter {
 
     logFile() {}
 
+    dispose() {
+
+        _.forEach(this.resources, res => res.dispose());
+        this.execPluginCallback('onDispose', this);
+
+    }
+
     parse(config = {}) {
+
         this.config = config;
 
         this.config._.plugins.forEach(plugin => plugin.app = this);
@@ -36,14 +44,16 @@ module.exports = class DocTools extends EventEmitter {
             // debugger
         })
 
-
     }
 
     getResourceByFile(file) {
+
         return _.find(this.resources, res => res.path === file);
+
     }
 
     analyze() {
+
         this.analyzes = true;
 
         this.execPluginCallback('onPrepare', this);
@@ -58,14 +68,26 @@ module.exports = class DocTools extends EventEmitter {
 
     }
 
-
     get() {
-        const data = {};
+
+        const data = {
+            resources: _.mapValues(this.resources, res => res.serialize()),
+            nodeGlobals: Object.getOwnPropertyNames(global),
+            rootPackage: 'package.json'
+        };
+
+        this.execPluginCallback('onGet', this, data);
+        debugger;
+
         return data;
+
     }
 
     write() {
-        debugger;
+
+        const data = this.get();
+        return Promise.resolve(data);
+
     }
 
 
@@ -89,15 +111,17 @@ module.exports = class DocTools extends EventEmitter {
                 return () => plugin[name] && plugin[name](module, data) || Promise.resolve();
             });
 
-            if (sync) {
+            if (sync === true) {
                 jobs.forEach(job => {
                     job();
                 });
-            } else {
+            } else if (sync === 'serial') {
                 return jobs.reduce(function(p, fn) {
                     return p = p.then(fn);
                 }, Promise.resolve());
 
+            } else {
+                return Promise.all(jobs.map(job => job()));
             }
 
         }
@@ -107,20 +131,13 @@ module.exports = class DocTools extends EventEmitter {
     scanFile(file) {
 
         if (!util.match(this.config, file)) {
-            // this.config.log('skipping file:', file);
+            this.log('skipping file:', file);
             return;
         }
 
-        // pack.log('seeking files in:', file);
+        this.log('seeking files in:', file);
 
         const module = this.loadFile(file);
-
-        if (module) {
-
-            // pack && pack.addChild(module);
-
-        }
-
 
         if(fs.lstatSync(file).isDirectory()) {
 

@@ -11,7 +11,6 @@ class ModuleMapper extends Plugin {
 
         this.config = config;
 
-        this.watchers = [];
     }
 
 
@@ -38,13 +37,6 @@ class ModuleMapper extends Plugin {
         }));
     }
 
-    onDispose() {
-
-        this.watchers.forEach(watcher => watcher.close());
-        this.watchers = [];
-
-    }
-
     onSerialize(desc, data) {
 
         data.module = _.pick(desc.module, ['global', 'description', 'type']);
@@ -53,7 +45,8 @@ class ModuleMapper extends Plugin {
 
 
     onPatch(desc) {
-        desc.log('jsdoc cleared', desc.name, !!desc.jsdoc);
+
+        this.app.log('jsdoc cleared', desc.name, !!desc.jsdoc);
         delete desc.jsdoc;
         delete desc.module;
     }

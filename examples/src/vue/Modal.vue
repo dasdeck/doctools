@@ -28,6 +28,7 @@
 
         props: {
             /**
+            PPP
              * When using the modal with a content component, you can pass the child's component properties here
              * @example
              * <Modal :props="{type:'checkbox'}" :content="InputConpnent"/>

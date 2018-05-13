@@ -22,19 +22,6 @@ class Module extends TreeItem {
         super.load();
     }
 
-    analyze() {
-
-        return this.execPluginCallback('onAnalyze');
-
-    }
-
-    /**
-     * applys custom mapping to module types
-     */
-    map() {
-       return this.execPluginCallback('onMap');
-    }
-
     /**
      * @override
      */
@@ -42,10 +29,10 @@ class Module extends TreeItem {
 
         const data = {
             ...super.serialize(),
-            package: this.package.resource
+            package: this.package
         };
 
-        this.execPluginCallback('onSerialize', data, true);
+        this.app.execPluginCallback('onSerialize', this, data, true);
 
         return data;
     }
@@ -54,7 +41,7 @@ class Module extends TreeItem {
 
         super.load();
 
-        this.execPluginCallback('onPatch', null, true);
+        this.app.execPluginCallback('onPatch', this, null, true);
 
     }
 

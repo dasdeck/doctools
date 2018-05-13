@@ -12,16 +12,12 @@ class PackageMapper extends Plugin {
         this.config = config;
     }
 
-    onDispose() {
-    }
 
     onSerialize(desc, data) {
         if (desc.type === 'package') {
-            data.module = _.pick(desc.module, ['global', 'description', 'type']);
-        }
-    }
 
-    onPatch(desc) {
+            data = _.pick(desc, ['global', 'description', 'type']);
+        }
     }
 
 
@@ -34,6 +30,7 @@ class PackageMapper extends Plugin {
 
         const packages = _.sortBy(_.filter(app.resources, res => res.type === 'package'), desc => -desc.path.length);
         // const resources = _.filter(desc.app.resources, res => res.type !== 'package'));
+
 
         _.forEach(app.resources, res => {
 
@@ -50,11 +47,31 @@ class PackageMapper extends Plugin {
                         pack.resources = pack.resources || {};
                         pack.resources[res.resource] = res.resource;
                     }
+                    return true;
                 }
             })
 
         })
 
+        _.forEach(packages, pack => {
+
+        })
+
+    }
+
+    //TODO
+    findMain(pack) {
+
+        if (pack.packageJson.main) {
+
+            const pathToMain = path.resolve(path.join(this.path, this.packageJson.main));
+            this.getPackageModules().forEach(res => {
+                if (pathToMain === path.resolve(res.path)) {
+
+                    this.main = res.resource;
+                }
+            });
+        }
     }
 
 };
