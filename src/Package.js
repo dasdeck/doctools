@@ -13,46 +13,18 @@ const mkpath = require('mkpath');
  */
 module.exports = class Package extends TreeItem {
 
-    constructor(config = defaultConfig, file = config.base, parent = null) {
+    constructor(app, file = config.base, parent = null) {
 
-
-        super(config, file, parent);
+        super(app, file, parent);
 
         this.type = 'package';
 
         this.load();
 
-
     }
-
-    load() {
-        this.resources = {};
-        super.load();
-        this.scanDirectory(this.path);
-    }
-
-
-
-    getPackageJsonPath() {
-        return path.resolve(path.join(this.path, 'package.json'));
-    }
-
-    loadAssets() {
-
-        const packPath = this.getPackageJsonPath();
-        if (fs.existsSync(packPath)) {
-            this.watchAsset(packPath, (w, m) => m.packageJson = JSON.parse(fs.readFileSync(w.file)));
-        }
-
-        const mdPath = path.join(this.path, 'README.md');
-        if (fs.existsSync(mdPath)) {
-            this.watchAsset(mdPath, 'readme');
-        }
-
-    }
-
 
     findMain() {
+
         if (this.packageJson && this.packageJson.main) {
 
             const pathToMain = path.resolve(path.join(this.path, this.packageJson.main));
@@ -62,57 +34,10 @@ module.exports = class Package extends TreeItem {
                     this.main = res.resource;
                 }
             });
-
         }
     }
 
-    addPackage(pack) {
 
-        this.packages = this.packages || {};
-        this.packages[pack.name] = pack;
-        // this.resources[pack.resource] = pack;
-    }
-
-    scanDirectory(directory) {
-        fs.readdirSync(directory).forEach(file => {
-            file = path.resolve(path.join(directory, file));
-
-            if (!util.match(this.config, file, {data: this})) {
-                this.log('skipping file:', file);
-                return;
-            }
-
-            this.log('seeking files in:', file);
-
-
-            const stats = fs.lstatSync(file);
-            if (stats.isDirectory()) {
-
-                //can now create packages
-                const packageJson = path.resolve(path.join(file, 'package.json'));
-
-                if(fs.existsSync(packageJson)) {
-                    const pack = new Package(this.config, file, this);
-
-                    this.addPackage(pack);
-
-                } else {
-                    this.scanDirectory(file, true);
-                }
-
-            } else {
-
-                this.config._.loaders.some(loader => {
-
-                    if (loader.match(file, this)) {
-                        this.addFileToPackage(file, loader);
-                        return true;
-                    }
-
-                });
-            }
-        })
-    }
 
     findPackageForFile(file) {
 
@@ -127,6 +52,12 @@ module.exports = class Package extends TreeItem {
         })
 
         return res;
+    }
+
+    addPackage(pack) {
+
+        this.packages = this.packages || {};
+        this.packages[pack.name] = pack;
     }
 
 
@@ -181,6 +112,7 @@ module.exports = class Package extends TreeItem {
         this.doRecursivelySync('dispose');
         super.dispose();
     }
+
         /**
      *
      */
@@ -192,29 +124,6 @@ module.exports = class Package extends TreeItem {
         .then(res => Promise.all(this.getPackageModules().map(module => module.map())))
         .then(() => this.execPluginCallback('onMap'))
         .catch(err => {throw err});
-
-    }
-
-
-    addFileToPackage(file, loader) {
-
-        const existingResource = this.getResourceByFile(file);
-
-        if (existingResource) {
-
-            throw 'file already added';
-        }
-
-        // this.log('adding file:', file, 'to:', this.name);
-
-        const module = new Module(this.config, file , this, loader);// parser.parse();
-
-        if (this.resources[module.resource]) {
-            throw 'module uri ' + module.resource + ' already existing'
-
-        }
-
-        this.resources[module.resource] = module;
 
     }
 

@@ -10,6 +10,7 @@ const util = require('./util');
 
 const defaultConfig = require('./Config');
 
+const DocTools = require('./Doctools');
 
 function forcePlugin(name, list, path) {
     if (!list.some(plugin => plugin === name || plugin.constructor && plugin.constructor.name === name)) {
@@ -57,6 +58,7 @@ function loadPlugins(config) {
         return loader;
     });
 
+    forcePlugin('PackageLoader', config._.loaders, 'loaders');
     forcePlugin('DefaultLoader', config._.loaders, 'loaders');
 
 }
@@ -72,6 +74,7 @@ function prepareConfig(config) {
         config = {...config};
 
         const base = config.base || defaultConfig.base;
+
         //ests teh resourceBase e.g. the root package
         // config.resourceBase = config.resourceBase || fs.lstatSync(base).isDirectory() ? base : path.dirname(base);
 
@@ -141,29 +144,38 @@ module.exports = {
 
         config = prepareConfig(config);
 
-        if (fs.lstatSync(config.base).isDirectory()) {
+       const app = new DocTools;
 
-            const Package = require('./Package');
-            return new Package(config);
-
-        } else {
-
-            try {
-
-                const Module = require('./Module');
-                return new Module(config);
-
-            } catch (e) {
-                console.warn('error while parsing: ' + config.base);
-                if (config.strict) {
-                    throw e;
-                } else {
-                    console.warn(e.message);
-                    console.warn(e.stack);
-                }
-            }
+       app.parse(config);
 
 
-        }
+        // if (fs.lstatSync(config.base).isDirectory()) {
+
+        //     const Package = require('./Package');
+        //     return new Package(config);
+
+        // } else {
+
+        //     try {
+
+        //         const Module = require('./Module');
+        //         return new Module(config);
+
+        //     } catch (e) {
+        //         console.warn('error while parsing: ' + config.base);
+        //         if (config.strict) {
+        //             throw e;
+        //         } else {
+        //             console.warn(e.message);
+        //             console.warn(e.stack);
+        //         }
+        //     }
+
+
+        // }
+    },
+
+    load(file ,config) {
+
     }
 };

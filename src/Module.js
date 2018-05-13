@@ -7,9 +7,9 @@ const fs = require('fs');
 
 class Module extends TreeItem {
 
-    constructor(config, file = config.base, pack = null, loader) {
+    constructor(app, file = config.base, pack = null, loader) {
 
-        super(config, file, pack);
+        super(app, file, pack);
 
         this.loader = loader;
 

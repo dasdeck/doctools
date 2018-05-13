@@ -1,8 +1,10 @@
 const vueComiler = require('vue-template-compiler');
 const _ = require('lodash');
 const fs = require('fs');
+const Loader = require('../Loader');
 
-module.exports = class VueLoader {
+module.exports = class VueLoader extends Loader {
+
 
     match(file) {
         return _.endsWith(file, '.vue');

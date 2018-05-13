@@ -1,21 +1,22 @@
 const _ = require('lodash');
 const fs = require('fs');
 const util = require('../util');
-class DefaultLoader {
+const Loader = require('../Loader');
+class DefaultLoader extends Loader {
 
     constructor(config = DefaultLoader.defaultOptions) {
+        super();
+
         this.config = config;
         _.defaults(this.config, DefaultLoader.defaultOptions);
     }
 
-    match(file, desc) {
+    match(file) {
 
-        return this.config.match.bind(this)(file, desc);
+        return util.match(this.config, file);
     }
 
     load(file, desc) {
-
-        // let script = fs.readFileSync(file, 'utf8');
 
         desc.watchAsset(file, this.config.member);
 
@@ -31,12 +32,6 @@ class DefaultLoader {
 DefaultLoader.defaultOptions = {
 
     include: '**/*.js',
-
-    exclude: '',
-
-    match(file, data) {
-        return util.match(this.config, file, {data});
-    },
 
     member: 'script',
 

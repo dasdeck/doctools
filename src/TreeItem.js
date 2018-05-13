@@ -11,13 +11,14 @@ const chokidar = require('chokidar');
  */
 module.exports = class TreeItem extends EventEmitter {
 
-    constructor(config, file = config.base, parent = null) {
+    constructor(app, file = config.base, parent = null) {
 
         super();
 
         this._assets = {};
 
-        this.config = config;
+        this.app = app;
+        this.config = app.config;
 
         this.package = parent;
 
@@ -27,9 +28,9 @@ module.exports = class TreeItem extends EventEmitter {
             this.fileInPackage += '/';
         }
         this.name = this.path.split('/').pop().split('.').shift();
-        this.resource = this.config.getResourceName(this);
+        this.resource = this.config.getResourceUri(this);
 
-        if (config.dev || config.log) {
+        if (this.config.dev || this.config.log) {
             this.log = console.log;
             const logDir = path.join(this.config.base, 'log');
             try {fs.mkdirSync(logDir);} catch(e) {};
@@ -40,6 +41,8 @@ module.exports = class TreeItem extends EventEmitter {
     }
 
     load() {
+
+        this.resources = {};
 
         if (this.loader) {
             const desc = this.loader.load(this.path, this);

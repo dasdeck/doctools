@@ -14,7 +14,6 @@ class ModuleMapper extends Plugin {
         this.watchers = [];
     }
 
-
     /**
      *
      * @param {Object} desc
@@ -227,8 +226,6 @@ class ModuleMapper extends Plugin {
 
         }
     }
-
-
 
     filterDocumented(els) {
         const res = {};

@@ -67,7 +67,7 @@ module.exports = {
         'UIkitComponentMapper',
         'VueComponentMapper',
         'ComponentLinker',
-        'AssetLinker'
+
         // 'ComponentExporter',
         // 'VuePressExporter',
     ],
@@ -95,7 +95,7 @@ module.exports = {
     subPackages: true,
 
 
-    getResourceName(desc) {
+    getResourceUri(desc) {
         return desc.fileInPackage.substr(1).replace(/\//g, '.').substr(1) || desc.name;
     }
 };
