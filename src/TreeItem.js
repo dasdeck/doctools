@@ -53,6 +53,7 @@ module.exports = class TreeItem extends EventEmitter {
         return _.pick(this, [
             'readme',
             'assets',
+            'isAsseet',
             // 'script',
             'path',
             'type',
