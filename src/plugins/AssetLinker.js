@@ -10,6 +10,11 @@ class AssetLinker extends Plugin {
     }
 
 
+    onSerialize(desc, data) {
+        _.assign(data, _.pick(desc, ['assets', 'isAsset']));
+    }
+
+
     onLink(app) {
         if (this.config.getAssets) {
 

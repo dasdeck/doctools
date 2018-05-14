@@ -12,7 +12,6 @@ class PackageMapper extends Plugin {
         this.config = config;
     }
 
-
     onSerialize(desc, data) {
         if (desc.type === 'package') {
 
@@ -23,7 +22,7 @@ class PackageMapper extends Plugin {
 
     onGet(app, data) {
         const packages = _.sortBy(_.filter(app.resources, res => res.type === 'package'), desc => desc.path.length);
-        data.rootPackage = _.first(packages).resource;
+        data.rootPackage = packages.length && _.first(packages).resource;
     }
 
     /**

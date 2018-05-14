@@ -155,7 +155,7 @@ module.exports = class DocTools extends EventEmitter {
 
         this.loadFile(file);
 
-        if(fs.lstatSync(file).isDirectory()) {
+        if (fs.lstatSync(file).isDirectory()) {
 
             this.scanDirectory(file);
 

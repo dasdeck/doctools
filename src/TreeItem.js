@@ -45,9 +45,8 @@ module.exports = class TreeItem extends EventEmitter {
 
     load() {
 
-
         if (this.loader) {
-            const desc = this.loader.load(this.path, this);
+            this.loader.load(this.path, this);
         }
 
     }
@@ -56,14 +55,17 @@ module.exports = class TreeItem extends EventEmitter {
 
         return _.pick(this, [
             'readme',
-            'assets',
-            // 'script',
+            'package',
             'path',
             'type',
             'name',
             'resource',
-            'fileInPackage']
-        )
+            'fileInPackage'
+        ]);
+
+        this.app.execPluginCallback('onSerialize', this, data, true);
+
+        return data;
     }
 
     watchAsset(file, targetKey, init = true, patch = false) {

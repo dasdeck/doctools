@@ -17,6 +17,7 @@
 
         <!-- This is the nav containing the toggling elements -->
         <ul uk-switcher class="uk-subnav uk-subnav-pill nomd">
+            <li v-if="module.readme"><a href="">content</a></li>
             <li v-if="module.assets"><a href="">assets</a></li>
             <li v-if="apiHasContent"><a href="">api</a></li>
             <li v-if="globals"><a href="">globals</a></li>
@@ -27,7 +28,9 @@
         </ul>
 
         <!-- This is the container of the content items -->
-        <div class="uk-switcher">
+        <div class="uk-switcher mdnoclass">
+
+            <Markdown v-if="module.readme" :text="module.readme"/>
             <Assets v-if="module.assets" :assets="module.assets"/>
             <component v-if="apiHasContent" :is="module.type" :data="module" ref="layout"/>
             <Globals v-if="globals"/>
@@ -103,6 +106,7 @@
                 const {$$, remove} = require('uikit').util;
 
                 UIkit.util.remove(UIkit.util.$$('.nomd', toMD));
+                UIkit.util.attr(UIkit.util.$$('.mdnoclass', toMD), 'class', '');
 
                 return toMD.outerHTML;
             }

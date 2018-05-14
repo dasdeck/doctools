@@ -24,16 +24,16 @@ const argv = require('minimist')(process.argv.slice(2), minimistConf);
 
 if (process.mainModule.filename === __filename) {
 
-
     config.base = argv._[0];
      //set base default early, for webpack dev server
     config.dev = argv.dev;
     config.watch = argv.watch;
     config.config = argv.config;
     config.server = argv.server;
+
 } else {
 
-    throw 'do not include this file elsewhere!'
+    throw 'do not include this file elsewhere!';
 
 }
 

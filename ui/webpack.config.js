@@ -54,7 +54,7 @@ const base = {
 
     mode: 'development',
 
-    // devtool: 'inline-sourcemap',
+    devtool: 'inline-sourcemap',
 
     externals,
 

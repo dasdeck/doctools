@@ -14,7 +14,7 @@ export default class UIkitRunner {
 
                     <ul class="uk-switcher uk-margin">
                         <li>${code}</li>
-                        <li>${markdown.renderCode(code, this.getLanguage(code))}</li>
+                        <li>${markdown.renderCode(code, this.getLanguage(code), true)}</li>
                     </ul>
 
                     <div class="uk-position-top-right uk-margin-small-top">

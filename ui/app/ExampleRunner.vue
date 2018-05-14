@@ -9,7 +9,7 @@
 
         <div class="uk-switcher uk-margin">
             <div v-if="error" class="error">{{error}}</div>
-            <div v-else class="preview" >
+            <div v-else ref="preview" >
                 <div v-html="preview"></div>
             </div>
             <div>
@@ -32,7 +32,7 @@
         </div>
       </div>
       <div style="display:none;">
-          {{`&lt;ExampleRunner id="<!-- $ -->{data.id}" resource="${data.resource}"/>`}}
+          {{`&lt;ExampleRunner id="${data.id}" resource="${data.resource}"/>`}}
       </div>
   </div>
   <div v-else>could not load example data</div>
@@ -87,7 +87,7 @@ const ExampleRunner = {
         createPreview(retry = true) {
             if(this.data) {
 
-                if (!this.previewEl) {
+                if (!this.$refs.preview) {
 
                     if(retry) {
                         this.$nextTick(res => {
@@ -118,9 +118,6 @@ const ExampleRunner = {
 
     computed: {
 
-        previewEl() {
-            return UIkit.util.$('.preview', this.$el, this.data.resource);
-        },
 
         runtime() {
             return this.dynamicRuntime || ExampleRunner.runtime[this.data.resource];
@@ -154,12 +151,12 @@ const ExampleRunner = {
             return this.runner && this.runner.getLanguage(this.code);
         },
 
-        type() {
-            return this.data && this.data.lang.split(':').pop();
-        },
+        // type() {
+        //     return this.data && this.data.lang.split(':').pop();
+        // },
 
         runner() {
-            return ExampleRunner.runners[this.type];
+            return ExampleRunner.runners[this.data.runnerName];
         }
     }
 }

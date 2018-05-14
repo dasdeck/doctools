@@ -6,7 +6,6 @@ const _ = require('lodash');
 const webpack = require('webpack');
 const MemFs = require('memory-fs');
 const requireFromString = require('require-from-string');
-const Package = require('../Package');
 const path = require('path');
 const mkpath = require('mkpath');
 

@@ -22,20 +22,6 @@ class Module extends TreeItem {
         super.load();
     }
 
-    /**
-     * @override
-     */
-    serialize() {
-
-        const data = {
-            ...super.serialize(),
-            package: this.package
-        };
-
-        this.app.execPluginCallback('onSerialize', this, data, true);
-
-        return data;
-    }
 
     patch() {
 

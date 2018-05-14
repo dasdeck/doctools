@@ -2,6 +2,7 @@ const _ = require('lodash');
 const fs = require('fs');
 const util = require('../util');
 const Loader = require('../Loader');
+
 class DefaultLoader extends Loader {
 
     constructor(config = DefaultLoader.defaultOptions) {
@@ -13,7 +14,7 @@ class DefaultLoader extends Loader {
 
     match(file) {
 
-        return util.match(this.config, file);
+        return util.match(this.config, file, {recursive: false});
     }
 
     load(file, desc) {

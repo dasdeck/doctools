@@ -57,6 +57,9 @@ class Config extends EventEmitter {
 
         this.forcePlugin('PackageMapper', config._.plugins, 'plugins');
         this.forcePlugin('ModuleMapper', config._.plugins, 'plugins');
+        this.forcePlugin('TypeMapper', config._.plugins, 'plugins');
+        this.forcePlugin('AssetLinker', config._.plugins, 'plugins');
+
 
         config._.loaders = [ ...config.loaders];
 
@@ -98,7 +101,8 @@ class Config extends EventEmitter {
 
                 console.log('config file used: ', configFile);
 
-                const confFromFile = eval(fs.readFileSync(path.resolve(configFile), 'utf8'));
+                // const confFromFile = eval(fs.readFileSync(path.resolve(configFile), 'utf8'));
+                const confFromFile = require(path.resolve(configFile), 'utf8');
 
                 if (confFromFile.config) {
                     throw 'use config option only on cli';
@@ -121,6 +125,7 @@ class Config extends EventEmitter {
     }
 
 }
+
 
 Config.defaultConfig = {
 
@@ -177,9 +182,8 @@ Config.defaultConfig = {
         'ModuleMapper',
         'UIkitComponentMapper',
         'VueComponentMapper',
-        'ComponentLinker',
-        'TypeMapper',
-        'AssetLinker'
+        'ComponentLinker'
+
 
         // 'ComponentExporter',
         // 'VuePressExporter',

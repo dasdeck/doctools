@@ -100,14 +100,12 @@ module.exports = class ComponentMapper extends Plugin {
         const entries = data.all.filter(el => !el.undocumented);
         const runtime = desc.runtime;
 
-
         base = 'module.exports';
         data.all.forEach(entry => {
             if ((entry.type && entry.type.names.includes(data.type)) && entry.kind === 'constant') {
                 base = entry.longname;
             }
         });
-
 
 
         [

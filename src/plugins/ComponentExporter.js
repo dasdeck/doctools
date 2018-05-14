@@ -1,11 +1,9 @@
 const Plugin = require('../Plugin');
-const Package = require('../Package');
 const path = require('path');
 const fs = require('fs');
 const _ = require('lodash');
 const pretty = require('pretty');
-const {DocPage, DocBase} = require('./MarkdownAdapter.min.js');
-
+const mkpath = require('mkpath');
 // const markdownAdapterSource = './MarkdownAdapter.min.js';
 
 
@@ -21,10 +19,13 @@ class ComponentExporter extends Plugin {
       _.defaults(this.config, ComponentExporter.defaultConfig);
     }
 
-
     renderHTML(app, data) {
       // app.log('exporting HTML...')
       const clear = require('jsdom-global')();
+
+      global.UIkit = require('uikit-ssr');
+
+      const {DocPage, DocBase} = require('./MarkdownAdapter.min.js');
 
       document.body.innerHTML = `<div id="app"></div>`;
 
@@ -34,15 +35,23 @@ class ComponentExporter extends Plugin {
 
       const Page = Vue.extend(DocPage);
 
+      if (this.config.markdown) {
+        DocBase.methods.markdown = this.config.markdown;
+      }
+
       const docBase = new Vue(DocBase);
       docBase.data = data;
 
+      const exporter = this;
+
+      // debugger;
       Vue.component('RouterLink', {
-        template: '<a :href="`${toClean}.html`"><slot/></a>',
+        template: '<a :href="`${link}`"><slot/></a>',
         props:['to'],
         computed: {
-          toClean() {
-            return this.to.replace(/\./g, '-');
+          link() {
+            // debugger
+            return exporter.config.createLink(app, app.resources[this.to.substr(1)], data);
           }
         }
       });
@@ -62,27 +71,32 @@ class ComponentExporter extends Plugin {
 
       }
 
-      _.forEach(data.resources, resource => {
+      _.forEach(this.config.resources(app, data), resource => {
 
-        if (this.config.cache && resource.html) {
-          return;
-        }
+        // if (this.config.cache && resource.html) {
+        //   return;
+        // }
 
         const vm = new Page({propsData: {moduleOverride: resource}, parent: docBase});
         vm.$mount(appEl);
-        const html = pretty(vm.toHtml());
+        const html = pretty(vm.toHtml()).replace(/<!---->/g, '');
 
         const changed = resource.html !== html;
 
         //set markdown in serialized AND original data to cache and further process
+        if(this.config.cache) {
+          app.resources[resource.resource].html = html;
+        }
+
         resource.html = html;
-        data.resources[resource.resource].html = html;
 
         vm.$destroy();
         setImmediate(clear);
 
         if (dir && changed) {
-          fs.writeFileSync(path.join(dir, resource.resource + '.html'), html);
+          const dest = path.join(dir, this.config.getFileName(app, resource, data));
+          mkpath.sync(path.dirname(dest));
+          fs.writeFileSync(dest, this.config.postProcess(app, html, data));
         }
 
       });
@@ -107,9 +121,28 @@ class ComponentExporter extends Plugin {
 
 }
 ComponentExporter.defaultConfig = {
+
   output: 'html',
   cache: false,
-  async : false
+  async : false,
+
+  createLink(app, desc, data) {
+    return desc.resource.replace(/\./g, '-') + '.html';
+  },
+
+  getFileName(app, desc, data) {
+    return desc.resource + '.html'
+  },
+
+  resources (app, data) {
+    return app.resources;
+  },
+
+  postProcess(app, html) {
+    return html;
+  },
+
+  markdown: null,
 
 };
 
