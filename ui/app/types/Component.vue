@@ -115,7 +115,7 @@ export default {
   inject: ["$doc"],
 
     hasContent(data) {
-            return data.component && size(data.component) || data.module.description;
+            return data.component && size(data.component) || data.module && data.module.description;
     },
 
   computed: {

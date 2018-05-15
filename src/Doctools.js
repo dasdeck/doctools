@@ -2,6 +2,9 @@ const util = require('./util');
 const _ = require('lodash');
 const glob = require('glob');
 const path = require('path');
+
+const chokidar = require('chokidar');
+
 const fs = require('fs');
 const {EventEmitter} = require('events');
 const mkpath = require('mkpath');
@@ -21,6 +24,30 @@ module.exports = class DocTools extends EventEmitter {
 
         this.scanFile(this.config.base);
 
+        if(this.config.watch && fs.lstatSync(this.config.base).isDirectory()) {
+            this.watcher = chokidar.watch(this.config.base);
+            this.watcher.on('add', file => {
+                if (!this.getResourceByFile(file) && util.match(this.config, file, {matchBase: this.config.base})) {
+                    this.scanFile(file);
+                    this.emit('change', {'add': file});
+                }
+            });
+
+            this.watcher.on('unlink', file => {
+
+                const res = this.getResourceByFile(file);
+                if (res) {
+                    res.dispose();
+                    delete this.resources[res.resource];
+                    this.emit('change', {'remove': file});
+
+                    // if(this.config.dev && !util.match(this.config, file, {matchBase: this.config.base})) {
+                    //     throw 'file removed that matches but was not added?'
+                    // }
+                }
+            })
+        }
+
     }
 
     log(...args) { console.log(...args); }
@@ -29,6 +56,7 @@ module.exports = class DocTools extends EventEmitter {
 
     dispose() {
 
+        this.watcher && this.watcher.close();
         _.forEach(this.resources, res => res.dispose());
         this.execPluginCallback('onDispose', this);
 

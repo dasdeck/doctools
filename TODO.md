@@ -3,6 +3,8 @@
 -uikitonly once?
 -utils seperate?
 
+-mode serializations to single plugins
+
 -change to markdown-it
 
 -reactive uikit tabs

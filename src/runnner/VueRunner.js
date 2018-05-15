@@ -1,8 +1,8 @@
 
-import babel from '@babel/standalone';
+import * as babel from '@babel/standalone';
 
 import umdPlugin from 'babel-plugin-transform-es2015-modules-umd';
-import vueTemplateCompiler from 'vue-template-compiler';
+import * as vueTemplateCompiler from 'vue-template-compiler';
 
 import Vue from 'vue' //hack for vuepress
 
@@ -48,6 +48,7 @@ class VueRunner {
         const code = runner.code;
 
         if (this.getLanguage(code) === 'html') {
+            // debugger;
             const res = vueTemplateCompiler.parseComponent(code);
             componentDefinition = this.getComponentDefinition(res.script.content);
             componentDefinition.template = res.template.content;
@@ -70,7 +71,7 @@ class VueRunner {
         const comp = Vue.extend(componentDefinition);
         const instance = new comp();
 
-        instance.$mount(runner.previewEl);
+        instance.$mount(runner.$refs.preview);
 
         return '...loading';
 

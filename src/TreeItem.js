@@ -53,7 +53,7 @@ module.exports = class TreeItem extends EventEmitter {
 
     serialize() {
 
-        return _.pick(this, [
+        const data = _.pick(this, [
             'readme',
             'package',
             'path',
