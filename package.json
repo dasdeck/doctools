@@ -16,7 +16,9 @@
     "example": "./bin/doctools.js examples",
     "link": "npm link uikit-utils"
   },
-  "workspaces": ["packages/*"],
+  "workspaces": [
+    "packages/*"
+  ],
   "private": true,
   "extra": {
     "binDocs": {
@@ -78,5 +80,8 @@
     "webpack-cli": "^2.0.14",
     "webpack-dev-server": "^3.1.3",
     "megamatch": "^1.0.0"
+  },
+  "devDependencies": {
+    "webpack-glob-entries": "^1.0.1"
   }
 }

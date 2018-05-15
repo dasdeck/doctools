@@ -25,8 +25,8 @@
                         </a>
                     </li>
                 <li v-if="runner.edit">
-                    <a @click="runner.edit(code)" class="js-codepen" uk-tooltip="Edit on Codepen">
-                    <img class="uk-icon" src="../images/icon-flask.svg" ></a>
+                    <a @click="runner.edit(code)" class="edit" uk-tooltip="Edit on Codepen">
+                    <img class="uk-icon" class="copy" src="../images/icon-flask.svg" ></a>
                 </li>
             </ul>
         </div>
@@ -47,7 +47,7 @@ const langMap = {
     'vue': 'text/x-vue',
     'js': 'text/javascript',
     'html': 'text/html'
-}
+};
 
 const ExampleRunner = {
 

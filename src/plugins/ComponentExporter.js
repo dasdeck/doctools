@@ -25,7 +25,9 @@ class ComponentExporter extends Plugin {
 
       global.UIkit = require('uikit-ssr');
 
-      const {DocPage, DocBase} = require('./MarkdownAdapter.min.js');
+      const {DocPage, DocBase, ExampleRunner} = require('./MarkdownAdapter.min.js');
+
+      ExampleRunner.runners = this.config.runners;
 
       document.body.innerHTML = `<div id="app"></div>`;
 
@@ -37,6 +39,10 @@ class ComponentExporter extends Plugin {
 
       if (this.config.markdown) {
         DocBase.methods.markdown = this.config.markdown;
+      }
+
+      if (this.config.highlight) {
+        DocBase.methods.highlight = this.config.highlight;
       }
 
       const docBase = new Vue(DocBase);
@@ -96,7 +102,7 @@ class ComponentExporter extends Plugin {
         if (dir && changed) {
           const dest = path.join(dir, this.config.getFileName(app, resource, data));
           mkpath.sync(path.dirname(dest));
-          fs.writeFileSync(dest, this.config.postProcess(app, html, data));
+          fs.writeFileSync(dest, this.config.postProcess(app, html, resource, data));
         }
 
       });
@@ -126,6 +132,8 @@ ComponentExporter.defaultConfig = {
   cache: false,
   async : false,
 
+  runners: {},
+
   createLink(app, desc, data) {
     return desc.resource.replace(/\./g, '-') + '.html';
   },
@@ -138,7 +146,7 @@ ComponentExporter.defaultConfig = {
     return app.resources;
   },
 
-  postProcess(app, html) {
+  postProcess(app, html, desc, data) {
     return html;
   },
 

@@ -113,10 +113,11 @@ const Markdown = {
                     return `<div id="${id}"></div>`;
 
                 }
-            } else {
-                debugger
-                return this.renderCode(code, lang);
             }
+            // else {
+            //     debugger
+            //     return this.renderCode(code, lang);
+            // }
         },
 
         clearRunners() {

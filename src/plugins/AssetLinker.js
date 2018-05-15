@@ -9,16 +9,13 @@ class AssetLinker extends Plugin {
         this.config = config;
     }
 
-
     onSerialize(desc, data) {
         _.assign(data, _.pick(desc, ['assets', 'isAsset']));
     }
 
-
     onLink(app) {
         if (this.config.getAssets) {
 
-            // const module = data.files
             const resources = app.resources;
 
             const files = _.reduce(resources, (res, mod) =>  {
@@ -27,10 +24,11 @@ class AssetLinker extends Plugin {
             }, {})
 
             _.forEach(resources, resource => {
-               const assets = this.config.getAssets(resource);
-               _.forEach(assets, (file, name) => {
+                const assets = this.config.getAssets(resource);
+                _.forEach(assets, (file, name) => {
 
                     const assetsResource = files[file];
+
                     if (assetsResource && assetsResource !== resource.resource) {
 
                         const assetModule = resources[assetsResource];
@@ -39,28 +37,31 @@ class AssetLinker extends Plugin {
                         resource.assets = resource.assets || {};
                         resource.assets[name] = assetsResource;
 
-                   }
-
-               })
+                    }
+                });
             });
         }
-        // debugger
     }
-
 };
 
 AssetLinker.defaultConfig = {
     getAssets(desc) {
-        switch(desc.type) {
-            case 'package': {
-                return {
-                    readme: path.join(path.dirname(desc.path),  'README.md')
-                };
-                break;
-            }
-            default: {
-                return {readme: desc.path + '.md'};
-            }
+
+        switch (desc.type) {
+
+        case 'package':
+
+            return {
+                readme: path.join(path.dirname(desc.path),  'README.md')
+            };
+
+            break;
+
+        default:
+            return {
+                readme: desc.path + '.md'
+            };
+
         }
     }
 }

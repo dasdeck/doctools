@@ -1,23 +1,7 @@
 /* eslint-env node */
+const glob_entries = require('webpack-glob-entries')
 
 const rules = [
-    {
-        test: /\.css$/,
-        use: [ 'style-loader', 'css-loader' ]
-    },
-    {
-        test: /\.vue$/,
-        loader: 'vue-loader',
-        options: {
-            loaders: {
-              js: "babel-loader"
-            }
-          }
-    },
-    {
-        test: /\.svg$/,
-        loader: 'raw-loader'
-    },
     {
         test: /\.js$/,
         exclude: /node_modules/,
@@ -34,9 +18,6 @@ const output = {
     libraryTarget: 'commonjs',
     path: __dirname,
     filename: '[name].min.js',
-    publicPath: '/',
-    hotUpdateChunkFilename: 'hot/[hash].hot-update.js', // fix ids with slashes
-    hotUpdateMainFilename: 'hot/[hash].hot-update.json'
 };
 
 const MarkdownAdapter = {
@@ -46,6 +27,8 @@ const MarkdownAdapter = {
 
     externals,
 
+    target: 'node',
+
     devtool: 'inline-source-map',
 
     module: {
@@ -53,9 +36,9 @@ const MarkdownAdapter = {
     },
     output,
     entry: {
-        'MarkdownAdapter': './MarkdownAdapter.js'
+        UIkitRunner: './UIkitRunner.js',
+        VueRunner: './VueRunner.js'
     }
-
-}
+};
 
 module.exports = MarkdownAdapter;

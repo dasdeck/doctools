@@ -37,7 +37,6 @@ class VuePressExporter extends Plugin {
         }
     }
 
-
     getResourcFileName(res) {
 
         const filename = this.getResourceMDName(res);
