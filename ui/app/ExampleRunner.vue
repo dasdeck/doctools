@@ -26,7 +26,7 @@
                     </li>
                 <li v-if="runner.edit">
                     <a @click="runner.edit(code)" class="edit" uk-tooltip="Edit on Codepen">
-                    <img class="uk-icon" class="copy" src="../images/icon-flask.svg" ></a>
+                    <img class="uk-icon copy" src="../images/icon-flask.svg" ></a>
                 </li>
             </ul>
         </div>

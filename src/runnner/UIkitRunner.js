@@ -5,14 +5,14 @@ class UIkitRunner {
 
         const id = 'a'
         // debugger;
-        return `<div class="uk-position-relative uk-margin-medium">
+        return `<div class="uikit-runner uk-position-relative uk-margin-medium">
                     <ul uk-tab>
                         <li><a href="#">Preview</a></li>
                         <li><a href="#">Markup</a></li>
                     </ul>
 
                     <ul class="uk-switcher uk-margin">
-                        <li>${code}</li>
+                        <li class="code">${code}</li>
                         <li>${markdown.renderCode(code, this.getLanguage(code), true)}</li>
                     </ul>
 

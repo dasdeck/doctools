@@ -1,19 +1,19 @@
 <template>
     <div v-if="module">
 
-        <h1>
-            {{module.name}}
-        </h1>
+        <div class="nomd">
 
-        {{module.description}}
-        <hr>
+            <h1>{{module.name}}</h1>
+            <p>{{module.description}}</p>
+            <hr>
 
+        </div>
 
          <template v-if="module.component && module.component.extends">
                 <span class="inherited">
                     ↳ <ModuleLink :resource="module.component.extends.resource"/>
                 </span>
-            </template>
+        </template>
 
         <!-- This is the nav containing the toggling elements -->
         <ul uk-switcher class="uk-subnav uk-subnav-pill nomd">
@@ -52,8 +52,8 @@
         </div>
 
         <hr>
-        <i v-if="module.package">package: <ModuleLink :resource="module.package"/></i>
-        <i v-if="repoLink">source: <a :href="repoLink">test</a></i>
+        <i class="nomd" v-if="module.package">package: <ModuleLink :resource="module.package"/></i>
+        <!-- <i v-if="repoLink">source: <a :href="repoLink">test</a></i> -->
     </div>
     <div v-else>
         select a module on the left
