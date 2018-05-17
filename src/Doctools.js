@@ -23,14 +23,13 @@ module.exports = class DocTools extends EventEmitter {
             this.log('config file used: ', this.config.file);
         }
 
-
         this.execPluginCallback('onLoad', this, true);
 
         this.resources = {};
 
         this.scanFile(this.config.base);
 
-        if(this.config.watch && fs.lstatSync(this.config.base).isDirectory()) {
+        if (this.config.watch && fs.lstatSync(this.config.base).isDirectory()) {
             this.watcher = chokidar.watch(this.config.base);
             this.watcher.on('add', file => {
                 if (!this.getResourceByFile(file) && util.match(this.config, file, {matchBase: this.config.base})) {
@@ -73,8 +72,9 @@ module.exports = class DocTools extends EventEmitter {
 
     analyze() {
 
-
         if (!this.analyzes) {
+
+            this.log('starting analyze');
 
             this.execPluginCallback('onPrepare', this);
 
@@ -83,8 +83,13 @@ module.exports = class DocTools extends EventEmitter {
                 this.execPluginCallback('onMap', this);
                 this.execPluginCallback('onLink', this);
                 this.analyzes = null;
+                this.log('done analyze');
+
                 return this;
             });
+
+        } else {
+            this.log('waiting for running analyze');
 
         }
 

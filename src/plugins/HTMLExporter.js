@@ -30,8 +30,6 @@ class HTMLExporter extends Plugin {
 
     onLoad(app) {
 
-
-
       if (this.config.serve) {
         const http = require('http');
         const port = this.config.serve.port || 3050;
@@ -120,10 +118,10 @@ class HTMLExporter extends Plugin {
       document.body.innerHTML = `<div id="app"></div>`;
       this.appEl = document.getElementById('app');
 
-
     }
 
     clearDom() {
+      UIkit.util.fastdom.flush();
       this.domClear && this.domClear();
     }
 
@@ -134,23 +132,20 @@ class HTMLExporter extends Plugin {
       const html = pretty(vm.toHtml()).replace(/<!---->/g, '');
       vm.$destroy();
 
-      return this.config.postProcess(this.app, html, res);
+      return this.config.postProcess(this.app, html, resource);
 
     }
 
+    renderHTML(app, data, output = null) {
 
-    renderHTML(app, data) {
+      this.initDom();
+      this.prepareDocApp();
 
+      const dir = output || this.config.output && this.app.resolvePath(this.config.output);
 
-      // this.initDom();
-      // this.prepareDocApp();
+      mkpath.sync(dir);
 
-      this.docApp.data = data;
-
-
-      const dir = this.config.output && this.app.resolvePath(this.config.output);
-        mkpath.sync(dir)
-
+      const files = [];
 
       _.forEach(this.config.resources(app, data), resource => {
 
@@ -168,12 +163,18 @@ class HTMLExporter extends Plugin {
         if (dir && changed) {
           const dest = path.join(dir, this.config.getFileName(app, resource, data));
           mkpath.sync(path.dirname(dest));
-          fs.writeFileSync(dest, app, html, resource, data);
+          fs.writeFileSync(dest, html);
+          files.push(dest);
+
         }
+
+
 
       });
 
       this.clearDom();
+
+      return files;
 
     }
 
