@@ -15,9 +15,14 @@ module.exports = class DocTools extends EventEmitter {
     constructor(config = new Config()) {
 
         super();
-        this.config = config;
 
-        this.config._.plugins.forEach(plugin => plugin.app = this);
+        this.config = config.prepareConfig(this);
+
+        if(this.config.file) {
+
+            this.log('config file used: ', this.config.file);
+        }
+
 
         this.execPluginCallback('onLoad', this, true);
 
@@ -48,7 +53,7 @@ module.exports = class DocTools extends EventEmitter {
 
     }
 
-    log(...args) { console.log(...args); }
+    log(...args) { if (this.config.dev) console.log(...args); }
 
     logFile() {}
 

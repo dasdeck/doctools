@@ -31,7 +31,7 @@ function match(conf, file, opts = {}) {
         } else if (typeof matcher === 'string') {
             matcher = typeof opts.matchBase === 'string' && !path.isAbsolute(matcher) && path.join(opts.matchBase, matcher) || matcher;
 
-            if (opts.recursive && fs.lstatSync(file).isDirectory()) {
+            if (opts.recursive && fs.existsSync(file) && fs.lstatSync(file).isDirectory()) {
                 const names = file.split('/');
                 const matches = matcher.split('/');
                 return names.length <= matches.length && !names.some((name, i) => {

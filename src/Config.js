@@ -21,11 +21,14 @@ class Config extends EventEmitter {
     constructor(data = {}) {
 
         super();
+        this.inputConfig = data;
+        // _.assign(this, data);
 
-        const config = this.prepareConfig(data);
+    }
 
-        _.assign(this, config);
-
+    addPlugin(plugin) {
+        this.plugins = this.plugins || [];
+        this.plugins.push(plugin);
     }
 
     forcePlugin(name, list, path) {
@@ -36,13 +39,12 @@ class Config extends EventEmitter {
         }
     }
 
-    loadPlugins(config) {
+    loadPlugins(config, app) {
 
-        if (config._) return;
 
         config._ = {};
 
-        config._.plugins = [...config.plugins]
+        config._.plugins = [...config.plugins, ...this.plugins]
 
         config._.plugins = config._.plugins.map(plugin => {
 
@@ -77,49 +79,47 @@ class Config extends EventEmitter {
         this.forcePlugin('PackageLoader', config._.loaders, 'loaders');
         this.forcePlugin('DefaultLoader', config._.loaders, 'loaders');
 
+        config._.plugins.forEach(plugin => plugin.app = app);
+
     }
 
      /**
     * @mutates
     * @param {DoctoolsConfig} config
     */
-    prepareConfig(config) {
+    prepareConfig(app) {
 
-        if (!config._) {
-
-            config = {...config};
-
-            const base = config.base || Config.defaultConfig.base;
-
-            //ests teh resourceBase e.g. the root package
-            // config.resourceBase = config.resourceBase || fs.lstatSync(base).isDirectory() ? base : path.dirname(base);
-
-            const configFile = path.join(base, 'doctools.config.js');
-
-            if (fs.existsSync(configFile)) {
+        const config = _.cloneDeep(this.inputConfig);
 
 
-                console.log('config file used: ', configFile);
+        const base = config.base || Config.defaultConfig.base;
 
-                // const confFromFile = eval(fs.readFileSync(path.resolve(configFile), 'utf8'));
-                const confFromFile = require(path.resolve(configFile), 'utf8');
+        //ests teh resourceBase e.g. the root package
+        // config.resourceBase = config.resourceBase || fs.lstatSync(base).isDirectory() ? base : path.dirname(base);
 
-                if (confFromFile.config) {
-                    throw 'use config option only on cli';
-                }
-                _.defaults(config, confFromFile);
+        const configFile = path.join(base, 'doctools.config.js');
 
-                this.file = configFile;
+        if (fs.existsSync(configFile)) {
 
-                //override base
-                config.base = confFromFile.base || config.base;
+
+            // const confFromFile = eval(fs.readFileSync(path.resolve(configFile), 'utf8'));
+            const confFromFile = require(path.resolve(configFile), 'utf8');
+
+            if (confFromFile.config) {
+                throw 'use config option only on cli';
             }
+            _.defaults(config, confFromFile);
 
-            _.defaults(config, Config.defaultConfig);
+            config.file = configFile;
 
+            //override base
+            config.base = confFromFile.base || config.base;
         }
 
-        this.loadPlugins(config);
+        _.defaults(config, Config.defaultConfig);
+
+
+        this.loadPlugins(config, app);
 
         return config;
     }
@@ -185,7 +185,7 @@ Config.defaultConfig = {
         'ComponentLinker'
 
 
-        // 'ComponentExporter',
+        // 'HTMLExporter',
         // 'VuePressExporter',
     ],
 

@@ -10,16 +10,17 @@ const mkpath = require('mkpath');
  * attemts to load the described class
  * mark module for runtime analysis by setting a member runtime = true
  */
-class ComponentExporter extends Plugin {
+class HTMLExporter extends Plugin {
 
-    constructor(config = ComponentExporter.defaultConfig) {
+    constructor(config = HTMLExporter.defaultConfig) {
       super();
       this.config = config;
-      _.defaults(this.config, ComponentExporter.defaultConfig);
+      _.defaults(this.config, HTMLExporter.defaultConfig);
 
     }
 
     onDispose() {
+      this.clearDom();
       this.server && this.server.close();
     }
 
@@ -28,6 +29,8 @@ class ComponentExporter extends Plugin {
     }
 
     onLoad(app) {
+
+
 
       if (this.config.serve) {
         const http = require('http');
@@ -56,7 +59,7 @@ class ComponentExporter extends Plugin {
         });
 
         this.server.listen(port, res => {
-          this.app.log('ComponentExporter listening @ port:  ' + port + ' ')
+          this.app.log('HTMLExporter listening @ port:  ' + port + ' ')
         });
 
       }
@@ -72,7 +75,7 @@ class ComponentExporter extends Plugin {
 
       const Vue = require('vue/dist/vue');
 
-      ExampleRunner.runners = this.config.runners;
+      _.assign(ExampleRunner.runners, this.app.config.runners, this.config.runners);
 
       if (this.config.markdown) {
         DocBase.methods.markdown = this.config.markdown;
@@ -80,6 +83,13 @@ class ComponentExporter extends Plugin {
 
       if (this.config.highlight) {
         DocBase.methods.highlight = this.config.highlight;
+      }
+
+      const DocBaseData = DocBase.data;
+      DocBase.data = () => _.omit(DocBaseData.call(this), ['data']);
+      DocBase.computed = DocBase.computed || {};
+      DocBase.computed.data = function() {
+        return app.get();
       }
 
       this.docApp = new Vue(DocBase);
@@ -110,12 +120,11 @@ class ComponentExporter extends Plugin {
       document.body.innerHTML = `<div id="app"></div>`;
       this.appEl = document.getElementById('app');
 
-      this.prepareDocApp();
 
     }
 
     clearDom() {
-      setImmediate(this.domClear);
+      this.domClear && this.domClear();
     }
 
     renderPage(resource) {
@@ -125,7 +134,7 @@ class ComponentExporter extends Plugin {
       const html = pretty(vm.toHtml()).replace(/<!---->/g, '');
       vm.$destroy();
 
-      return html;
+      return this.config.postProcess(this.app, html, res);
 
     }
 
@@ -133,12 +142,11 @@ class ComponentExporter extends Plugin {
     renderHTML(app, data) {
 
 
-      this.initDom();
-      this.prepareDocApp();
+      // this.initDom();
+      // this.prepareDocApp();
 
       this.docApp.data = data;
 
-      // debugger;
 
       const dir = this.config.output && this.app.resolvePath(this.config.output);
         mkpath.sync(dir)
@@ -160,7 +168,7 @@ class ComponentExporter extends Plugin {
         if (dir && changed) {
           const dest = path.join(dir, this.config.getFileName(app, resource, data));
           mkpath.sync(path.dirname(dest));
-          fs.writeFileSync(dest, this.config.postProcess(app, html, resource, data));
+          fs.writeFileSync(dest, app, html, resource, data);
         }
 
       });
@@ -189,7 +197,7 @@ class ComponentExporter extends Plugin {
     }
 }
 
-ComponentExporter.defaultConfig = {
+HTMLExporter.defaultConfig = {
 
   output: 'html',
   cache: false,
@@ -209,7 +217,7 @@ ComponentExporter.defaultConfig = {
     return app.resources;
   },
 
-  postProcess(app, html, desc, data) {
+  postProcess(app, html, desc) {
     return html;
   },
 
@@ -217,4 +225,4 @@ ComponentExporter.defaultConfig = {
 
 };
 
-module.exports = ComponentExporter;
+module.exports = HTMLExporter;
