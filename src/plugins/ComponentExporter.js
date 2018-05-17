@@ -4,7 +4,6 @@ const fs = require('fs');
 const _ = require('lodash');
 const pretty = require('pretty');
 const mkpath = require('mkpath');
-// const markdownAdapterSource = './MarkdownAdapter.min.js';
 
 
 /**
@@ -17,25 +16,63 @@ class ComponentExporter extends Plugin {
       super();
       this.config = config;
       _.defaults(this.config, ComponentExporter.defaultConfig);
+
     }
 
-    renderHTML(app, data) {
-      // app.log('exporting HTML...')
-      const clear = require('jsdom-global')();
+    onDispose() {
+      this.server && this.server.close();
+    }
 
-      global.UIkit = require('uikit-ssr');
+    onGet(app, data) {
+      data.routeMap = this.config.routeMap && this.config.routeMap(app, data) || _.mapValues(data.resources, res => res.resource);
+    }
 
+    onLoad(app) {
+
+      if (this.config.serve) {
+        const http = require('http');
+        const port = this.config.serve.port || 3050;
+        this.server = http.createServer((req, res) => {
+
+            this.app.analyze().then(() => {
+
+              const data = app.get();
+              const resource = data.resources[data.routeMap[req.url.substr(1)]];
+
+              res.setHeader('Access-Control-Allow-Origin', '*');
+              res.setHeader('Access-Control-Request-Method', '*');
+              res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET');
+              res.setHeader('Access-Control-Allow-Headers', '*');
+
+              if (resource) {
+                this.initDom();
+                this.prepareDocApp();
+                res.end(this.renderPage(resource));
+                this.clearDom();
+              } else {
+                res.end('not found');
+              }
+          });
+        });
+
+        this.server.listen(port, res => {
+          this.app.log('ComponentExporter listening @ port:  ' + port + ' ')
+        });
+
+      }
+
+    }
+
+    prepareDocApp() {
+
+      const app = this.app;
       const {DocPage, DocBase, ExampleRunner} = require('./MarkdownAdapter.min.js');
 
-      ExampleRunner.runners = this.config.runners;
-
-      document.body.innerHTML = `<div id="app"></div>`;
-
-      const appEl = document.getElementById('app');
+      const exporter = this;
 
       const Vue = require('vue/dist/vue');
 
-      const Page = Vue.extend(DocPage);
+      ExampleRunner.runners = this.config.runners;
 
       if (this.config.markdown) {
         DocBase.methods.markdown = this.config.markdown;
@@ -45,19 +82,17 @@ class ComponentExporter extends Plugin {
         DocBase.methods.highlight = this.config.highlight;
       }
 
-      const docBase = new Vue(DocBase);
-      docBase.data = data;
+      this.docApp = new Vue(DocBase);
 
-      const exporter = this;
+      this.Page = Vue.extend(DocPage);
 
-      // debugger;
       Vue.component('RouterLink', {
         template: '<a :href="`${link}`"><slot/></a>',
         props:['to'],
         computed: {
           link() {
             // debugger
-            return exporter.config.createLink(app, app.resources[this.to.substr(1)], data);
+            return exporter.config.createLink(app, app.resources[this.to.substr(1)], app.get());
           }
         }
       });
@@ -66,26 +101,52 @@ class ComponentExporter extends Plugin {
         template: '<pre><code :class="`language-${language}`"><slot/></code></pre>',
         props:['language']
       });
+    }
+
+    initDom() {
+
+      this.domClear = require('jsdom-global')();
+      global.UIkit = require('uikit');
+      document.body.innerHTML = `<div id="app"></div>`;
+      this.appEl = document.getElementById('app');
+
+      this.prepareDocApp();
+
+    }
+
+    clearDom() {
+      setImmediate(this.domClear);
+    }
+
+    renderPage(resource) {
+
+      const vm = new this.Page({propsData: {moduleOverride: resource}, parent: this.docApp});
+      vm.$mount(this.appEl);
+      const html = pretty(vm.toHtml()).replace(/<!---->/g, '');
+      vm.$destroy();
+
+      return html;
+
+    }
+
+
+    renderHTML(app, data) {
+
+
+      this.initDom();
+      this.prepareDocApp();
+
+      this.docApp.data = data;
+
+      // debugger;
 
       const dir = this.config.output && this.app.resolvePath(this.config.output);
-      try {
-        if (dir) {
-          fs.mkdirSync(dir)
-        }
+        mkpath.sync(dir)
 
-      } catch (e) {
-
-      }
 
       _.forEach(this.config.resources(app, data), resource => {
 
-        // if (this.config.cache && resource.html) {
-        //   return;
-        // }
-
-        const vm = new Page({propsData: {moduleOverride: resource}, parent: docBase});
-        vm.$mount(appEl);
-        const html = pretty(vm.toHtml()).replace(/<!---->/g, '');
+        const html = this.renderPage(resource);
 
         const changed = resource.html !== html;
 
@@ -96,9 +157,6 @@ class ComponentExporter extends Plugin {
 
         resource.html = html;
 
-        vm.$destroy();
-        setImmediate(clear);
-
         if (dir && changed) {
           const dest = path.join(dir, this.config.getFileName(app, resource, data));
           mkpath.sync(path.dirname(dest));
@@ -107,7 +165,8 @@ class ComponentExporter extends Plugin {
 
       });
 
-      // pack.log('exporting HTML...done!')
+      this.clearDom();
+
     }
 
     /**
@@ -117,21 +176,25 @@ class ComponentExporter extends Plugin {
      */
     onWrite(app, data) {
 
-      if (this.config.async) {
-            setTimeout(res => this.renderHTML(app, data), 100);
-      } else {
+      if (this.config.output) {
+
+        if (this.config.async) {
+          setTimeout(res => this.renderHTML(app, data), 100);
+        } else {
           this.renderHTML(app, data);
+        }
+
       }
 
     }
-
 }
+
 ComponentExporter.defaultConfig = {
 
   output: 'html',
   cache: false,
   async : false,
-
+  serve: false,
   runners: {},
 
   createLink(app, desc, data) {

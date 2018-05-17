@@ -2,6 +2,7 @@ const util = require('./util');
 const _ = require('lodash');
 const glob = require('glob');
 const path = require('path');
+const Config = require('./Config');
 
 const chokidar = require('chokidar');
 
@@ -11,7 +12,7 @@ const mkpath = require('mkpath');
 
 module.exports = class DocTools extends EventEmitter {
 
-    constructor(config) {
+    constructor(config = new Config()) {
 
         super();
         this.config = config;
@@ -41,9 +42,6 @@ module.exports = class DocTools extends EventEmitter {
                     delete this.resources[res.resource];
                     this.emit('change', {'remove': file});
 
-                    // if(this.config.dev && !util.match(this.config, file, {matchBase: this.config.base})) {
-                    //     throw 'file removed that matches but was not added?'
-                    // }
                 }
             })
         }
@@ -70,17 +68,23 @@ module.exports = class DocTools extends EventEmitter {
 
     analyze() {
 
-        this.analyzes = true;
 
-        this.execPluginCallback('onPrepare', this);
+        if (!this.analyzes) {
 
-        return this.execPluginCallback('onAnalyze', this, null, false)
-        .then(() => {
-            this.execPluginCallback('onMap', this);
-            this.execPluginCallback('onLink', this);
-            this.analyzes = false;
-            return this;
-        });
+            this.execPluginCallback('onPrepare', this);
+
+            this.analyzes = this.execPluginCallback('onAnalyze', this, null, false)
+            .then(() => {
+                this.execPluginCallback('onMap', this);
+                this.execPluginCallback('onLink', this);
+                this.analyzes = null;
+                return this;
+            });
+
+        }
+
+        return this.analyzes;
+
 
     }
 

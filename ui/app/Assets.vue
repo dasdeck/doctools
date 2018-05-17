@@ -1,7 +1,10 @@
 <template>
 
     <div>
-        <component v-for="(asset, name) in assets" :is="$doc.resources[asset].type" :key="name" :data="$doc.resources[asset]"/>
+    <div v-for="(asset, name) in assets" :key="name">
+        <component  v-if="$doc.resources[asset]" :is="$doc.resources[asset].type"  :data="$doc.resources[asset]"/>
+        <div v-else>asset {{asset}} found</div>
+    </div>
     </div>
 
 </template>
