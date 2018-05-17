@@ -48,7 +48,7 @@ class HTMLExporter extends Plugin {
               if (resource) {
                 this.initDom();
                 this.prepareDocApp();
-                res.end(this.renderPage(resource));
+                res.end(this.renderPage(resource, data));
                 this.clearDom();
               } else {
                 res.end('not found');
@@ -125,14 +125,14 @@ class HTMLExporter extends Plugin {
       this.domClear && this.domClear();
     }
 
-    renderPage(resource) {
+    renderPage(resource, data) {
 
-      const vm = new this.Page({propsData: {moduleOverride: resource}, parent: this.docApp});
+      const vm = new this.Page({propsData: {moduleProperty: resource}, parent: this.docApp});
       vm.$mount(this.appEl);
       const html = pretty(vm.toHtml()).replace(/<!---->/g, '');
       vm.$destroy();
 
-      return this.config.postProcess(this.app, html, resource);
+      return this.config.postProcess(this.app, html, resource, data);
 
     }
 
@@ -149,7 +149,7 @@ class HTMLExporter extends Plugin {
 
       _.forEach(this.config.resources(app, data), resource => {
 
-        const html = this.renderPage(resource);
+        const html = this.renderPage(resource, data);
 
         const changed = resource.html !== html;
 

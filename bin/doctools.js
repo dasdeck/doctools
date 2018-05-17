@@ -76,9 +76,9 @@ if (argv.explain) {
     const app = new DocTools(config);
 
     app.on('change', res => {
-        console.log('package changed, updating...')
+        app.log('package changed, updating...');
         app.analyze().then(() => {
-            const data = app.write().then(res => console.log('package updated!'));
+            const data = app.write().then(res => app.log('package updated!'));
         });
     });
     app.emit('change');

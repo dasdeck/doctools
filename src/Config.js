@@ -21,13 +21,14 @@ class Config extends EventEmitter {
     constructor(data = {}) {
 
         super();
+
+        this.plugins = [];
         this.inputConfig = data;
         // _.assign(this, data);
 
     }
 
     addPlugin(plugin) {
-        this.plugins = this.plugins || [];
         this.plugins.push(plugin);
     }
 
@@ -40,7 +41,6 @@ class Config extends EventEmitter {
     }
 
     loadPlugins(config, app) {
-
 
         config._ = {};
 

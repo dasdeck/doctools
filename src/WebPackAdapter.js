@@ -18,7 +18,7 @@ module.exports = class WebpackAdapter {
                     const file = info.rawRequest;
                     try {
                         if (this.analyzer.app.getResourceByFile(file)) {
-                            console.log(this.analyzer.constructor.name, 'webpack:', file);
+                            this.analyzer.app.log(this.analyzer.constructor.name, 'webpack:', file);
                             if (!this.initialBuild) {
                                 this.analyzer.fileChanged(file);
                             }

@@ -35,7 +35,7 @@ class AssetLinker extends Plugin {
                         assetModule.isAsset = true;
 
                         resource.assets = resource.assets || {};
-                        resource.assets[name] = assetsResource;
+                        resource.assets[name] = this.config.inline ? assetModule : assetsResource;
 
                     }
                 });
@@ -45,6 +45,9 @@ class AssetLinker extends Plugin {
 };
 
 AssetLinker.defaultConfig = {
+
+    inline: false,
+
     getAssets(desc) {
 
         switch (desc.type) {

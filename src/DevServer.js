@@ -69,7 +69,7 @@ class DevServer {
 
         file = path.resolve(file);
 
-        console.log('code changed');
+        this.app.log('code changed');
 
         const sources = glob.sync(__dirname + '/+(src|ui)/**/*.js');
         sources.forEach(file => {
@@ -115,10 +115,10 @@ class DevServer {
             const app = this.getParser().parse(new Config(this.config));
 
             app.on('change', () => {
-                console.log('devServer:', 'change');
+                app.log('devServer:', 'change');
 
-                if(app.analyzes) {
-                    console.log('waiting to finish')
+                if (app.analyzes) {
+                    app.log('waiting to finish')
                     return;
                 }
 
