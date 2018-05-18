@@ -16,7 +16,6 @@ module.exports = class DocTools extends EventEmitter {
 
         super();
 
-
         this.config = config.prepareConfig(this);
 
         if (this.config.file) {

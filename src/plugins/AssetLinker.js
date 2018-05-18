@@ -48,10 +48,6 @@ AssetLinker.defaultConfig = {
 
     inline: false,
 
-    assetLookups() {
-        return [];
-    },
-
     getAssets(desc) {
 
         switch (desc.type) {

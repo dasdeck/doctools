@@ -3,6 +3,10 @@
 -uikitonly once?
 -utils seperate?
 
+loader load raw string
+    -extract hash for caching
+        -respect config
+
 
 -multiple
 

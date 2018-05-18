@@ -8,6 +8,7 @@ const Plugin = require('../Plugin');
 module.exports = class TypeMapper extends Plugin {
 
     constructor() {
+        super();
         this.nodeGlobals = Object.getOwnPropertyNames(global);
     }
 
