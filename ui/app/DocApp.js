@@ -1,20 +1,20 @@
 import Prism from 'prismjs';
 import marked from 'marked';
+import DocBase from './DocBase';
 
 export default {
 
+    extends: DocBase,
 
     methods: {
 
         markdown(markdown) {
-
 
             return marked(markdown, {
                 highlight: (code, lang) => {
                     return this.highlight(code,lang);
                 }
             });
-
         },
 
         highlight(code, lang, frame = false) {

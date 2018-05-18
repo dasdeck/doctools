@@ -38,7 +38,6 @@ function findProps(data, runtime) {
 
 }
 
-
 function findData(data) {
     const res = {};
     data.forEach(el => {
@@ -101,11 +100,16 @@ module.exports = class ComponentMapper extends Plugin {
         const runtime = desc.runtime;
 
         base = 'module.exports';
+
+
+        //find base
         data.all.forEach(entry => {
             if ((entry.type && entry.type.names.includes(data.type)) && entry.kind === 'constant') {
                 base = entry.longname;
             }
         });
+
+        const mod = desc.module.global[base];
 
 
         [
@@ -132,7 +136,15 @@ module.exports = class ComponentMapper extends Plugin {
         });
 
         desc.component = _.pickBy(component, type => _.size(type));
-        desc.component.description = desc.module.global[base] && desc.module.global[base].description;
+
+        if (mod) {
+
+            desc.component.description = mod.description;
+            desc.component.tutorials = mod.tutorials;
+        } else {
+            // debugger;
+            // this.app.log('what is this?')
+        }
 
 
     }

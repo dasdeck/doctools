@@ -18,7 +18,7 @@ module.exports = class DocTools extends EventEmitter {
 
         this.config = config.prepareConfig(this);
 
-        if(this.config.file) {
+        if (this.config.file) {
 
             this.log('config file used: ', this.config.file);
         }
@@ -67,6 +67,10 @@ module.exports = class DocTools extends EventEmitter {
     getResourceByFile(file) {
 
         return _.find(this.resources, res => res.path === file);
+
+    }
+
+    getHash() {
 
     }
 

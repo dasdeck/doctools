@@ -56,7 +56,7 @@ module.exports = class TreeItem extends EventEmitter {
         const data = _.pick(this, [
             'readme',
             'package',
-            'path',
+            // 'path',
             'type',
             'name',
             'resource',
@@ -92,9 +92,8 @@ module.exports = class TreeItem extends EventEmitter {
 
                             _.set(module, targetKey, newValue);
 
-                        } else {
-                            debugger;
                         }
+
                     } else if (_.isFunction(targetKey)) {
                         targetKey(this, module);
                     }
@@ -123,6 +122,13 @@ module.exports = class TreeItem extends EventEmitter {
         }
     }
 
+    patch() {
+
+        this.load();
+        this.app.execPluginCallback('onPatch', this, null, true);
+
+    }
+
     unwatchAsset(file) {
         const asset = this._assets[file];
         if (asset) {
@@ -131,11 +137,8 @@ module.exports = class TreeItem extends EventEmitter {
         }
     }
 
-
-
     dispose() {
         _.forEach(this._assets, asset => asset.close())
     }
-
 
 };

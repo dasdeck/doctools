@@ -1,5 +1,5 @@
 /* eslint-env node */
-
+const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const rules = [
     {
         test: /\.css$/,
@@ -53,6 +53,10 @@ const base = {
     devServer: DevServer.webPackConfig,
 
     mode: 'development',
+
+    plugins: [
+        new VueLoaderPlugin
+    ],
 
     devtool: 'inline-sourcemap',
 

@@ -17,6 +17,7 @@
 
 /**
  * a great compnent
+ * @tutorial unrelatedName
  */
 export default {
 

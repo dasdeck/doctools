@@ -1,5 +1,5 @@
 /* eslint-env node */
-const glob_entries = require('webpack-glob-entries')
+const glob_entries = require('webpack-glob-entries');
 
 const rules = [
     {

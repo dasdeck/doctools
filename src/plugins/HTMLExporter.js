@@ -67,13 +67,13 @@ class HTMLExporter extends Plugin {
     prepareDocApp() {
 
       const app = this.app;
-      const {DocPage, DocBase, ExampleRunner} = require('./MarkdownAdapter.min.js');
+      const {DocPage, DocBase, ExampleRunner, Registry} = require('./MarkdownAdapter.min.js');
 
       const exporter = this;
 
       const Vue = require('vue/dist/vue');
 
-      _.assign(ExampleRunner.runners, this.app.config.runners, this.config.runners);
+      _.assign(Registry.runners, this.app.config.runners, this.config.runners);
 
       if (this.config.markdown) {
         DocBase.methods.markdown = this.config.markdown;

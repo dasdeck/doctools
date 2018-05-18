@@ -40,7 +40,6 @@
 
 <script>
 
-import 'uikit-ssr';
 import copyToCB from 'copy-text-to-clipboard';
 
 const langMap = {
@@ -49,9 +48,18 @@ const langMap = {
     'html': 'text/html'
 };
 
-const ExampleRunner = {
-
+const Registry = {
     runners: {},
+    examples: {},
+    runtime: {}
+
+}
+
+export {
+    Registry
+};
+
+export default {
 
     props: {
         id: String,
@@ -59,7 +67,7 @@ const ExampleRunner = {
         data: {
             type: Object,
             default() {
-                return ExampleRunner.examples[this.id] || null;
+                return Registry.examples[this.id] || null;
             }
         }
     },
@@ -120,7 +128,7 @@ const ExampleRunner = {
 
 
         runtime() {
-            return this.dynamicRuntime || ExampleRunner.runtime[this.data.resource];
+            return this.dynamicRuntime || Registry.runtime[this.data.resource];
         },
 
         moduleName() {
@@ -151,19 +159,10 @@ const ExampleRunner = {
             return this.runner && this.runner.getLanguage(this.code);
         },
 
-        // type() {
-        //     return this.data && this.data.lang.split(':').pop();
-        // },
-
         runner() {
-            return ExampleRunner.runners[this.data.runnerName];
+            return Registry.runners[this.data.runnerName];
         }
     }
 }
-
-ExampleRunner.examples = {};
-ExampleRunner.runtime = {};
-
-export default ExampleRunner;
 
 </script>

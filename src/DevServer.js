@@ -112,15 +112,10 @@ class DevServer {
 
         if (!this.app) {
 
-            const app = this.getParser().parse(new Config(this.config));
+            const app = this.getParser().parse(this.config);
 
             app.on('change', () => {
                 app.log('devServer:', 'change');
-
-                if (app.analyzes) {
-                    app.log('waiting to finish')
-                    return;
-                }
 
                 app.analyze().then(() => {
                     const data = app.get();

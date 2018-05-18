@@ -11,13 +11,13 @@ import Prism from 'vue-prism-component';
 
 import Doc from './app/Doc.vue';
 import DocPage from './app/DocPage.vue';
-import ExamplerRunner from './app/ExampleRunner.vue';
+import ExamplerRunner, {Registry} from './app/ExampleRunner.vue';
 
 import vuerunner from '../src/runnner/VueRunner'
 import uikitrunner from '../src/runnner/UIkitRunner'
 
-ExamplerRunner.runners['vue'] = new vuerunner;
-ExamplerRunner.runners['uikit'] = new uikitrunner;
+Registry.runners['vue'] = new vuerunner;
+Registry.runners['uikit'] = new uikitrunner;
 
 Vue.use(VueRouter);
 

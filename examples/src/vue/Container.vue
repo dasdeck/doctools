@@ -1,6 +1,8 @@
 <template>
 
-  <Modal>super simple modal</Modal>
+    <div>
+        <Modal>super simple modal</Modal>
+    </div>
 
 </template>
 
@@ -8,6 +10,9 @@
 
 import Modal from './Modal.vue';
 
+/**
+ * @tutorial Container
+ */
 export default {
 
     components: {
@@ -15,15 +20,16 @@ export default {
     },
 
     created() {
-        
+
         /**
          * @event test
          * @kind Trigger
          * @param {String} a - parameter a
-         * 
+         *
          **/
         this.$trigger('test', ['a', 'b']);
     }
 
-}
+};
+
 </script>

@@ -8,9 +8,9 @@
 <script>
 
 import {omit} from 'lodash-es';
-import Vue from 'vue';
+// import Vue from 'vue';
 
-import ExampleRunner from '../ExampleRunner.vue';
+import ExampleRunner, {Registry} from '../ExampleRunner.vue';
 import ModuleComp from './ModuleComp.js';
 
 
@@ -89,9 +89,9 @@ const Markdown = {
 
         addRunner(code, [lang, runnerName]) {
 
-            if (ExampleRunner.runners[runnerName]) {
+            if (Registry.runners[runnerName]) {
 
-                const runner = ExampleRunner.runners[runnerName];
+                const runner = Registry.runners[runnerName];
 
                 if (runner && runner.plain) {
 
@@ -143,7 +143,7 @@ const Markdown = {
 
                     if (el) {
 
-                        const ExampleRunnnerComp = Vue.extend(ExampleRunner);
+                        const ExampleRunnnerComp = this.constructor.extend(ExampleRunner);
                         data.instance = new ExampleRunnnerComp({propsData: {data, dynamicRuntime}, el});
 
                     } else if (retry) {

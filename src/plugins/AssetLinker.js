@@ -48,6 +48,10 @@ AssetLinker.defaultConfig = {
 
     inline: false,
 
+    assetLookups() {
+        return [];
+    },
+
     getAssets(desc) {
 
         switch (desc.type) {
@@ -55,7 +59,7 @@ AssetLinker.defaultConfig = {
         case 'package':
 
             return {
-                readme: path.join(path.dirname(desc.path),  'README.md')
+                readme: path.join(path.dirname(desc.path), 'README.md')
             };
 
             break;

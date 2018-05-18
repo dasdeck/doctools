@@ -40,7 +40,7 @@
     import PackageTree from './sidebar/PackageTree.vue';
     import FileTree from './sidebar/FileTree.vue';
     import Menu from './sidebar/Menu.vue';
-    import DocBase from './DocBase.js';
+    import DocApp from './DocApp.js';
     import {size} from 'lodash'
 
     /**
@@ -54,7 +54,7 @@
             Menu
         },
 
-        extends: DocBase,
+        extends: DocApp,
 
         ref: '$doc',
 

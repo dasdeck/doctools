@@ -17,19 +17,7 @@ class Module extends TreeItem {
 
     }
 
-    load() {
 
-        super.load();
-    }
-
-
-    patch() {
-
-        super.load();
-
-        this.app.execPluginCallback('onPatch', this, null, true);
-
-    }
 
 }
 
