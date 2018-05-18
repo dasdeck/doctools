@@ -24,7 +24,7 @@ module.exports = {
     ],
 
     plugins: [
-        // 'RuntimeAnalyzer',
+        'RuntimeAnalyzer',
         'ModuleMapper',
         'UIkitComponentMapper',
         'VueComponentMapper',

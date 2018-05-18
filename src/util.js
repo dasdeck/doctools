@@ -176,7 +176,7 @@ module.exports = {
         if (runtime && runtime['props']) {
 
             const realProps = runtime['props'];
-            const ukDefaults = runtime['data'];
+            const ukDefaults = _.isPlainObject(runtime['data']) && runtime['data'];
 
             _.forEach(props, prop => {
 

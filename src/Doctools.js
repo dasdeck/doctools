@@ -16,6 +16,7 @@ module.exports = class DocTools extends EventEmitter {
 
         super();
 
+
         this.config = config.prepareConfig(this);
 
         if (this.config.file) {
@@ -99,15 +100,12 @@ module.exports = class DocTools extends EventEmitter {
 
         return this.analyzes;
 
-
     }
 
     get() {
 
         const data = {
-            resources: _.mapValues(this.resources, res => res.serialize()),
-            nodeGlobals: Object.getOwnPropertyNames(global),
-            rootPackage: 'package.json'
+            resources: _.mapValues(this.resources, res => res.serialize())
         };
 
         this.execPluginCallback('onGet', this, data);

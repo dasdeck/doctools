@@ -7,13 +7,13 @@ const Plugin = require('../Plugin');
 
 module.exports = class TypeMapper extends Plugin {
 
-    onLink(app) {
-
+    constructor() {
+        this.nodeGlobals = Object.getOwnPropertyNames(global);
     }
 
     onGet(app, data) {
 
-        data.nodeGlobals = Object.getOwnPropertyNames(global);
+        data.nodeGlobals = this.nodeGlobals;
 
         data.types = _.reduce(app.resources, (types, res) => {
 

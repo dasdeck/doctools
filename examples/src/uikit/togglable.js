@@ -48,7 +48,7 @@ export default {
         queued: Boolean
     },
 
-    defaults: {
+    data: {
         cls: false,
         animation: [false],
         duration: 200,
