@@ -1,25 +1,13 @@
 const _ = require('lodash');
 const fs = require('fs');
 const util = require('../util');
-const Loader = require('../Loader');
+const DefaultLoader = require('./DefaultLoader');
 
-class MarkdownLoader extends Loader {
+class MarkdownLoader extends DefaultLoader {
 
     constructor(config = MarkdownLoader.defaultOptions) {
-        super();
-        this.config = config;
+        super(config);
         _.defaults(this.config, MarkdownLoader.defaultOptions);
-    }
-
-    match(file) {
-        return util.match(this.config, file);
-    }
-
-    load(file, desc) {
-
-        desc.type = 'markdown';
-        desc.watchAsset(file, 'readme');
-
     }
 
 }
@@ -27,6 +15,8 @@ class MarkdownLoader extends Loader {
 MarkdownLoader.defaultOptions = {
 
     include: '**/*.md',
+    type: 'markdown',
+    member: 'readme'
 
 }
 

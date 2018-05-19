@@ -69,7 +69,6 @@ class DevServer {
 
         file = path.resolve(file);
 
-        this.app.log('code changed');
 
         const sources = glob.sync(__dirname + '/+(src|ui)/**/*.js');
         sources.forEach(file => {
@@ -78,6 +77,8 @@ class DevServer {
 
 
         if (this.app) {
+
+            this.app.log('code changed');
 
             this.app.dispose();
             this.app = null;

@@ -17,10 +17,10 @@ class DefaultLoader extends Loader {
         return util.match(this.config, file, {recursive: false});
     }
 
-    load(file, desc) {
+    load(source, desc) {
 
-        desc.watchAsset(file, this.config.member);
 
+        desc[this.config.member] = source;
         _.assign(desc, {
             type: this.config.type,
             ...this.config.desc

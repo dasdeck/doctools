@@ -47,7 +47,7 @@ class RuntimeAnalyzer extends Plugin {
         //deregister all local watcher in favor of webpack's watcher
         if (this.config.watch) {
             this.getRuntimeModules().forEach(module => {
-                module.unwatchAsset(module.path);
+                module.unwatch();
             });
         }
     }

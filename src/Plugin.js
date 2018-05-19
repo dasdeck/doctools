@@ -41,7 +41,7 @@ module.exports = class Plugin extends EventEmitter {
     onMapModule(desc) {}
 
     //single module!
-    onPatch(desc) {}
+    onLoadModule(desc) {}
 
     //single module
     onSerialize(desc) {}

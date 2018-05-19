@@ -11,14 +11,12 @@ class PackageLoader extends Loader {
         return path.basename(file) === 'package.json';
     }
 
-    load(file, desc) {
+    load(source, desc) {
 
         const app = desc.app;
 
-        desc.watchAsset(file, (watcher, module) => {
-            module.packageJson = JSON.parse(fs.readFileSync(file));
-            module.name = module.packageJson.name;
-        });
+        desc.packageJson = JSON.parse(source);
+        desc.name = desc.packageJson.name;
 
         desc.type = 'package';
 

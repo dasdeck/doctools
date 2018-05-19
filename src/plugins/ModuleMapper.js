@@ -44,7 +44,7 @@ class ModuleMapper extends Plugin {
     }
 
 
-    onPatch(desc) {
+    onLoadModule(desc) {
 
         this.app.log('jsdoc cleared', desc.name, !!desc.jsdoc);
         delete desc.jsdoc;
@@ -145,10 +145,10 @@ class ModuleMapper extends Plugin {
                 const name = el.type && el.type.names[0] || el.longname;
 
                 if (res.types[name]) {
-                    desc.log('type already defined in package:', name);
+                    desc.app.log('type already defined in package:', name);
                 } else {
 
-                    desc.log('found type:', name);
+                    desc.app.log('found type:', name);
                     res.types[name] = desc.resource;
 
                 }

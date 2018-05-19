@@ -10,43 +10,36 @@ module.exports = class VueLoader extends Loader {
         return _.endsWith(file, '.vue');
     }
 
-    load(file, desc) {
+    load(source, desc) {
 
         try {
-            return this.unpack(file, desc);
+            return this.unpack(source, desc);
         } catch (e) {
             console.warn('error loading vue component', file);
         }
         return {script: ''};
     }
 
-    unpack(file, desc) {
+    unpack(source, desc) {
 
-        // const text = fs.readFileSync(file, 'utf8');
+        const res = vueComiler.parseComponent(source);
 
-        desc.watchAsset(file, watcher => {
-            const module = watcher.module;
-            const text = fs.readFileSync(file, 'utf8');
+        const template = res.template && res.template.content.trim() !== '' && {template: res.template.content.trim()};
+        const script = res.script && res.script.content.trim();
 
-            const res = vueComiler.parseComponent(text);
+        _.assign(desc, {
+            type: 'VueComponent',
+            template,
+            script,
+            runtime: true
+        });
 
-            const template = res.template && res.template.content.trim() !== '' && {template: res.template.content.trim()};
-            const script = res.script && res.script.content.trim();
+        res.customBlocks.forEach(el => {
+            if (el.type === 'docs' && !el.attrs || el.attrs.name === 'readme') {
+                desc.readme = el.content;
+            }
+        });
 
-            _.assign(module, {
-                type: 'VueComponent',
-                template,
-                script,
-                runtime: true
-            });
-
-            res.customBlocks.forEach(el => {
-                if (el.type === 'docs' && !el.attrs || el.attrs.name === 'readme') {
-                    desc.readme = el.content;
-                }
-            });
-
-        }, true, true);
 
 
     }

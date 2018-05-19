@@ -231,8 +231,8 @@ module.exports = class DocTools extends EventEmitter {
 
             if (loader.match(file)) {
 
-                const module = loader.createModule && loader.createModule(this, file, null)
-                    || new Module(this, file , pack, loader);
+                const module = loader.createModule && loader.createModule(this, file)
+                    || new Module(this, file, loader);
 
 
                 if (this.resources[module.resource]) {

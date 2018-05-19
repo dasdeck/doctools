@@ -7,6 +7,7 @@ loader load raw string
     -extract hash for caching
         -respect config
 
+-give runtime analyzer a filter instead of assigning from module
 
 -multiple
 
