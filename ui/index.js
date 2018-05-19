@@ -2,7 +2,6 @@ import Vue from 'vue';
 import VueRouter from 'vue-router';
 import SockJS from 'sockjs-client';
 
-
 import 'prismjs'
 import 'prismjs/themes/prism.css'
 import _ from 'lodash-es';
@@ -15,6 +14,10 @@ import ExamplerRunner, {Registry} from './app/ExampleRunner.vue';
 
 import vuerunner from '../src/runnner/VueRunner'
 import uikitrunner from '../src/runnner/UIkitRunner'
+
+import ui from '@base/doctools.ui.config.js';
+
+ui(Vue)
 
 Registry.runners['vue'] = new vuerunner;
 Registry.runners['uikit'] = new uikitrunner;

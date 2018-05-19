@@ -100,10 +100,10 @@
             "request": "launch",
             "name": "uikit (server)",
             "program": "${workspaceFolder}/bin/doctools.js",
-            "cwd": "/Users/jms/uikit",
+            "cwd": "/Users/jms/uikit-doctools",
             "console": "internalConsole",
             "args": [
-                "/Users/jms/uikit",
+                "/Users/jms/uikit-doctools",
                 "--dev",
                 "--server"
             ]
