@@ -60,8 +60,10 @@ const Markdown = {
             this.processCodeBlocks(markdown, ([text, fence, lang, code]) => {
 
                 if(lang.includes(':')) {
+
                     const replacement = this.addRunner(code, lang.split(':').map(e => e.trim()));
                     markdown = markdown.replace(text, replacement);
+
                 }
             });
 

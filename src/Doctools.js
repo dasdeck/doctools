@@ -110,7 +110,9 @@ module.exports = class DocTools extends EventEmitter {
 
     writeCache() {
         _.forEach(this.resources, res => {
-            res.writeCache();
+            const data = {};
+            this.execPluginCallback('onWriteModuleCache', res, data)
+            res.writeCache(data);
         })
     }
 
@@ -233,7 +235,7 @@ module.exports = class DocTools extends EventEmitter {
     }
 
     getCacheDir() {
-        return path.join(this.config.base, '.doctools','_cache');
+        return path.join(this.config.cache && (this.config.cache.dir || this.config.base), '.doctools','_cache');
     }
 
     loadFile(file) {

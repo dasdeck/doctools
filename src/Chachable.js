@@ -39,9 +39,9 @@ module.exports = {
         return fs.existsSync(this.getCacheFile()) || rimraf.sync(this.getCacheDir());
     },
 
-    writeCache() {
+    writeCache(data = this.getState()) {
         mkpath.sync(this.getCacheDir());
-        fs.writeFileSync(this.getCacheFile(), JSON.stringify(this.getState(), null, 2));
+        fs.writeFileSync(this.getCacheFile(), JSON.stringify(data, null, 2));
     },
 
     restoreCache() {

@@ -33,6 +33,7 @@ module.exports = class Plugin extends EventEmitter {
 
     onWriteCache(app) {}
 
+    onWriteModuleCache(desc) {}
     /**
      *
      * @param {Object} desc

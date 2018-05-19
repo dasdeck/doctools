@@ -19,12 +19,6 @@ export default {
 
     inject: ['$doc'],
 
-    // created() {
-    //     if (!isString(this.resource)) {
-    //         debugger;
-    //     }
-    // },
-
     methods: {
         isUndefined
     }

@@ -43,6 +43,10 @@ class ModuleMapper extends Plugin {
 
     }
 
+    onWriteModuleCache(desc, data) {
+        data.jsdoc = desc.jsdoc;
+    }
+
 
     onLoadModule(desc) {
 

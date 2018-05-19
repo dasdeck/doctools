@@ -34,7 +34,6 @@ module.exports = class Module {
         this.resource = this.config.getResourceUri(this);
         this.loader = loader;
 
-
         if (this.app.config.watch) {
 
             this.watcher = chokidar.watch(this.path);
@@ -46,10 +45,6 @@ module.exports = class Module {
 
         this.load();
 
-    }
-
-    getState() {
-        return _.omit(this, ['app', 'config', 'loader', 'watcher']);
     }
 
     setState(state) {
@@ -70,13 +65,13 @@ module.exports = class Module {
             this._raw = fs.readFileSync(this.path, 'utf8');
             this._hash = util.hash(this._raw);
 
+
+
+            this.loader.load(this._raw, this);
+            this.app.execPluginCallback('onLoadModule', this, null, true);
+
             if(this.checkCache()) {
-
                 this.restoreCache();
-
-            } else {
-                this.loader.load(this._raw, this);
-                this.app.execPluginCallback('onLoadModule', this, null, true);
             }
 
         } else {

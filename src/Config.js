@@ -137,6 +137,11 @@ Config.defaultConfig = {
     base: process.cwd(),
 
     /**
+     * overwrite the default cachedir (config.base)
+     */
+    cachedir: true,
+
+    /**
      * enables 'hot reload' for the parser code
      * usefule wehn working on the actual parser code
      * @type {Boolean}
