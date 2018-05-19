@@ -48,7 +48,6 @@
     "copy-text-to-clipboard": "^1.0.4",
     "css-loader": "^0.28.11",
     "glob": "^7.1.2",
-    "uikit-ssr": "^1.0.0",
     "htmltidy2": "^0.3.0",
     "jasmine": "^3.1.0",
     "jsdoc-api": "^4.0.3",

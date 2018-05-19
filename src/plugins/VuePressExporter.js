@@ -3,7 +3,7 @@ const path = require('path');
 const fs = require('fs');
 const mkpath = require('mkpath');
 const _ = require('lodash');
-// const prismjs = require('prismjs');
+
 /**
  * attemts to load the described class
  * mark module for runtime analysis by setting a member runtime = true

@@ -1,9 +1,5 @@
 const _ = require('lodash');
-// const jsdoc = require('jsdoc-api');
 const Plugin = require('../Plugin');
-// const util = require('../util');
-// const fs = require('fs');
-// const path = require('path');
 
 module.exports = class TypeMapper extends Plugin {
 
