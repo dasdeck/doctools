@@ -8,7 +8,6 @@
 <script>
 
 import {omit} from 'lodash-es';
-// import Vue from 'vue';
 
 import ExampleRunner, {Registry} from '../ExampleRunner.vue';
 import ModuleComp from './ModuleComp.js';
@@ -24,12 +23,7 @@ const Markdown = {
 
     props:{
         data: Object,
-        text: {
-            type: String,
-            default() {
-                return this.data.readme;
-            }
-        },
+        text: String,
 
     },
 
@@ -114,10 +108,6 @@ const Markdown = {
 
                 }
             }
-            // else {
-            //     debugger
-            //     return this.renderCode(code, lang);
-            // }
         },
 
         clearRunners() {
@@ -176,9 +166,15 @@ const Markdown = {
     },
 
     computed: {
+
+        sourceText() {
+            return this.text || this.data && this.data.readme;
+        },
+
         html() {
-            return this.text && this.markdown(this.text);
+            return this.sourceText && this.markdown(this.sourceText);
         }
+
     }
 }
 

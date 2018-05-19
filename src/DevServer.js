@@ -14,7 +14,6 @@ class DevServer {
         this.router = router;
         this.config = config;
 
-
         if (config.dev) {
 
             fs.watch(__dirname, {recursive: true}, (e, file) => this.sourceChanged(file));
@@ -159,6 +158,18 @@ DevServer.startWebpackDevServer = function() {
     const cfg = path.join(__dirname, '..', 'ui', 'webpack.config.js');
     const wpConfig = require(cfg);
     const portfinder = require('portfinder');
+
+    wpConfig.resolve = {
+        alias: {
+            '@base': global.doctoolsConfig.base
+        }
+    };
+
+    if (!fs.existsSync(path.join(global.doctoolsConfig.base, 'doctools.ui.config.js'))) {
+        wpConfig.externals = wpConfig.externals || {};
+        wpConfig.externals['@base/doctools.ui.config.js'] = 'Vue => {}';
+
+    }
 
     const compiler = Webpack(wpConfig);
 
