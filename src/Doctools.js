@@ -73,7 +73,7 @@ module.exports = class DocTools extends EventEmitter {
     }
 
     getHash() {
-
+        return this.config.hash;
     }
 
     analyze() {
@@ -88,6 +88,11 @@ module.exports = class DocTools extends EventEmitter {
             .then(() => {
                 this.execPluginCallback('onMap', this);
                 this.execPluginCallback('onLink', this);
+
+                this.execPluginCallback('onWriteCache', this);
+
+                this.writeCache();
+
                 this.analyzes = null;
                 this.log('done analyze');
 
@@ -102,6 +107,13 @@ module.exports = class DocTools extends EventEmitter {
         return this.analyzes;
 
     }
+
+    writeCache() {
+        _.forEach(this.resources, res => {
+            res.writeCache();
+        })
+    }
+
 
     get() {
 

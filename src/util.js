@@ -3,7 +3,7 @@ const _ = require('lodash');
 const path = require('path');
 const fs = require('fs');
 const getTypesRaw = arr => arr ? arr.join(' | ') : '';
-
+const xxhash = require('xxhash');
 
 module.exports = {
 
@@ -11,6 +11,10 @@ module.exports = {
 
     match: require('megamatch'),
 
+    hash(input) {
+        input = _.isPlainObject(input) && JSON.stringify(input) || input;
+        return xxhash.hash(Buffer.from(input, 'utf8'), 666);
+    },
 
     /**e
      * scapes a string to be a valid variable name

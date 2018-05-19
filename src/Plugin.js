@@ -6,6 +6,7 @@ module.exports = class Plugin extends EventEmitter {
     constructor() {
 
         super();
+
         this.setMaxListeners(0);
 
     }
@@ -29,6 +30,8 @@ module.exports = class Plugin extends EventEmitter {
     onPrepare(app) {}
 
     onAnalyze(app) {}
+
+    onWriteCache(app) {}
 
     /**
      *

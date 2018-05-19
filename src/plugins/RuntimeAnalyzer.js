@@ -7,7 +7,7 @@ const webpack = require('webpack');
 const MemFs = require('memory-fs');
 const requireFromString = require('require-from-string');
 const path = require('path');
-const mkpath = require('mkpath');
+const Cachable = require('../Chachable');
 
 /**
  * attemts to load the described class
@@ -18,6 +18,8 @@ class RuntimeAnalyzer extends Plugin {
     constructor(config = RuntimeAnalyzer.defaultOptions) {
 
         super();
+
+        _.extend(this, Cachable);
 
         this.config = config;
 
@@ -44,6 +46,10 @@ class RuntimeAnalyzer extends Plugin {
     }
 
     onPrepare(app) {
+
+        if (this.checkCache()) {
+            this.restoreCache();
+        }
         //deregister all local watcher in favor of webpack's watcher
         if (this.config.watch) {
             this.getRuntimeModules().forEach(module => {
@@ -65,6 +71,29 @@ class RuntimeAnalyzer extends Plugin {
 
         const jobs = this.getRuntimeModules().map(resource => this.analyzeRuntime(resource));
         return Promise.all(jobs);
+
+    }
+
+    getHash() {
+        const runtime = this.getRuntimeModules();
+        const hash = util.hash(_.mapValues(runtime, mod => mod.getHash()));
+        return hash;
+    }
+
+    getState() {
+        return {script: this.script};
+    }
+
+    setState(state) {
+        if (this.script !== state.script) {
+            this.script = state.script;
+            this.scriptChanged();
+        }
+    }
+
+    getChacheName() {
+
+        return 'RuntimeAnalyzer';
 
     }
 
@@ -133,6 +162,7 @@ class RuntimeAnalyzer extends Plugin {
         }
 
     }
+
 
 
 

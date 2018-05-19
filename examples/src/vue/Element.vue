@@ -41,6 +41,7 @@
      * An Element represents an Element in the layout-editor of the Builder.
      * It implicitly extends `Node`.
      * @extends Node
+     * @tutorial test
      */
     export default {
 

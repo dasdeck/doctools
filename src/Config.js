@@ -4,7 +4,7 @@ const path = require('path');
 const fs = require('fs');
 const {EventEmitter} = require('events');
 const chokidar = require('chokidar');
-
+const util = require('./util');
 /**
  * @file
  * @type {example}
@@ -120,6 +120,8 @@ class Config extends EventEmitter {
 
 
         this.loadPlugins(config, app);
+
+        config.hash = util.hash(config);
 
         return config;
     }

@@ -1,15 +1,19 @@
 /* eslint-env node*/
 
-const utils = require('./util');
+const util = require('./util');
 const fs = require('fs');
 const chokidar = require('chokidar');
 const path = require('path');
 const _ = require('lodash');
 const mkpath = require('mkpath');
-const xxhash = require('xxhash');
+const Chachable = require('./Chachable');
+
 module.exports = class Module {
 
     constructor(app, file , loader) {
+
+
+        _.extend(this, Chachable);
 
         this.app = app;
 
@@ -52,39 +56,29 @@ module.exports = class Module {
         _.assign(this, state);
     }
 
-    getCacheFile() {
-        return path.join(this.app.getCacheDir(), this.resource, this.getHash() + '.json');
-    }
-
-    getCacheDir() {
-        return path.dirname(this.getCacheFile());
-    }
-
-    storeCache() {
-        mkpath.sync(this.getCacheDir());
-        fs.writeFileSync(this.getCacheFile(), JSON.stringify(this.getState(), null, 2));
-    }
-
-    checkCache() {
-        return fs.existsSync(this.getCacheFile()) || fs.rmdirSync(this.getCacheDir());
-    }
-
-    restoreCache() {
-        const state = JSON.parse(fs.readFileSync(this.getCacheFile(), 'utf8'));
-        this.setState(state);
+    getChacheName() {
+        return this.resource;
     }
 
     getHash() {
-        return xxhash.hash(Buffer.from(this._raw, 'utf8'), 0xCAFEBABE);
+        return this._hash;
     }
 
     load() {
 
         if (this.loader) {
             this._raw = fs.readFileSync(this.path, 'utf8');
-            this.loader.load(this._raw, this);
-            this.app.execPluginCallback('onLoadModule', this, null, true);
-            this.storeCache();
+            this._hash = util.hash(this._raw);
+
+            if(this.checkCache()) {
+
+                this.restoreCache();
+
+            } else {
+                this.loader.load(this._raw, this);
+                this.app.execPluginCallback('onLoadModule', this, null, true);
+            }
+
         } else {
             throw 'no loader!';
         }
