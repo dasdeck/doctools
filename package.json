@@ -58,6 +58,7 @@
     "markdown-it": "^8.4.1",
     "marked": "^0.3.19",
     "minimist": "^1.2.0",
+    "xxhash": "^0.2.4",
     "mkpath": "^1.0.0",
     "portfinder": "^1.0.13",
     "pretty": "^2.0.0",

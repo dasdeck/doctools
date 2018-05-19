@@ -23,6 +23,8 @@ module.exports = class DocTools extends EventEmitter {
             this.log('config file used: ', this.config.file);
         }
 
+        mkpath.sync(this.getCacheDir());
+
         this.execPluginCallback('onLoad', this, true);
 
         this.resources = {};
@@ -216,6 +218,10 @@ module.exports = class DocTools extends EventEmitter {
 
         })
 
+    }
+
+    getCacheDir() {
+        return path.join(this.config.base, '.doctools','_cache');
     }
 
     loadFile(file) {
