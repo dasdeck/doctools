@@ -26,7 +26,6 @@ inside `package.json``
 ```js
 module.exports = {
     base: __dirname,
-    search: '+(src|ui)/**/*.+(js|vue)',
     developMode: false,
     /**
      * @type

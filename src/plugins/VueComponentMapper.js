@@ -5,18 +5,17 @@ const util = require('../util');
 
 module.exports = class VueComponentMapper extends ComponentMapper {
 
-    /**
-     *
-     * @param {*} desc
-     */
-    matchesType(desc) {
-        return desc.type === 'VueComponent' || _.endsWith(desc.path, '.vue');
-    }
 
-    onMap(desc) {
+    onMapModule(desc) {
 
-        this.mapComponent(desc);
-        this.parseTemplate(desc);
+        if(desc.type !== 'VueComponent') {
+            return;
+        }
+        super.onMapModule(desc);
+
+        if (desc.template) {
+            this.parseTemplate(desc);
+        }
 
         if(desc.component.trigger) {
 
@@ -30,8 +29,8 @@ module.exports = class VueComponentMapper extends ComponentMapper {
                 trigger.params = params;
                 trigger.tables = tables;
 
-                desc.package.globals.trigger = desc.package.globals.trigger || [];
-                desc.package.globals.trigger.push(trigger);
+                // desc.package.globals.trigger = desc.package.globals.trigger || [];
+                // desc.package.globals.trigger.push(trigger);
 
             });
 

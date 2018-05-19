@@ -1,5 +1,4 @@
 const Plugin = require('../Plugin');
-const Package = require('../Package');
 const path = require('path');
 const fs = require('fs');
 const _ = require('lodash');
@@ -42,8 +41,6 @@ class MarkdownExporter extends Plugin {
             filter: ''
           }
       }
-
-
 
       const comp = {
           ...Content,
@@ -103,7 +100,7 @@ class MarkdownExporter extends Plugin {
         props:['language']
       });
 
-      const dir = this.config.output && pack.resolvePath(this.config.output);
+      const dir = this.config.output && this.app.resolvePath(this.config.output);
       try {
         if (dir) {
           fs.mkdirSync(dir)

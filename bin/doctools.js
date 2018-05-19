@@ -1,22 +1,20 @@
 #!/usr/bin/env node
-/* eslint-env node */
 const path = require('path');
 const _ = require('lodash');
-// const DocTools = require('../src/Doctools');
 const parser = require('../src/parser');
-
+const Config = require('../src/Config');
+const DocTools = require('../src/Doctools');
 
 let config = {};
 
-
 const minimistConf = {
     '--': true,
-    boolean: ['dev', 'explain', 'server'],
+    boolean: ['dev', 'explain', 'server', 'watch'],
     string: ['config', 'search'],
     alias: {
         config: ['c', '--config'],
+        watch: ['w', '--watch'],
         server: ['serv', '--server'],
-        search: ['s', '--search'],
         dev: ['d', '--dev'],
         explain: ['e', '--explain']
     }
@@ -26,19 +24,18 @@ const argv = require('minimist')(process.argv.slice(2), minimistConf);
 
 if (process.mainModule.filename === __filename) {
 
-
     config.base = argv._[0];
      //set base default early, for webpack dev server
-    config.search = argv.search;
     config.dev = argv.dev;
+    config.watch = argv.watch;
     config.config = argv.config;
     config.server = argv.server;
+
 } else {
 
-    throw 'do not include this file elsewhere!'
+    throw 'do not include this file elsewhere!';
 
 }
-
 
 /**
  *
@@ -51,37 +48,40 @@ if (process.mainModule.filename === __filename) {
  */
 
 
-
-
 if (argv.explain) {
 
     config.watch = false;
 
-    const pack = parser.parse(config);
+    config = new Config(config);
 
-    pack.analyze().then(() => {
-        const data = pack.get();
+    const app = new DocTools(config);
+
+    app.analyze().then(() => {
+        const data = app.get();
         console.log(data);
-        pack.dispose();
     });
 
 } else if (config.server) {
 
     config.watch = true;
-    global.doctoolsConfig = parser.prepareConfig(config);
+
+    global.doctoolsConfig = config;
+
     require('../src/DevServer').startWebpackDevServer();
 
 } else {
 
-    const pack = parser.parse(config);
+    config = new Config(config);
 
-    pack.on('change', res => {
-        console.log('package changed, updating...')
-        pack.analyze().then(() => {
-            const data = pack.write().then(res => console.log('package updated!'));
+    const app = new DocTools(config);
+
+    app.on('change', res => {
+        app.log('package changed, updating...');
+        app.analyze().then(() => {
+            const data = app.write().then(res => app.log('package updated!'));
         });
     });
-    pack.emit('change');
+    app.emit('change');
 
 }
 

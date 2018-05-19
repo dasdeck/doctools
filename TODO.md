@@ -3,6 +3,16 @@
 -uikitonly once?
 -utils seperate?
 
+loader load raw string
+    -extract hash for caching
+        -respect config
+
+-give runtime analyzer a filter instead of assigning from module
+
+-multiple
+
+-mode serializations to single plugins
+
 -change to markdown-it
 
 -reactive uikit tabs

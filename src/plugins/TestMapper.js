@@ -10,19 +10,11 @@ let base; //= 'module.exports';
  * it can also enrich the jsdoc structure with valuable runtime informations
  */
 
-
 const Plugin = require('../Plugin');
 
 module.exports = class TestMapper extends Plugin {
 
-    onSerialize(desc, data) {
-    }
-
-    onMap(desc) {
-    }
-
 };
-
 
 const fs = require('fs');
 const {deIndent} = require('./util');

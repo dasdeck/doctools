@@ -1,5 +1,5 @@
 /* eslint-env node */
-
+const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const rules = [
     {
         test: /\.css$/,
@@ -54,7 +54,11 @@ const base = {
 
     mode: 'development',
 
-    // devtool: 'inline-sourcemap',
+    plugins: [
+        new VueLoaderPlugin
+    ],
+
+    devtool: 'inline-sourcemap',
 
     externals,
 
@@ -62,7 +66,6 @@ const base = {
         rules
     }
 };
-
 
 
 module.exports = base;

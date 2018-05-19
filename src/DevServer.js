@@ -5,12 +5,13 @@ const fs = require('fs');
 const path = require('path');
 const WebpackDevServer = require('webpack-dev-server');
 const Webpack = require('webpack');
+const Config = require('./Config');
 
 class DevServer {
 
-    constructor(config, app) {
+    constructor(config, router) {
 
-        this.app = app;
+        this.router = router;
         this.config = config;
 
 
@@ -24,37 +25,37 @@ class DevServer {
 
     }
 
-    createRoutes(app = this.app, server = this) {
+    createRoutes(router = this.router, server = this) {
 
         const index = fs.readFileSync(__dirname + '/../ui/index.html', 'utf8');
 
-        app.get('/data.json', (req, res, next) => {
+        router.get('/data.json', (req, res, next) => {
 
-            const pack = server.getPack();
+            const app = server.getPack();
 
-            pack.analyze().then(() => {
-                const data = pack.get();
-                pack.logFile('output', data);
+            app.analyze().then(() => {
+                const data = app.get();
+                app.logFile('output', data);
                 res.json(data);
                 next();
             });
 
         });
 
-        app.get('/data', (req, res, next) => {
+        router.get('/data', (req, res, next) => {
 
-            const pack = server.getPack();
-            pack.emit('change');
+            const app = server.getPack();
+            app.emit('change');
 
             res.send('ok');
             // next();
 
         });
 
-        app.get('*', function(request, response, next) {
+        router.get('*', function(request, response, next) {
 
-            const pack = server.getPack();
-            const resources = pack.getResources();
+            const app = server.getPack();
+            const resources = app.resources;
             if (resources[request.url.substr(1)] || request.url === '/') {
 
                 response.send(index);
@@ -68,7 +69,6 @@ class DevServer {
 
         file = path.resolve(file);
 
-        console.log('code changed');
 
         const sources = glob.sync(__dirname + '/+(src|ui)/**/*.js');
         sources.forEach(file => {
@@ -76,18 +76,20 @@ class DevServer {
         });
 
 
-        if (this.pack) {
+        if (this.app) {
 
-            this.pack.dispose();
-            this.pack = null;
+            this.app.log('code changed');
+
+            this.app.dispose();
+            this.app = null;
         }
 
         this.parser = null;
         this.config._ = null;
 
-        const pack = this.getPack();
+        const app = this.getPack();
 
-        pack.emit('change');
+        app.emit('change');
 
     }
 
@@ -109,29 +111,24 @@ class DevServer {
 
     getPack() {
 
-        if (!this.pack) {
+        if (!this.app) {
 
-            const pack = this.getParser().parse(this.config);
+            const app = this.getParser().parse(this.config);
 
-            pack.on('change', () => {
-                console.log('devServer:', 'change');
+            app.on('change', () => {
+                app.log('devServer:', 'change');
 
-                if(pack.analyzes) {
-                    console.log('waiting to finish')
-                    return;
-                }
-
-                pack.analyze().then(() => {
-                    const data = pack.get();
+                app.analyze().then(() => {
+                    const data = app.get();
                     this.sendDataToClient(data);
                 });
 
             });
 
-            this.pack = pack;
+            this.app = app;
         }
 
-        return this.pack;
+        return this.app;
 
     }
 }
@@ -150,7 +147,6 @@ DevServer.webPackConfig = {
     watchContentBase: false,
     inline: true,
     before(app) {
-
 
         const server = new DevServer(global.doctoolsConfig, app);
         global.doctoolsConfig.devServer = server;// = app;

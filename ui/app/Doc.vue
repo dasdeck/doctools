@@ -12,16 +12,18 @@
                     <input type="text" v-model="settings.filter">
                 </label>
 
-                <ul v-if="size(data.config.menus) > 1" uk-switcher class="uk-subnav uk-subnav-pill">
-                    <li v-if="data.menu && data.config.menus.menu"><a href="">menu</a></li>
-                    <li v-if="data.config.menus.packages"><a href="">packages</a></li>
-                    <li v-if="data.config.menus.files"><a href="">files</a></li>
-                </ul>
-                <div :class="size(data.config.menus) > 1 && 'uk-switcher'">
-                    <Menu v-if="data.menu && data.config.menus.menu" :menu="data.menu"/>
-                    <PackageTree v-if="data.config.menus.packages" :data="resources[data.rootPackage]"/>
-                    <FileTree v-if="data.config.menus.files" :resources="resources"/>
-                </div>
+                <template v-if="">
+                    <ul  uk-switcher class="uk-subnav uk-subnav-pill">
+                        <li v-if="data.menu && data.config.menus.menu"><a href="">menu</a></li>
+                        <li ><a href="">packages</a></li>
+                        <li ><a href="">files</a></li>
+                    </ul>
+                    <div :class="'uk-switcher'">
+                        <Menu v-if="data.menu && data.config.menus.menu" :menu="data.menu"/>
+                        <PackageTree :data="resources[data.rootPackage]"/>
+                        <FileTree  :resources="resources"/>
+                    </div>
+                </template>
             </div>
 
             <router-view class="uk-width-3-4"/>
@@ -38,7 +40,7 @@
     import PackageTree from './sidebar/PackageTree.vue';
     import FileTree from './sidebar/FileTree.vue';
     import Menu from './sidebar/Menu.vue';
-    import DocBase from './DocBase.js';
+    import DocApp from './DocApp.js';
     import {size} from 'lodash'
 
     /**
@@ -52,7 +54,7 @@
             Menu
         },
 
-        extends: DocBase,
+        extends: DocApp,
 
         ref: '$doc',
 

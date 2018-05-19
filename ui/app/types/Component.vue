@@ -4,6 +4,7 @@
         <p>
             {{component.description}}
         </p>
+
         <template v-if="component.components">
             <h2>components:</h2>
             <div v-for="comp in component.components">
@@ -86,8 +87,8 @@
                 <h3>{{trigger.name}}</h3>
                 {{trigger.description}}
             </div>
-
         </template>
+
     </div>
 </template>
 
@@ -114,7 +115,7 @@ export default {
   inject: ["$doc"],
 
     hasContent(data) {
-            return data.component && size(data.component) || data.module.description;
+            return data.component && size(data.component) || data.module && data.module.description;
     },
 
   computed: {

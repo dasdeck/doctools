@@ -23,17 +23,17 @@ export default {
             forEach(this.resources, mod => {
                 const path = mod.fileInPackage.split('/').filter(p => p);
                 path.shift();
-                let file;
-                if (mod.type !== 'package') {
-                    file = path.pop().replace(/\./g, '::');
-                    path.push(file);
-                }
+                // if (mod.type !== 'package') {
+                const file = path.pop().replace(/\./g, '::');
+                path.push(file);
+                // }
                 path.push('::');
                 const address = path.join('.');
 
                 set(struct, address, mod);
             });
 
+            // debugger;
             return struct;
 
         }

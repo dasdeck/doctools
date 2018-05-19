@@ -1,95 +1,16 @@
 /* eslint-env node */
 const _ = require('lodash');
-const minimatch = require('minimatch');
 const path = require('path');
 const fs = require('fs');
 const getTypesRaw = arr => arr ? arr.join(' | ') : '';
 
-class AndMatch {
-    constructor(...args) {
-        this.and = args;
-    }
-
-}
-
-function match(conf, file, opts = {}) {
-
-    _.defaults(opts, {recursive: true, matchBase: true});
-
-    conf = _.isArray(conf) ? conf : [conf];
-
-    return conf.some(matcher => {
-
-        if (matcher instanceof AndMatch || matcher.and) {
-            for (let i = 0 ; i < matcher.and.length; i++) {
-                const subMatcher = matcher.and[i];
-                if (!match(subMatcher, file, opts)) {
-                    return false;
-                }
-            }
-            return true;
-
-        } else if (matcher instanceof RegExp) {
-            return matcher.exec(file);
-        } else if (typeof matcher === 'function') {
-            return matcher(file, opts);
-        } else if (typeof matcher === 'string') {
-            matcher = _.isString(opts.matchBase) && !path.isAbsolute(matcher) && path.join(opts.matchBase, matcher) || matcher;
-
-            if (opts.recursive && fs.lstatSync(file).isDirectory()) {
-                const names = file.split('/');
-                const matches = matcher.split('/');
-                return names.length <= matches.length && !names.some((name, i) => {
-                    const name2 = matches[i];
-                    const doesMatch = name2 === name || minimatch(name, name2);
-                    return !doesMatch;
-                });
-
-            } else {
-                return minimatch(file, matcher, opts);
-            }
-        } else if (_.isPlainObject(matcher)) {
-
-            // const recursive = opts.recursive && fs.lstatSync(file).isDirectory();
-            const include = match(matcher.include, file, opts);
-            const res = include && (!matcher.exclude || !match(matcher.exclude, file, opts));
-
-            return res;
-
-        } else {
-            throw 'invalid matcher:' + matcher;
-        }
-    });
-}
-
-match.and = function(...args) {
-    return new AndMatch(...args);
-}
 
 module.exports = {
 
     getTypesRaw,
 
-    match,
+    match: require('megamatch'),
 
-    AndMatch,
-
-    getCodeBlocks(text, fences = ['```']) {
-
-        const blocks = [];
-        fences = Array.isArray(fences) && fences || [fences];
-        const reg = new RegExp(/(fences)(.*)\n(.*)\n\1/g.source.replace('fences', fences.join()));
-        let res;
-        while (res = reg.exec(text)) {
-            blocks.push({
-                lang: res[2],
-                code: res[3]
-            });
-        }
-
-        return blocks;
-
-    },
 
     /**e
      * scapes a string to be a valid variable name
@@ -131,9 +52,7 @@ module.exports = {
 
         const tables = {};
 
-
         const options = {0: []};
-
 
         const rootParams = params.filter(param => !~param.name.indexOf('.'));
 
@@ -247,7 +166,6 @@ module.exports = {
         return eval(script.replace(/import/g, '//import').replace('export default', 'global.res = '));
     },
 
-
     /**
      * helper funciton to find property defaults, required and type
      * works for UIkit and Vue
@@ -258,7 +176,7 @@ module.exports = {
         if (runtime && runtime['props']) {
 
             const realProps = runtime['props'];
-            const ukDefaults = runtime['data'];
+            const ukDefaults = _.isPlainObject(runtime['data']) && runtime['data'];
 
             _.forEach(props, prop => {
 

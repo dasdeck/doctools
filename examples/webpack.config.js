@@ -1,5 +1,6 @@
 /* eslint-env node */
 const DoctoolsWebpack = require('../src/DoctoolsWebpack');
+const VueLoaderPlugin = require('vue-loader/lib/plugin');
 
 module.exports = {
 
@@ -19,7 +20,10 @@ module.exports = {
 
     mode: 'development',
 
-    plugins: [new DoctoolsWebpack()],
+    plugins: [
+        new VueLoaderPlugin,
+        new DoctoolsWebpack
+    ],
 
     externals: {
         'vue': 'Vue'

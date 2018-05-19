@@ -7,11 +7,10 @@
 
 <script>
 
-import markdown from 'markdown-it';
 import {omit} from 'lodash-es';
-import Vue from 'vue';
+// import Vue from 'vue';
 
-import ExampleRunner from '../ExampleRunner.vue';
+import ExampleRunner, {Registry} from '../ExampleRunner.vue';
 import ModuleComp from './ModuleComp.js';
 
 
@@ -37,29 +36,8 @@ const Markdown = {
     extends: ModuleComp,
 
     data() {
-        const renderer = new markdown({
-            highlight:(code, lang) => {
-                return this.renderCode(code, lang);
-            }
-        });
-
-        const fence = renderer.renderer.rules['fence'];
-        const component = this;
-        renderer.renderer.rules['fence'] = function(tokens, idx) {
-            const token = tokens[idx];
-            if(token.info.includes(':')) {
-                return component.addRunner(token.content, token.info.split(':').map(e => e.trim()));
-            } else {
-                return fence.apply(this, arguments);
-            }
-
-        }
-
-
-        Object.assign(renderer, omit(Markdown.extendRenderer, ['code']));
 
         return {
-            renderer,
             runners: []
         };
     },
@@ -82,11 +60,38 @@ const Markdown = {
     },
 
     methods: {
+
+        preprocess(markdown) {
+
+            this.processCodeBlocks(markdown, ([text, fence, lang, code]) => {
+
+                if(lang.includes(':')) {
+                    const replacement = this.addRunner(code, lang.split(':').map(e => e.trim()));
+                    markdown = markdown.replace(text, replacement);
+                }
+            });
+
+            return markdown;
+
+        },
+
+        processCodeBlocks(text, callback = x => x, fences = ['```']) {
+
+            fences = Array.isArray(fences) && fences || [fences];
+            const reg = new RegExp(/(fences)(.*)\n((?:\r\n|\n|.)*?)\n\1/.source.replace('fences', fences.join('|')), 'g');
+            let res;
+
+            while (res = reg.exec(text)) {
+                callback && callback(res);
+            }
+
+        },
+
         addRunner(code, [lang, runnerName]) {
 
-            if (ExampleRunner.runners[runnerName]) {
+            if (Registry.runners[runnerName]) {
 
-                const runner = ExampleRunner.runners[runnerName];
+                const runner = Registry.runners[runnerName];
 
                 if (runner && runner.plain) {
 
@@ -94,11 +99,12 @@ const Markdown = {
 
                 } else {
 
-                    const id = 'runner-' + this.module.resource.replace(/[^a-zA-Z0-1]*/g, '-') + '-' + (this.runners.length + 1);
+                    const id = 'runner-' + this.module.resource.replace(/[^a-zA-Z0-9]/g, '-') + '-' + (this.runners.length + 1);
 
                     this.runners.push({
                         id,
                         lang,
+                        runnerName,
                         code,
                         name: this.module.name,
                         resource: this.module.resource
@@ -107,9 +113,11 @@ const Markdown = {
                     return `<div id="${id}"></div>`;
 
                 }
-            } else {
-                return this.renderCode(code, lang);
             }
+            // else {
+            //     debugger
+            //     return this.renderCode(code, lang);
+            // }
         },
 
         clearRunners() {
@@ -135,7 +143,7 @@ const Markdown = {
 
                     if (el) {
 
-                        const ExampleRunnnerComp = Vue.extend(ExampleRunner);
+                        const ExampleRunnnerComp = this.constructor.extend(ExampleRunner);
                         data.instance = new ExampleRunnnerComp({propsData: {data, dynamicRuntime}, el});
 
                     } else if (retry) {
@@ -154,21 +162,16 @@ const Markdown = {
             });
         },
 
-        renderCode(code, lang) {
+        renderCode(code, lang, frame) {
 
-                return this.$doc.highlight(code, lang);
-
-                // if (Markdown.extendRenderer.code) {
-                //     return Markdown.extendRenderer.code(code, lang);
-                // } else if (Prism.languages[lang]) {
-                //     return `<pre><code class="language-${lang}">${Prism.highlight(code, Prism.languages[lang], lang)}</code></pre>`;
-                // } else {
-                //     return Markdown.baseRenderer.code(code, lang);
-                // }
+            return this.$doc.highlight(code, lang, frame);
         },
 
-        markdown(code) {
-            return this.renderer.render(code)
+        markdown(markdown) {
+            markdown = this.preprocess(markdown);
+
+            return this.$doc.markdown(markdown)
+
         }
     },
 

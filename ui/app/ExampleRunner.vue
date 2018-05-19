@@ -9,7 +9,7 @@
 
         <div class="uk-switcher uk-margin">
             <div v-if="error" class="error">{{error}}</div>
-            <div v-else class="preview" >
+            <div v-else ref="preview" >
                 <div v-html="preview"></div>
             </div>
             <div>
@@ -25,14 +25,14 @@
                         </a>
                     </li>
                 <li v-if="runner.edit">
-                    <a @click="runner.edit(code)" class="js-codepen" uk-tooltip="Edit on Codepen">
-                    <img class="uk-icon" src="../images/icon-flask.svg" ></a>
+                    <a @click="runner.edit(code)" class="edit" uk-tooltip="Edit on Codepen">
+                    <img class="uk-icon copy" src="../images/icon-flask.svg" ></a>
                 </li>
             </ul>
         </div>
       </div>
       <div style="display:none;">
-          {{`&lt;ExampleRunner id="<!-- $ -->{data.id}" resource="${data.resource}"/>`}}
+          {{`&lt;ExampleRunner id="${data.id}" resource="${data.resource}"/>`}}
       </div>
   </div>
   <div v-else>could not load example data</div>
@@ -40,18 +40,26 @@
 
 <script>
 
-import '../uikit-node';
 import copyToCB from 'copy-text-to-clipboard';
 
 const langMap = {
     'vue': 'text/x-vue',
     'js': 'text/javascript',
     'html': 'text/html'
+};
+
+const Registry = {
+    runners: {},
+    examples: {},
+    runtime: {}
+
 }
 
-const ExampleRunner = {
+export {
+    Registry
+};
 
-    runners: {},
+export default {
 
     props: {
         id: String,
@@ -59,7 +67,7 @@ const ExampleRunner = {
         data: {
             type: Object,
             default() {
-                return ExampleRunner.examples[this.id] || null;
+                return Registry.examples[this.id] || null;
             }
         }
     },
@@ -87,7 +95,7 @@ const ExampleRunner = {
         createPreview(retry = true) {
             if(this.data) {
 
-                if (!this.previewEl) {
+                if (!this.$refs.preview) {
 
                     if(retry) {
                         this.$nextTick(res => {
@@ -118,12 +126,9 @@ const ExampleRunner = {
 
     computed: {
 
-        previewEl() {
-            return UIkit.util.$('.preview', this.$el, this.data.resource);
-        },
 
         runtime() {
-            return this.dynamicRuntime || ExampleRunner.runtime[this.data.resource];
+            return this.dynamicRuntime || Registry.runtime[this.data.resource];
         },
 
         moduleName() {
@@ -154,19 +159,10 @@ const ExampleRunner = {
             return this.runner && this.runner.getLanguage(this.code);
         },
 
-        type() {
-            return this.data && this.data.lang.split(':').pop();
-        },
-
         runner() {
-            return ExampleRunner.runners[this.type];
+            return Registry.runners[this.data.runnerName];
         }
     }
 }
-
-ExampleRunner.examples = {};
-ExampleRunner.runtime = {};
-
-export default ExampleRunner;
 
 </script>

@@ -1,4 +1,3 @@
-import Prism from 'prismjs';
 
 export default {
 
@@ -23,13 +22,17 @@ export default {
     },
 
     methods: {
-        highlight(code, lang) {
 
-             if (Prism.languages[lang]) {
-                return `<pre><code class="language-${lang}">${Prism.highlight(code, Prism.languages[lang], lang)}</code></pre>`;
-            }
+        markdown(markdown) {
 
-            return code;
+            throw 'abstract call';
+
+        },
+
+        highlight(code, lang, frame = false) {
+
+            throw 'abstract call';
+
         }
     },
 
@@ -62,7 +65,6 @@ export default {
         rootPackage() {
             return this.resources[this.data.rootPackage];
         },
-
 
         repo() {
             const root = this.rootPackage;

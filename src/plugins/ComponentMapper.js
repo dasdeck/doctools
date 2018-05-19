@@ -38,7 +38,6 @@ function findProps(data, runtime) {
 
 }
 
-
 function findData(data) {
     const res = {};
     data.forEach(el => {
@@ -82,38 +81,35 @@ module.exports = class ComponentMapper extends Plugin {
         // delete data.runtime;
     }
 
-    onMap(desc) {
-        this.mapComponent(desc);
+    onMap(app) {
+
+        _.forEach(app.resources, res => {
+            if(res.module) {
+                this.onMapModule(res);
+            }
+        })
 
     }
 
-    matchesType(desc) {
-        return desc.type !== 'package' && desc.script;
-    }
-
-    mapComponent(desc) {
+    onMapModule(desc) {
         const data = desc.module;
 
-        // desc.log('mapping component', desc.name);
-
-        if (!desc.module) {
-            throw 'can not use Component mapper without the Module Mapper first';
-        }
-
         const component = {};
-        if (!data) debugger;
 
         const entries = data.all.filter(el => !el.undocumented);
         const runtime = desc.runtime;
 
-
         base = 'module.exports';
+
+
+        //find base
         data.all.forEach(entry => {
             if ((entry.type && entry.type.names.includes(data.type)) && entry.kind === 'constant') {
                 base = entry.longname;
             }
         });
 
+        const mod = desc.module.global[base];
 
 
         [
@@ -140,14 +136,16 @@ module.exports = class ComponentMapper extends Plugin {
         });
 
         desc.component = _.pickBy(component, type => _.size(type));
-        desc.component.description = desc.module.global[base] && desc.module.global[base].description;
 
-        // debugger;
-        // entries.forEach(el => {
-        //     if (el.longname === base) {
-        //         data.description = el.description;
-        //     }
-        // });
+        if (mod) {
+
+            desc.component.description = mod.description;
+            desc.component.tutorials = mod.tutorials;
+        } else {
+            // debugger;
+            // this.app.log('what is this?')
+        }
+
 
     }
 

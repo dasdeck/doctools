@@ -1,7 +1,10 @@
 <template>
 
     <div>
-        <component v-for="(asset, name) in assets" :is="$doc.resources[asset].type" :key="name" :data="$doc.resources[asset]"/>
+    <div v-for="(asset, name) in assets" :key="name">
+        <component v-if="getAsset(asset)" :is="getAsset(asset).type"  :data="getAsset(asset)"/>
+        <div v-else>asset {{name}} not found</div>
+    </div>
     </div>
 
 </template>
@@ -20,6 +23,12 @@ export default {
 
     props: {
         assets: Object
+    },
+
+    methods: {
+        getAsset(desc) {
+            return typeof desc === 'string' ? this.$doc.resources[desc] : desc;
+        }
     }
 }
 </script>

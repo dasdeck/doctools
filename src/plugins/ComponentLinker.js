@@ -1,34 +1,16 @@
 const Plugin = require('../Plugin');
 const util = require('../util');
 const _ = require('lodash');
-const Package = require('../Package');
 
 module.exports = class ComponentLinker extends Plugin {
 
-
     /**
-     *
-     * @param {Object} desc
-     * @returns {Boolean}
-     */
-    matchesType(desc) {
-        const isPackage = desc.type === 'package' || desc instanceof Package;
-        const matches = isPackage && desc.isRootPackage();
-        return matches;
-
-    }
-
-    onLoad(pack) {
-        this.pack = pack;
-    }
-
-       /**
      *
      * @param {*} desc
      */
-    onLink(pack) {
+    onLink(app) {
 
-        const resources = _.keyBy(pack.getAllModules(), 'resource');
+        const resources = app.resources;// _.keyBy(app.getAllModules(), 'resource');
 
         _.forEach(resources, desc => {
 
@@ -56,13 +38,10 @@ module.exports = class ComponentLinker extends Plugin {
                         comp[name] = _.map(runtime[name], (mixin, index) => {
                             return this.getLink(mixin, 'could not link/find  mixin ' + index + ' for: ' + desc.path);
                         });
-                        // debugger;
                     }
 
                 });
 
-
-                // debugger;
                 //merge inherited props, methods, computeds  to component
                 ['props', 'methods', 'computed'].forEach(type => {
 
@@ -117,17 +96,13 @@ module.exports = class ComponentLinker extends Plugin {
             desc.component = _.pickBy(comp, type => _.size(type));
 
         });
-    // this.linked = true;
-}
-
-
+    }
 
     getLink(runtime, warning = null) {
 
         if (runtime !== undefined) {
 
-            const resources = _.keyBy(this.pack.getAllModules(), 'resource');
-            const res = _.find(resources, res => res.runtime === runtime);
+            const res = _.find(this.app.resources, res => res.runtime === runtime);
 
             if(res && res.runtime !== runtime) {
                 debugger
@@ -140,6 +115,5 @@ module.exports = class ComponentLinker extends Plugin {
             return {resource: res && res.resource};
         }
     }
-
 
 }

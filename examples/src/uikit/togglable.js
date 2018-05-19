@@ -17,6 +17,7 @@
 
 /**
  * a great compnent
+ * @tutorial unrelatedName
  */
 export default {
 
@@ -47,7 +48,7 @@ export default {
         queued: Boolean
     },
 
-    defaults: {
+    data: {
         cls: false,
         animation: [false],
         duration: 200,

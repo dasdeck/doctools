@@ -1,4 +1,5 @@
 /* eslint-env node */
+const VueLoaderPlugin = require('vue-loader/lib/plugin');
 
 const rules = [
     {
@@ -46,6 +47,11 @@ const MarkdownAdapter = {
 
     externals,
 
+    devtool: 'inline-source-map',
+
+    plugins: [
+        new VueLoaderPlugin
+    ],
     module: {
         rules
     },
@@ -55,6 +61,5 @@ const MarkdownAdapter = {
     }
 
 }
-
 
 module.exports = MarkdownAdapter;

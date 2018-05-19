@@ -21,6 +21,7 @@
 
     import ResourceList from './ResourceList.vue';
     import ModuleLink from '../utils/ModuleLink.vue';
+
     /**
      * @type {VueComponent}
      */

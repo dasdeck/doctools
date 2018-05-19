@@ -1,4 +1,5 @@
 const {EventEmitter} = require('events');
+const _ = require('lodash');
 
 module.exports = class Plugin extends EventEmitter {
 
@@ -22,25 +23,33 @@ module.exports = class Plugin extends EventEmitter {
      *
      * @param {Object} desc
      */
-    onLoad(desc) {}
+    onLoad(app) {}
 
-    onPrepare(desc) {}
 
-    onAnalyze(desc) {}
+    onPrepare(app) {}
+
+    onAnalyze(app) {}
 
     /**
      *
      * @param {Object} desc
      */
-    onMap(desc) {}
+    onMap(app) {
+        _.forEach(app.resources, res => this.onMapModule(res));
+    }
 
-    onPatch(desc) {}
+    onMapModule(desc) {}
 
+    //single module!
+    onLoadModule(desc) {}
+
+    //single module
     onSerialize(desc) {}
 
-    onGet(data) {}
+    //app
+    onGet(app) {}
 
-    onWrite(data) {}
+    onWrite(app) {}
 
     onDispose() {}
 

@@ -7,12 +7,12 @@ export default {
     },
 
     props: {
-        moduleOverride: Object
+        moduleProperty: Object
     },
 
     computed: {
         module() {
-            return this.moduleOverride || this.$page && this.$page.module ||this.$doc.selectedModule;
+            return this.moduleData || this.moduleProperty || this.$page && this.$page.module ||this.$doc.selectedModule;
 
         }
     }
