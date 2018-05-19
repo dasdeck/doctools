@@ -53,7 +53,7 @@ const Type = {
         apiDocLink() {
             if(this.$doc.nodeGlobals.includes(this.primeType)) {
                 return `https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/${this.type}`;
-            } else if(window[this.primeType]) {
+            } else if(typeof window !== 'undefined' && window[this.primeType]) {
                 return `https://developer.mozilla.org/docs/Web/API/${this.type}`;
             }
         }

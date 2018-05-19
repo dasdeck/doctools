@@ -33,6 +33,10 @@ export default {
 
             throw 'abstract call';
 
+        },
+
+        getUrl(resource) {
+            return `${this.uriPrefix}${resource}`
         }
     },
 

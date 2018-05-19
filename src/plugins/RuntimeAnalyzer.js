@@ -269,7 +269,7 @@ class RuntimeAnalyzer extends Plugin {
         delete this.cache;
         delete this.script;
 
-        resource.patch();
+        resource.load();
 
     }
 
