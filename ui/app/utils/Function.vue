@@ -7,7 +7,9 @@
             {{data.description}}
         </a>
         <template v-else>
+
             <code v-if="data.memberof === 'module.exports'">import { {{data.simpleName}} } from '{{module.fileInPackage}}'</code>
+
             <p>{{data.description}}</p>
 
             <h4 class="signature">{{data.simpleName}}(

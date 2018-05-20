@@ -123,6 +123,11 @@ class ModuleMapper extends Plugin {
                 this.analyseFunction(el, desc);
             }
 
+            if (el.kind === 'event') {
+                el.longname = el.longname.split(':').pop();
+                this.analyseFunction(el, desc);
+            }
+
             if (el.kind === 'file') {
 
                 res.description = el.description;

@@ -1,167 +1,58 @@
 <template>
+
     <div>
 
+        <Markdown v-if="module.readme" :text="module.readme"/>
+
         <p>
-            {{component.description}}
+            {{module.component.description}}
         </p>
 
-        <template v-if="component.components">
-            <h2>{{$t('components:')}}</h2>
-            <div v-for="comp in component.components">
-                <ModuleLink :resource="comp.resource"/>
-            </div>
-            <hr>
-        </template>
+        <Mixins/>
 
-        <template v-if="component.slot">
-            <h2>{{$t('slots:')}}</h2>
-            <div v-for="slot in component.slot">
-                <h4>{{slot.name}}</h4>
-                {{slot.description}}
-            </div>
-            <hr>
-        </template>
+        <Props/>
 
-        <template v-if="component.mixins">
-            <h2>mixins:</h2>
-            <template v-for="(mixin, index) in component.mixins">
-                <ModuleLink v-if="mixin.resource" :resource="mixin.resource"/>
-                <span v-else>{{mixin.name || '?'}}</span>
-                <span v-if="index + 1 < component.mixins.length">, </span>
-            </template>
-            <hr>
-        </template>
+        <Methods/>
 
-        <template v-if="component.props && Object.keys(component.props).length">
-            <h2>props:</h2>
-            <PropTable :data="props" :annotations="['examples']" :headers="{name: 'name', type: 'type', defaultvalue: 'default', description: 'description'}"/>
-        </template>
+        <Emits/>
 
-        <template v-if="methods.length">
-            <h2>methods:</h2>
-            <div v-for="method in methods">
-                <Function :data="method"/>
-                <hr>
-            </div>
-        </template>
-
-        <template v-if="component.computed">
-            <h2>computed:</h2>
-
-            <div v-for="computed in component.computed">
-
-                <h3>{{computed.name}}</h3>
-                <h4 class="inherited" v-if="computed.inherited"> ↳ <ModuleLink :resource="computed.inherited"/>.{{computed.name}}</h4>
-                <Types :type="computed.type"/>
-                <p>
-                    {{computed.description}}
-                </p>
-            </div>
-
-        </template>
-
-        <template v-if="component.events">
-            <h2>events:</h2>
-
-            <div v-for="event in component.events">
-                <h3>{{event.name}}</h3>
-                {{event.description}}
-            </div>
-
-        </template>
-
-        <template v-if="component.emit">
-            <h2>emits:</h2>
-
-            <div v-for="event in component.emit">
-                <h3>{{event.name}}</h3>
-                {{event.description}}
-            </div>
-
-        </template>
-
-        <template v-if="component.trigger">
-            <h2>trigger:</h2>
-
-            <div v-for="trigger in component.trigger">
-                <h3>{{trigger.name}}</h3>
-                {{trigger.description}}
-            </div>
-        </template>
-
-        <a v-if="repoLink" :href="repoLink" v-html="$t('edit in repo')"></a>
+        <RepoLink/>
 
     </div>
+
 </template>
 
 <script>
+
 import PropTable from "../utils/PropTable.vue";
+import RepoLink from "../utils/RepoLink.vue";
 import Function from "../utils/Function.vue";
 import ModuleLink from "../utils/ModuleLink.vue";
-import Types from "../utils/Types.vue";
 import ModuleComp from '../utils/ModuleComp';
+import Markdown from '../utils/Markdown.vue';
 
-import {size, filter, forEach, orderBy, mapValues} from "lodash-es";
+import {size} from "lodash-es";
+
+import Component from './Component';
 
 export default {
 
-extends: ModuleComp,
+    extends: ModuleComp,
 
-  components: {
-    PropTable,
-    Function,
-    ModuleLink,
-    Types
-  },
+    components: {
+        ...Component,
+        ModuleLink,
+        RepoLink,
+        Markdown
+    },
 
-  inject: ["$doc"],
+    provide() {
+        return {$component: this};
+    },
 
     hasContent(data) {
-            return data.component && size(data.component) || data.module && data.module.description;
-    },
-
-  computed: {
-    component() {
-      return this.module.component;
-    },
-
-    /**
-     * the filtered list of methods
-     */
-    methods() {
-      return filter(
-        this.component.methods,
-        method => this.$doc.settings.private || method.access !== "private"
-      );
-    },
-
-    /**
-     * the lsit of props with added style information for rendering
-     */
-    props() {
-      const props = this.component.props;
-
-      forEach(
-        props,
-        prop =>
-          (prop._style = {
-            ...prop._style,
-            opacity: prop.optional ? 0.5 : 1,
-            "font-style": prop.inherited ? "italic" : undefined
-          })
-      );
-
-      return orderBy(
-        mapValues(props, prop => ({
-          ...prop,
-          type: prop.type && {template: 'types', type: prop.type},
-          name: prop.name && {template: 'code', html: prop.name},
-          defaultvalue: prop.defaultvalue && {template: 'code', html: prop.defaultvalue}
-        })),
-        ["inherited", "name"],
-        ["desc", "asc"]
-      );
+        return data.component && size(data.component) || data.module && data.module.description;
     }
-  }
+
 };
 </script>

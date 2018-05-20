@@ -74,7 +74,6 @@
         components: {
             ...Types,
             UIkitComponent: Types.Component,
-            VueComponent: Types.Component,
             ModuleLink,
             Globals,
             Assets

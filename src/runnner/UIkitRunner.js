@@ -16,8 +16,8 @@ class UIkitRunner {
 
                     <div class="uk-position-top-right uk-margin-small-top">
                         <ul class="uk-iconnav">
-                            <li><a class="copy" uk-tooltip="Copy to Clipboard" ><img class="uk-icon" src="/images/icon-clipboard.svg" uk-svg></a></li>
-                            <li><a class="edit" uk-tooltip="Edit on Codepen" ><img class="uk-icon" src="/images/icon-flask.svg" uk-svg></a></li>
+                            <li><a class="copy" uk-tooltip="Copy to Clipboard" ><div class="uk-icon" uk-icon icon="copy"></div></a></li>
+                            <li><a class="edit" uk-tooltip="Edit on Codepen" ><div class="uk-icon" uk-icon icon="pencil"></div></a></li>
                         </ul>
                     </div>
                 </div>`;

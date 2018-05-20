@@ -15,10 +15,10 @@ import {upperFirst} from 'lodash-es';
 import Function from './Function.vue';
 import Constant from './Constant.vue';
 import Typedef from './Typedef.vue';
-    import ModuleComp from './ModuleComp.js';
+import ModuleComp from './ModuleComp.js';
 
 const DescList = {
-    components:{
+    components: {
         Function,
         Constant,
         Member: Constant,

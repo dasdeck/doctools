@@ -1,7 +1,7 @@
 <template>
     <div>
         <p>
-            {{data.module.description}}
+            {{module.module.description}}
         </p>
 
         <DescList :descs="descs"/>
@@ -30,7 +30,7 @@
         },
         computed: {
             descs() {
-                return this.data.module.global;
+                return this.module.module.global;
             }
         },
 

@@ -162,9 +162,10 @@
 
                 /**
                  * triggered when the modal has been closed
+                 * @param {VueComponentInstance} this - passes this Modal
                  * @event close
                  */
-                this.$emit('close');
+                this.$emit('close', this);
                 this.opened = false;
             }
         }

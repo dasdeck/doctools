@@ -21,12 +21,12 @@
             <ul class="uk-iconnav">
                 <li>
                     <a @click="copyToCB(code)" uk-tooltip="Copy to Clipboard" rel="#${id}">
-                        <img class="uk-icon" src="../images/icon-clipboard.svg" >
+                        <div class="uk-icon" uk-icon icon="copy"></div>
                         </a>
                     </li>
                 <li v-if="runner.edit">
                     <a @click="runner.edit(code)" class="edit" uk-tooltip="Edit on Codepen">
-                    <img class="uk-icon copy" src="../images/icon-flask.svg" ></a>
+                    <div class="uk-icon" uk-icon icon="edit"></div></a>
                 </li>
             </ul>
         </div>
