@@ -2,7 +2,7 @@
 
     <div>
     <div v-for="(asset, name) in assets" :key="name">
-        <component v-if="getAsset(asset)" :is="getAsset(asset).type"  :data="getAsset(asset)"/>
+        <component v-if="getAsset(asset)" :is="getAsset(asset).type"  :moduleProperty="getAsset(asset)"/>
         <div v-else>asset {{name}} not found</div>
     </div>
     </div>
@@ -12,12 +12,11 @@
 <script>
 
 import ModuleComp from './utils/ModuleComp';
-import Markdown from './utils/Markdown.vue';
+import components from './types';
+
 export default {
 
-    components: {
-        Markdown
-    },
+    components,
 
     extends: ModuleComp,
 

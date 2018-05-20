@@ -192,7 +192,9 @@ DevServer.startWebpackDevServer = function() {
                 throw err;
             }
 
-            console.log('server started',`http://${devServerConfig.host}:${devServerConfig.port}`);
+            const url = `http://${devServerConfig.host}:${devServerConfig.port}`;
+            console.log('server started', url);
+            require('openurl').open(url);
         });
     });
 

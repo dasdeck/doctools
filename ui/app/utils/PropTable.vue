@@ -13,7 +13,7 @@
             <template v-for="row in filteredData">
                 <tr :style="row._style">
                     <td v-for="(header, col) in filteredHeaders">
-                        <component v-if="row[col] && row[col].template" :is="row[col].template" v-bind="row[col]"/>
+                        <component v-if="row[col] && row[col].template" :is="row[col].template" v-bind="row[col]">{{row[col].html}}</component>
                         <span v-else>{{row[col]}}</span>
                     </td>
                 </tr>

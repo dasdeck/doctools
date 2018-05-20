@@ -3,12 +3,12 @@
         <div v-if="data" uk-grid>
             <div class="uk-width-1-4">
                 <label>
-                    show private members:
+                    {{$t('show private members:')}}
                     <input class="uk-checkbox" type="checkbox" v-model="settings.private">
                 </label>
 
                 <label>
-                    filter:
+                    {{$t('filter:')}}
                     <input type="text" v-model="settings.filter">
                 </label>
 
@@ -30,7 +30,11 @@
 
         </div>
         <div v-else>
-            waiting for data...
+        <div class="uk-position-center" style="text-align:center;">
+
+            <div uk-spinner></div>
+            <div v-html="$t('waiting for data...')"></div>
+        </div>
         </div>
     </div>
 </template>

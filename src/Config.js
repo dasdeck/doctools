@@ -121,7 +121,7 @@ class Config extends EventEmitter {
 
         this.loadPlugins(config, app);
 
-        config.hash = util.hash(config);
+        config.hash = util.hash(_.omit(config, ['devServer', 'server']));
 
         return config;
     }
@@ -139,7 +139,7 @@ Config.defaultConfig = {
     /**
      * overwrite the default cachedir (config.base)
      */
-    cachedir: true,
+    cache: true,
 
     /**
      * enables 'hot reload' for the parser code

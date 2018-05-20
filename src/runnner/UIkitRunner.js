@@ -50,21 +50,21 @@ UIkitRunner.edit = code => {
     const nc = Date.now() % 9999;
 
     const data = {
-            title: '',
-            description: '',
-            html: code,
-            html_pre_processor: 'none',
-            css: '',
-            css_pre_processor: 'none',
-            css_starter: 'neither',
-            css_prefix_free: false,
-            js: scripts || '',
-            js_pre_processor: 'none',
-            js_modernizr: false,
-            html_classes: '',
-            css_external: `https://getuikit.com/assets/uikit/dist/css/uikit.css?nc=${nc}`,
-            js_external: `https://getuikit.com/assets/uikit/dist/js/uikit.js?nc=${nc};https://getuikit.com/assets/uikit/dist/js/uikit-icons.js?nc=${nc}`
-        };
+        title: '',
+        description: '',
+        html: code,
+        html_pre_processor: 'none',
+        css: '',
+        css_pre_processor: 'none',
+        css_starter: 'neither',
+        css_prefix_free: false,
+        js: scripts || '',
+        js_pre_processor: 'none',
+        js_modernizr: false,
+        html_classes: '',
+        css_external: `https://getuikit.com/assets/uikit/dist/css/uikit.css?nc=${nc}`,
+        js_external: `https://getuikit.com/assets/uikit/dist/js/uikit.js?nc=${nc};https://getuikit.com/assets/uikit/dist/js/uikit-icons.js?nc=${nc}`
+    };
 
     // Quotes will screw up the JSON
     const dataString = JSON.stringify(data)

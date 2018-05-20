@@ -125,9 +125,9 @@ module.exports = {
             const rows = [];
             options[name].forEach((param, index) => {
                 const row = {
-                    0: param.name,
+                    0: {template: 'code', html: param.name},
                     1: {template: 'types', type: param.type},
-                    2: param.defaultvalue,
+                    0: {template: 'code', html: param.defaultvalue},
                     3: param.description
                 };
 

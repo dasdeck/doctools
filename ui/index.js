@@ -27,22 +27,36 @@ Vue.use(VueRouter);
 Vue.component('Code', Prism);
 
 Vue.mixin({
+
     computed:{
         _() {
             return _;
         }
     },
+
+    methods: {
+        $t(text, vars) {
+            if (vars) {
+                return text.replace(/\$(\w+)/g, (all, word) => vars[word] ? vars[word] : word);
+            } else {
+                return text;
+            }
+        },
+    },
+
     created() {
         if (this.$options.ref) {
             window[this.$options.ref] = this;
         }
     }
+
 });
 
 const router = new VueRouter({mode: 'history'});
 const comp = Vue.extend(({...Doc}));
 const app = new comp({propsData: {initialData: window.$data}, el: '#app', router});
-const socket = new SockJS('http://localhost:8080/sockjs-node');
+
+const socket = new SockJS(`${location.protocol}//${location.host}/sockjs-node`);
 
 socket.onmessage = res => {
 

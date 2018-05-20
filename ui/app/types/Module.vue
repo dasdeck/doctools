@@ -6,6 +6,8 @@
 
         <DescList :descs="descs"/>
 
+        <a v-if="repoLink" :href="repoLink" v-html="$t('edit in repo')"></a>
+
     </div>
 </template>
 
@@ -13,14 +15,14 @@
     import {size} from 'lodash-es';
 
     import DescList from '../utils/DescList.vue';
-    import Base from './Base';
+    import ModuleComp from '../utils/ModuleComp';
 
     /**
      * View to render module files
      *
      */
     export default {
-        extends: Base,
+        extends: ModuleComp,
 
         components: {
             DescList,

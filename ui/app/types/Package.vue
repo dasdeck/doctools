@@ -1,66 +1,63 @@
 <template>
     <div>
-        <template v-if="data.packageJson">
+        <template v-if="module.packageJson">
 
-            <p>{{data.packageJson.description}}</p>
+            <p>{{module.packageJson.description}}</p>
 
-            <template v-if="data.packageJson.repository">
+            <template v-if="module.packageJson.repository">
                 <h2>install:</h2>
-                <code v-if="data.packageJson.bin">npm i -g {{data.packageJson.repository.url}}</code>
-                <code v-else>npm i -D {{data.packageJson.repository.url}}</code>
+                <code v-if="module.packageJson.bin">npm i -g {{module.packageJson.repository.url}}</code>
+                <code v-else>npm i -D {{module.packageJson.repository.url}}</code>
             </template>
 
-            <template v-if="data.packageJson.bin">
+            <template v-if="module.packageJson.bin">
                 <h2>cli / bin:</h2>
-                <div v-for="(command, name) in data.packageJson.bin">
+                <div v-for="(command, name) in module.packageJson.bin">
                     <code>{{name}} [{{command}}] </code>
-                    <p v-if="data.packageJson.extra && data.packageJson.extra.binDocs && data.packageJson.extra.binDocs[name]">
-                        {{data.packageJson.extra.binDocs[name]}}
+                    <p v-if="module.packageJson.extra && module.packageJson.extra.binDocs && module.packageJson.extra.binDocs[name]">
+                        {{module.packageJson.extra.binDocs[name]}}
                     </p>
                 </div>
             </template>
 
-            <template v-if="data.main">
+            <template v-if="module.main">
                 <h2>usage / api:</h2>
-                {{data.main.types.file[0].examples[0].description}}
+                {{module.main.types.file[0].examples[0].description}}
             </template>
 
-            <template v-if="data.packageJson.scripts">
+            <template v-if="module.packageJson.scripts">
                 <h2>commands:</h2>
-                <div v-for="(command, name) in data.packageJson.scripts">
+                <div v-for="(command, name) in module.packageJson.scripts">
                     <code>npm run {{name}} [{{command}}] </code>
-                    <p v-if="data.packageJson.extra && data.packageJson.extra.scriptDocs && data.packageJson.extra.scriptDocs[name]">
-                        {{data.packageJson.extra.scriptDocs[name]}}
+                    <p v-if="module.packageJson.extra && module.packageJson.extra.scriptDocs && module.packageJson.extra.scriptDocs[name]">
+                        {{module.packageJson.extra.scriptDocs[name]}}
                     </p>
                 </div>
             </template>
         </template>
 
-        <!-- <template v-if="data.globals.trigger.length">
-            <h2>trigger:</h2>
-            <Function v-for="trigger in data.globals.trigger" :key="trigger.longname" :data="trigger"/>
-        </template> -->
+        <a v-if="repoLink" :href="repoLink" v-html="$t('edit in repo')"></a>
 
     </div>
 </template>
 
 <script>
     import Function from '../utils/Function.vue';
-    import Base from './Base';
+    import ModuleComp from '../utils/ModuleComp';
     import {size, omit} from 'lodash-es';
     /**
      * view for package overviews
      */
     export default {
-        extends: Base,
+        extends: ModuleComp,
 
         components: {
             Function
         },
 
 
-        hasContent(data) {
-                return data.packageJson && !!size(omit(data.packageJson, 'name'));
+        hasContent(module) {
+                return module.packageJson && !!size(omit(module.packageJson, 'name'));
         }
     }
 </script>

@@ -6,7 +6,7 @@
         </p>
 
         <template v-if="component.components">
-            <h2>components:</h2>
+            <h2>{{$t('components:')}}</h2>
             <div v-for="comp in component.components">
                 <ModuleLink :resource="comp.resource"/>
             </div>
@@ -14,7 +14,7 @@
         </template>
 
         <template v-if="component.slot">
-            <h2>slots:</h2>
+            <h2>{{$t('slots:')}}</h2>
             <div v-for="slot in component.slot">
                 <h4>{{slot.name}}</h4>
                 {{slot.description}}
@@ -89,6 +89,8 @@
             </div>
         </template>
 
+        <a v-if="repoLink" :href="repoLink" v-html="$t('edit in repo')"></a>
+
     </div>
 </template>
 
@@ -97,13 +99,13 @@ import PropTable from "../utils/PropTable.vue";
 import Function from "../utils/Function.vue";
 import ModuleLink from "../utils/ModuleLink.vue";
 import Types from "../utils/Types.vue";
-import Base from './Base';
+import ModuleComp from '../utils/ModuleComp';
 
 import {size, filter, forEach, orderBy, mapValues} from "lodash-es";
 
 export default {
 
-    extends: Base,
+extends: ModuleComp,
 
   components: {
     PropTable,
@@ -120,7 +122,7 @@ export default {
 
   computed: {
     component() {
-      return this.data.component;
+      return this.module.component;
     },
 
     /**
@@ -152,7 +154,9 @@ export default {
       return orderBy(
         mapValues(props, prop => ({
           ...prop,
-          type: prop.type && {template: 'types', type: prop.type}
+          type: prop.type && {template: 'types', type: prop.type},
+          name: prop.name && {template: 'code', html: prop.name},
+          defaultvalue: prop.defaultvalue && {template: 'code', html: prop.defaultvalue}
         })),
         ["inherited", "name"],
         ["desc", "asc"]

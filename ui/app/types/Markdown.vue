@@ -1,28 +1,28 @@
 <template>
     <div>
-        <div v-html="html">
+        <div v-html="html"></div>
+        <RepoLink/>
     </div>
-</div>
 </template>
 
 <script>
 
-import {omit} from 'lodash-es';
 
 import ExampleRunner, {Registry} from '../ExampleRunner.vue';
-import ModuleComp from './ModuleComp.js';
+import ModuleComp from '../utils/ModuleComp.js';
+import RepoLink from '../utils/RepoLink.vue';
 
 
 const Markdown = {
 
     components: {
-        ExampleRunner
+        ExampleRunner,
+        RepoLink
     },
 
     extendRenderer: {},
 
     props:{
-        data: Object,
         text: String,
 
     },
@@ -170,7 +170,7 @@ const Markdown = {
     computed: {
 
         sourceText() {
-            return this.text || this.data && this.data.readme;
+            return this.text || this.module && this.module.readme;
         },
 
         html() {

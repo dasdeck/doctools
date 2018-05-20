@@ -23,7 +23,10 @@ module.exports = class DocTools extends EventEmitter {
             this.log('config file used: ', this.config.file);
         }
 
-        mkpath.sync(this.getCacheDir());
+        if (this.config.cache) {
+
+            mkpath.sync(this.getCacheDir());
+        }
 
         this.execPluginCallback('onLoad', this, true);
 
@@ -89,9 +92,11 @@ module.exports = class DocTools extends EventEmitter {
                 this.execPluginCallback('onMap', this);
                 this.execPluginCallback('onLink', this);
 
-                this.execPluginCallback('onWriteCache', this);
+                if (this.config.cache) {
 
-                this.writeCache();
+                    this.execPluginCallback('onWriteCache', this);
+                    this.writeCache();
+                }
 
                 this.analyzes = null;
                 this.log('done analyze');

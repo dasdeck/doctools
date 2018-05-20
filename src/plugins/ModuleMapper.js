@@ -13,7 +13,6 @@ class ModuleMapper extends Plugin {
 
     }
 
-
     onAnalyze(app) {
 
         return Promise.all(_.map(app.resources, desc => {
@@ -47,14 +46,12 @@ class ModuleMapper extends Plugin {
         data.jsdoc = desc.jsdoc;
     }
 
-
     onLoadModule(desc) {
 
         this.app.log('jsdoc cleared', desc.name, !!desc.jsdoc);
         delete desc.jsdoc;
         delete desc.module;
     }
-
 
     onMap(app) {
         _.forEach(app.resources, res => {
@@ -63,7 +60,8 @@ class ModuleMapper extends Plugin {
             }
         });
     }
-        /**
+
+    /**
      * maps the jsdoc list to a sorted structure
      * @param {*} all
      * @param {*} config
@@ -80,8 +78,6 @@ class ModuleMapper extends Plugin {
                 // delete el.meta.code
             }
         });
-
-        // desc.log('mapping module', desc.name, !!all);
 
         const config = desc.config;
         const res =  desc.module = {all, global: {}, types: {}};
@@ -143,8 +139,6 @@ class ModuleMapper extends Plugin {
             }
 
             if (el.kind === 'typedef') {
-
-                // const pack = desc.package;
 
                 const name = el.type && el.type.names[0] || el.longname;
 
@@ -216,10 +210,9 @@ class ModuleMapper extends Plugin {
 
             existing.extras[type] = current;
 
-            // console.error('double member in global:',desc.resource , el.longname)
         } else {
 
-            target[el.longname] = el;//.push(el);
+            target[el.longname] = el;
 
         }
     }
@@ -271,7 +264,6 @@ class ModuleMapper extends Plugin {
 
                     params[name] = value;
 
-
                 });
             }
 
@@ -315,7 +307,6 @@ class ModuleMapper extends Plugin {
         const mappedPrams = util.mapParams(el.params || [], params);
         el.params = mappedPrams.params;
         el.tables = mappedPrams.tables;
-
 
         return el;
     }

@@ -17,7 +17,6 @@
 
         <!-- This is the nav containing the toggling elements -->
         <ul uk-switcher class="uk-subnav uk-subnav-pill nomd">
-            <li v-if="module.readme"><a href="">content</a></li>
             <li v-if="module.assets"><a href="">assets</a></li>
             <li v-if="apiHasContent"><a href="">api</a></li>
             <li v-if="globals"><a href="">globals</a></li>
@@ -30,9 +29,8 @@
         <!-- This is the container of the content items -->
         <div class="uk-switcher mdnoclass">
 
-            <Markdown v-if="module.readme" :text="module.readme"/>
             <Assets v-if="module.assets" :assets="module.assets"/>
-            <component v-if="apiHasContent" :is="module.type" :data="module" ref="layout"/>
+            <component v-if="apiHasContent" :is="module.type" :moduleProperty="module" ref="layout"/>
             <Globals v-if="globals"/>
             <div v-if="module.script">
                 <h2>code:</h2>
@@ -53,21 +51,16 @@
 
         <hr>
         <i class="nomd" v-if="module.package">package: <ModuleLink :resource="module.package"/></i>
-        <!-- <i v-if="repoLink">source: <a :href="repoLink">test</a></i> -->
     </div>
-    <div v-else>
-        select a module on the left
-    </div>
+    <div v-else v-html="$t('select a module on the left')"></div>
 </template>
 
 <script>
 
-    import Component from './types/Component.vue';
-    import Module from './types/Module.vue';
-    import Package from './types/Package.vue';
+    import Types from './types';
+
     import ModuleLink from './utils/ModuleLink.vue';
     import Globals from './utils/Globals.vue';
-    import Markdown from './utils/Markdown.vue';
     import ModuleComp from './utils/ModuleComp.js';
     import Assets from './Assets.vue';
     import {some, size, upperFirst} from 'lodash-es';
@@ -79,13 +72,11 @@
     export default {
 
         components: {
-            UIkitComponent: Component,
-            VueComponent: Component,
-            Module: Module,
-            Package,
+            ...Types,
+            UIkitComponent: Types.Component,
+            VueComponent: Types.Component,
             ModuleLink,
             Globals,
-            Markdown,
             Assets
         },
 
@@ -116,29 +107,14 @@
 
             apiHasContent() {
                 const comp = this.$options.components[upperFirst(this.module.type)];
-                return comp && comp.hasContent && comp.hasContent(this.module);
+                return comp && comp.hasContent && comp.hasContent(this.module) || true;
             },
 
             globals() {
                 return this.module.globals && size(this.module.globals);
             },
 
-            repoLink() {
-                if  (this.$doc.repo) {
 
-                    const shorthands = {
-                        'github:': 'https://github.com'
-                    }
-
-                    let url = this.$doc.repo.url;
-
-                    if(!some(shorthands, (rep, ser) => url.includes(ser) && url.replace(ser, rep + '/'))) {
-                        url = `${Object.values(shorthands)[0]}/${url}`;
-                    }
-
-                    return `${url}/tree/master/${this.$doc.repo.workspace || ''}/${this.module.fileInPackage}`;
-                }
-            },
 
         }
     }

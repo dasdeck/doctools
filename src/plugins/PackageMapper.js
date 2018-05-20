@@ -15,7 +15,7 @@ class PackageMapper extends Plugin {
     onSerialize(desc, data) {
         if (desc.type === 'package') {
 
-            _.assign(data, _.pick(desc, ['global', 'description', 'type', 'packages', 'resources']));
+            _.assign(data, _.pick(desc, ['packageJson', 'global', 'description', 'type', 'packages', 'resources']));
 
         }
     }
