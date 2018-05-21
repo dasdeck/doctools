@@ -11,8 +11,8 @@
 
 <script>
 
-import ModuleComp from './utils/ModuleComp';
-import components from './types';
+import ModuleComp from './ModuleComp';
+import components from '../types';
 
 export default {
 

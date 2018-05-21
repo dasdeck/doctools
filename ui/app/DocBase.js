@@ -1,3 +1,4 @@
+import {find} from 'lodash-es';
 
 export default {
 
@@ -37,6 +38,30 @@ export default {
 
         getUrl(resource) {
             return `${this.uriPrefix}${resource}`
+        },
+
+        resolveModule(nameOrResource) {
+
+            if (this.data.resources[nameOrResource]) {
+                return nameOrResource;
+            } else {
+                const mod = find(this.data.resources, res => res.fileInPackage.includes(nameOrResource));
+                if (mod) {
+                    return mod.resource;
+                }
+            }
+
+        },
+
+        getTypeUrl(type) {
+
+            if(this.types[type]) {
+                return this.getUrl(this.types[type]);
+            } else if(this.nodeGlobals.includes(type)) {
+                return `https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/${type}`;
+            } else if(typeof window !== 'undefined' && window[type]) {
+                return `https://developer.mozilla.org/docs/Web/API/${type}`;
+            }
         }
     },
 

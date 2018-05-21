@@ -12,7 +12,6 @@ module.exports = class Module {
 
     constructor(app, file , loader) {
 
-
         _.extend(this, Chachable);
 
         this.app = app;

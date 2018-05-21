@@ -4,7 +4,7 @@
         <div class="nomd">
 
             <h1>{{module.name}}</h1>
-            <p>{{module.description}}</p>
+            <Description/>
             <hr>
 
         </div>
@@ -58,11 +58,11 @@
 <script>
 
     import Types from './types';
+    import utils from './utils';
+    import Assets from './utils/Assets.vue';
 
-    import ModuleLink from './utils/ModuleLink.vue';
     import Globals from './utils/Globals.vue';
     import ModuleComp from './utils/ModuleComp.js';
-    import Assets from './Assets.vue';
     import {some, size, upperFirst} from 'lodash-es';
 
     /**
@@ -73,10 +73,10 @@
 
         components: {
             ...Types,
+            ...utils,
+            Assets,
             UIkitComponent: Types.Component,
-            ModuleLink,
             Globals,
-            Assets
         },
 
         ref: '$content',

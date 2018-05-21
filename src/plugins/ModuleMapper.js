@@ -86,12 +86,58 @@ class ModuleMapper extends Plugin {
 
         all.forEach((el, index) => {
 
+
+            //inline code
             let code;
             if (el.meta && el.meta.range) {
 
                 code = desc.script.substr(el.meta.range[0], el.meta.range[1]);
                 el.code = code;
             }
+
+            // el.description = el.description && util.parseComment(el.description);
+
+
+            //process types
+
+            if (el.kind === 'function') {
+                this.analyseFunction(el, desc);
+            }
+
+            if (el.kind === 'event') {
+                el.longname = el.longname.split(':').pop();
+                this.analyseFunction(el, desc);
+            }
+
+            if (el.kind === 'file') {
+
+                res.description = el.description;
+                if (el.type) {
+                    desc.type = el.type.names[0];
+                } else if(el.ignore) {
+                    res.ignore = true;
+                }
+
+            }
+
+            if (el.kind === 'typedef') {
+
+
+                const name = el.type && el.type.names[0] || el.longname;
+
+                el.longname = el.name = name;
+
+                if (res.types[name]) {
+                    desc.app.log('type already defined in package:', name);
+                } else {
+
+                    desc.app.log('found type:', name);
+                    res.types[name] = desc.resource;
+
+                }
+
+            }
+
 
             //analyse eports
             let exporter;
@@ -119,56 +165,7 @@ class ModuleMapper extends Plugin {
                 this.addMemberTo(el, res.global);
             }
 
-            if (el.kind === 'function') {
-                this.analyseFunction(el, desc);
-            }
 
-            if (el.kind === 'event') {
-                el.longname = el.longname.split(':').pop();
-                this.analyseFunction(el, desc);
-            }
-
-            if (el.kind === 'file') {
-
-                res.description = el.description;
-                if (el.type) {
-                    desc.type = el.type.names[0];
-                } else if(el.ignore) {
-                    res.ignore = true;
-                }
-
-            }
-
-            if (el.kind === 'readme') {
-                debugger;
-            }
-
-            if (el.kind === 'typedef') {
-
-                const name = el.type && el.type.names[0] || el.longname;
-
-                if (res.types[name]) {
-                    desc.app.log('type already defined in package:', name);
-                } else {
-
-                    desc.app.log('found type:', name);
-                    res.types[name] = desc.resource;
-
-                }
-
-            }
-
-            if (!el.undocumented) {
-
-                if (el.kind === 'function' && el.see) {
-
-                }
-
-                if (res[el.kind] && !_.isArray(res[el.kind])) {
-                    debugger
-                }
-
-            }
 
             delete el.code;
             // delete el.meta;

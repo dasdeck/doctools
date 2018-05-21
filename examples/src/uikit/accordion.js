@@ -24,6 +24,7 @@ export default {
 
     props: {
         /**
+         * btw. you can look up funny stuff at {@link togglable copy.js}
          * CSSo selector of the element(s) to toggle.
          */
         targets: String,

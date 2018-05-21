@@ -174,10 +174,11 @@
 </script>
 
 <docs name="readme">
+
+## this is my block!
 I can write as much as I want here because this block is called "readme"
 
 ```html : vue
-
 <template>
     <div>{{test}}</div>
 </template>
@@ -193,9 +194,9 @@ export default {
     }
 }
 </script>
-
 ```
 
+## another block
 This is a real example that uses the actual code:
 
 ```html : vue
@@ -217,7 +218,6 @@ export default {
     }
 }
 </script>
-
 ```
 
 more text

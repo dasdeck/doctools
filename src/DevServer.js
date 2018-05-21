@@ -55,7 +55,8 @@ class DevServer {
 
             const app = server.getPack();
             const resources = app.resources;
-            if (resources[request.url.substr(1)] || request.url === '/') {
+            const url = decodeURI(request.url);
+            if (resources[url.substr(1)] || request.url === '/') {
 
                 response.send(index);
             } else {

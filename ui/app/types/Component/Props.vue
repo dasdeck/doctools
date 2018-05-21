@@ -8,15 +8,10 @@
 <script>
 
     import Base from './Base';
-    import PropTable from '../../utils/PropTable.vue'
     import {mapValues, forEach, orderBy} from 'lodash-es';
 
     export default {
         extends: Base,
-
-        components: {
-            PropTable
-        },
 
         computed: {
             /**
@@ -38,9 +33,10 @@
                 return orderBy(
                     mapValues(props, prop => ({
                     ...prop,
-                    type: {template: 'types', type: prop.type},
+                    type: {template: 'Types', type: prop.type},
                     name: {template: 'code', html: prop.name},
-                    defaultvalue: {template: 'code', html: prop.defaultvalue}
+                    defaultvalue: {template: 'code', html: prop.defaultvalue},
+                    description: {template: 'Description', text: prop.description}
                     })),
                     ["inherited", "name"],
                     ["desc", "asc"]

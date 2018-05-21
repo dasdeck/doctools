@@ -4,27 +4,25 @@
 
         <Markdown v-if="module.readme" :text="module.readme"/>
 
-        <p>
-            {{module.component.description}}
-        </p>
-
-
+        <Description :text="module.component.description"/>
 
         <Slots/>
-
-        <Components/>
-
-        <Mixins/>
 
         <Props/>
 
         <Methods/>
 
-        <Emits/>
+        <Computeds/>
 
         <Events/>
 
+        <GlobalEvents/>
+
         <Triggers/>
+
+        <Components/>
+
+        <Mixins/>
 
         <RepoLink/>
 

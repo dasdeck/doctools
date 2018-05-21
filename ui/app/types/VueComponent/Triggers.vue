@@ -1,10 +1,12 @@
 <template>
-    <div v-if="component.trigger">
-        <template v-html="$t('<h2>trigger:</h2>')"/>
-        <div v-for="trigger in component.trigger">
-            <h3>{{trigger.name}}</h3>
-            {{trigger.description}}
+    <div v-if="component.events">
+
+        <div v-html="$t('<h2>triggers:</h2>')"></div>
+        <div v-for="event in component.events">
+            <h3>{{event.name}}</h3>
+            <Description :text="event.description"/>
         </div>
+
     </div>
 </template>
 

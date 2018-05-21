@@ -1,18 +1,20 @@
 <template>
     <div>
-        <h1>{{name}}</h1>
-        <p>
-            {{data.description}}
-        </p>
+        <h2>{{name}}</h2>
+        <Description :text="data.description"/>
     </div>
 </template>
 
 <script>
-
+    import Description from '../utils/Description.vue';
     /**
      * document layout for constants
      */
     export default {
+
+        components: {
+            Description
+        },
         props: {
             /**
              * the descriptor jsodc for this constant

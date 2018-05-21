@@ -23,7 +23,7 @@ export default {
 
         /**
          * @event test
-         * @kind Trigger
+         * @kind trigger
          * @param {String} a - parameter a
          *
          **/

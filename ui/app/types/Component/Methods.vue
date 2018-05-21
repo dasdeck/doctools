@@ -11,16 +11,11 @@
 <script>
 
     import Base from './Base';
-    import Function from '../../utils/Function.vue';
     import {filter} from 'lodash-es';
 
     export default {
 
         extends: Base,
-
-        components: {
-            Function
-        },
 
         inject: ['$doc'],
 

@@ -14,13 +14,8 @@
 <script>
 
     import Base from './Base';
-    import ModuleLink from '../../utils/ModuleLink.vue';
 
     export default {
-
-        components: {
-            ModuleLink
-        },
 
         extends: Base
 

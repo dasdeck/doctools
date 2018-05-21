@@ -2,9 +2,8 @@
     <div>
         <h2>{{data.name}}:</h2>
         <Types v-if="data.type" :type="data.type"/>
-        <p>
-            {{data.description}}
-        </p>
+        <Description :text="data.description"/>
+
     </div>
 </template>
 
@@ -12,6 +11,7 @@
 
     import Types from './Types.vue';
     import ModuleComp from './ModuleComp.js';
+    import Description from './Description.vue';
 
     /**
      * document layout for constants
@@ -19,7 +19,8 @@
     export default {
 
         components: {
-            Types
+            Types,
+            Description
         },
 
         extends: ModuleComp,

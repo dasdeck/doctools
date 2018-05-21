@@ -1,12 +1,10 @@
 <template>
     <div>
-        <p>
-            {{module.module.description}}
-        </p>
+        <Description :text="module.module.description"/>
 
         <DescList :descs="descs"/>
 
-        <a v-if="repoLink" :href="repoLink" v-html="$t('edit in repo')"></a>
+        <RepoLink/>
 
     </div>
 </template>
@@ -14,7 +12,7 @@
 <script>
     import {size} from 'lodash-es';
 
-    import DescList from '../utils/DescList.vue';
+    import utils from '../utils';
     import ModuleComp from '../utils/ModuleComp';
 
     /**
@@ -24,10 +22,8 @@
     export default {
         extends: ModuleComp,
 
-        components: {
-            DescList,
+        components: utils,
 
-        },
         computed: {
             descs() {
                 return this.module.module.global;

@@ -65,7 +65,7 @@ class RuntimeAnalyzer extends Plugin {
      */
     onAnalyze(app) {
 
-        if (!this.script) {
+        if (!this.compiler) {
             this.run();
         }
 
@@ -164,13 +164,11 @@ class RuntimeAnalyzer extends Plugin {
     }
 
 
-
-
     createCompiler(filename = this.indexFile) {
 
         const conf = this.adaptConfig(filename);
 
-        const WebpackAdapter = require('../WebpackAdapter');
+        const WebpackAdapter = require('./RuntimeAnalyzer/WebpackAdapter');
         const plugin = new WebpackAdapter(this);
 
         conf.plugins = [...(conf.plugins || []), plugin];

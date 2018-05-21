@@ -1,19 +1,19 @@
 <template>
     <span>
         <template v-if="isComplexType">
-            <Type :type="primeType"/>.(<Type v-for="(t,i) in secondaryTypes" :key="t" :type="t" :comma="i < secondaryTypes.length - 1"/>)
+            <Type :type="primeType"/>.&lt;<Type v-for="(t,i) in secondaryTypes" :key="t" :type="t" :comma="i < secondaryTypes.length - 1"/>&gt;
         </template>
         <ModuleLink v-else-if="types[type]" :resource="types[type]" :name="primeType"/>
         <a v-else-if="apiDocLink" :href="apiDocLink">{{primeType}}</a>
         <span v-else>{{primeType}}</span>
-        <span v-if="comma">, </span>
+        <template v-if="comma">, </template>
     </span>
 </template>
 
 <script>
 
-import ModuleLink from './ModuleLink.vue';
 import {upperFirst} from 'lodash-es';
+import ModuleLink from './ModuleLink.vue';
 import ModuleComp from './ModuleComp.js';
 
 const Type = {
@@ -51,11 +51,7 @@ const Type = {
         },
 
         apiDocLink() {
-            if(this.$doc.nodeGlobals.includes(this.primeType)) {
-                return `https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/${this.type}`;
-            } else if(typeof window !== 'undefined' && window[this.primeType]) {
-                return `https://developer.mozilla.org/docs/Web/API/${this.type}`;
-            }
+            return this.$doc.getTypeUrl(this.primeType);
         }
     }
 }

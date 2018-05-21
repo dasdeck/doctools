@@ -35,8 +35,9 @@
 </template>
 
 <script>
-    import {forEach, some, isPlainObject, size} from 'lodash-es';
+    import {forEach, some, isPlainObject, size, filter, isUndefined} from 'lodash-es';
     import Types from './Types.vue';
+    import Description from './Description.vue';
 
     /**
      * utility view to render property lists
@@ -45,7 +46,8 @@
     export default {
 
         components: {
-            Types
+            Types,
+            Description
         },
 
         props: {
@@ -84,9 +86,8 @@
                 forEach(this.headerToUse, (title, index) => {
                     if (some(this.filteredData, row => {
                             const val = row[index];
-                            if( isPlainObject(val)) {
-                                return size(val) > 1;
-
+                            if (isPlainObject(val)) {
+                                return size(filter(val, v => !isUndefined(v))) > 1;
                             } else {
                                 return val;
                             }
@@ -96,12 +97,13 @@
                 });
                 return this.headerToUse ? res : this.data[0];
             },
+
             numCols() {
                 return size(this.filteredHeaders);
             },
+
             filteredData() {
                 return this.headers === true ? this.data.slice(1) : this.data;
-
             }
         },
     }

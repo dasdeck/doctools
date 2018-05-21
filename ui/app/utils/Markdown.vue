@@ -12,11 +12,6 @@ import RepoLink from '../utils/RepoLink.vue';
 
 const Markdown = {
 
-    components: {
-        ExampleRunner,
-        RepoLink
-    },
-
     extendRenderer: {},
 
     props:{

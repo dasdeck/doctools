@@ -45,7 +45,7 @@
     import FileTree from './sidebar/FileTree.vue';
     import Menu from './sidebar/Menu.vue';
     import DocApp from './DocApp.js';
-    import {size} from 'lodash'
+    import {size} from 'lodash-es'
 
     /**
      * Container Component for the doctools app ui
@@ -72,7 +72,7 @@
             },
 
             selectedModuleResource() {
-                return this.$route.fullPath.substr(1);
+                return decodeURI(this.$route.fullPath).substr(1);
             },
 
             selectedModule() {

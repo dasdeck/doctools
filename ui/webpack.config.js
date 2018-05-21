@@ -9,6 +9,9 @@ const rules = [
         test: /\.vue$/,
         loader: 'vue-loader',
         options: {
+            compilerOptions: {
+                preserveWhitespace: false
+            },
             loaders: {
               js: "babel-loader"
             }

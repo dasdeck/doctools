@@ -2,19 +2,15 @@
 
     <div>
 
-        <Markdown v-if="module.readme" :text="module.readme"/>
-
-        <p>
-            {{module.component.description}}
-        </p>
-
-        <Mixins/>
+        <Description :text="module.description"/>
 
         <Props/>
 
         <Methods/>
 
-        <Emits/>
+        <Events/>
+
+        <Mixins/>
 
         <RepoLink/>
 
@@ -24,12 +20,8 @@
 
 <script>
 
-import PropTable from "../utils/PropTable.vue";
-import RepoLink from "../utils/RepoLink.vue";
-import Function from "../utils/Function.vue";
-import ModuleLink from "../utils/ModuleLink.vue";
+import utils from '../utils';
 import ModuleComp from '../utils/ModuleComp';
-import Markdown from '../utils/Markdown.vue';
 
 import {size} from "lodash-es";
 
@@ -41,9 +33,7 @@ export default {
 
     components: {
         ...Component,
-        ModuleLink,
-        RepoLink,
-        Markdown
+        ...utils
     },
 
     provide() {

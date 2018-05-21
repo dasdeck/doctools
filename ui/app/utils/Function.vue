@@ -1,16 +1,19 @@
 <template>
     <div :class="data.inherited ? 'inherited' : ''">
+
         <component :is="headline" :id="data.simpleName">
             {{data.simpleName}}:
         </component>
+
         <a v-if="data.reference" :href="`#${data.reference}`" uk-scroll>
-            {{data.description}}
+            <Description :text="data.description"/>
         </a>
+
         <template v-else>
 
             <code v-if="data.memberof === 'module.exports'">import { {{data.simpleName}} } from '{{module.fileInPackage}}'</code>
 
-            <p>{{data.description}}</p>
+                    <Description :text="data.description"/>
 
             <h4 class="signature">{{data.simpleName}}(
                 <template v-for="(param, index) in data.params" >
@@ -26,7 +29,7 @@
                 <template v-for="(ret, i) in data.returns">
                     <Types :type="ret.type" :key="i"/>
                     <!-- <h4><code>{{ret.type.names.join('|')}}</code></h4> -->
-                    <p>{{ret.description}}</p>
+                    <Description :text="ret.description"/>
                 </template>
             </template>
         </template>
@@ -39,6 +42,7 @@
     import Param from './Param.vue';
     import Types from './Types.vue';
     import ModuleComp from './ModuleComp.js';
+    import Description from './Description.vue';
 
     /**
      * renders a function
@@ -50,7 +54,8 @@
             PropTable,
             ModuleLink,
             Param,
-            Types
+            Types,
+            Description
         },
 
         extends: ModuleComp,

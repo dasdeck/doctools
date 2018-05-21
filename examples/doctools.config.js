@@ -29,7 +29,11 @@ module.exports = {
         'UIkitComponentMapper',
         'VueComponentMapper',
         'ComponentLinker',
-
+        {
+            onSerialize(desc, data) {
+                data.code = desc._raw;
+            }
+        },
         new AssetLinker({
 
             getAssets(desc) {

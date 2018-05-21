@@ -1,10 +1,8 @@
 <template>
-    <div v-if="component.events">
-
+    <div v-if="component.emit">
         <div v-html="$t('<h2>events:</h2>')"></div>
-        <div v-for="event in component.events">
-            <h3>{{event.name}}</h3>
-            {{event.description}}
+        <div v-for="event in component.emit">
+            <Function :data="event"/>
         </div>
 
     </div>

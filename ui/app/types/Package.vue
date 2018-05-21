@@ -42,23 +42,22 @@
 </template>
 
 <script>
-    import Function from '../utils/Function.vue';
+    import utils from '../utils';
     import ModuleComp from '../utils/ModuleComp';
     import {size, omit} from 'lodash-es';
     /**
      * view for package overviews
      */
     export default {
+
         extends: ModuleComp,
 
-        components: {
-            Function
-        },
-
+        components: utils,
 
         hasContent(module) {
                 return module.packageJson && !!size(omit(module.packageJson, 'name'));
         }
+
     }
 </script>
 
