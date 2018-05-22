@@ -2,7 +2,7 @@
     <div v-if="methods.length">
         <div v-html="$t('<h2>methods:</h2>')"/>
         <div v-for="method in methods">
-            <Function :data="method"/>
+            <FunctionSimple :data="method"/>
             <hr>
         </div>
     </div>

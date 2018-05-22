@@ -1,31 +1,12 @@
-<template>
 
-    <div>
-
-        <Description :text="module.description"/>
-
-        <Props/>
-
-        <Methods/>
-
-        <Events/>
-
-        <Mixins/>
-
-        <RepoLink/>
-
-    </div>
-
-</template>
 
 <script>
 
 import utils from '../utils';
 import ModuleComp from '../utils/ModuleComp';
+import Component from './Component/index';
 
 import {size} from "lodash-es";
-
-import Component from './Component';
 
 export default {
 

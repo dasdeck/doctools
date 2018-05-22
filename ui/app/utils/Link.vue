@@ -1,6 +1,6 @@
 <template>
-    <a v-if="isExternalLink" :href="url" v-html="title"></a>
-    <ModuleLink v-else :resource="resource"/>
+    <a v-if="isExternalLink" :href="url" v-html="title"><slot></slot></a>
+    <ModuleLink v-else :resource="resource" :name="name"/>
 </template>
 
 <script>
@@ -20,6 +20,11 @@
         },
 
         computed: {
+
+            name() {
+                return this.$slots.default && this.$slots.default[0] && this.$slots.default[0].text;
+            },
+
             isExternalLink() {
                 return this.link.trim().indexOf('http') === 0;
             },

@@ -43,7 +43,7 @@ module.exports = class ComponentLinker extends Plugin {
                 });
 
                 //merge inherited props, methods, computeds  to component
-                ['props', 'methods', 'computed'].forEach(type => {
+                ['props', 'methods', 'computed', 'emit'].forEach(type => {
 
                     const res = {};
 

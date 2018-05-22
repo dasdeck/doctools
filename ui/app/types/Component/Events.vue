@@ -4,7 +4,6 @@
         <div v-for="event in component.emit">
             <Function :data="event"/>
         </div>
-
     </div>
 </template>
 

@@ -1,7 +1,7 @@
 <template>
     <div>
         <h4 v-if="name">{{name}}</h4>
-        <table class="uk-table uk-table-striped">
+        <table class="uk-table uk-table-divider">
 
             <thead v-if="headerToUse">
             <tr>
@@ -13,7 +13,7 @@
             <template v-for="row in filteredData">
                 <tr :style="row._style">
                     <td v-for="(header, col) in filteredHeaders">
-                        <component v-if="row[col] && row[col].template" :is="row[col].template" v-bind="row[col]">{{row[col].html}}</component>
+                        <component v-if="row[col] && row[col].template" :is="row[col].template" v-bind="omit(row[col], 'template')">{{row[col].html}}</component>
                         <span v-else>{{row[col]}}</span>
                     </td>
                 </tr>
@@ -35,7 +35,7 @@
 </template>
 
 <script>
-    import {forEach, some, isPlainObject, size, filter, isUndefined} from 'lodash-es';
+    import {forEach, some, isPlainObject, size, filter, isUndefined, omit} from 'lodash-es';
     import Types from './Types.vue';
     import Description from './Description.vue';
 
@@ -67,6 +67,10 @@
              * table column to use for annotations, e.g. the key in a row to use
              */
             annotations: [Array]
+        },
+
+        methods: {
+            omit
         },
         computed: {
             /**

@@ -1,5 +1,5 @@
 <template>
-    <p v-html="html"></p>
+    <div v-html="html"></div>
 </template>
 
 <script>
@@ -14,6 +14,10 @@
         extends: ComponentFromText,
 
         mixins: [ModuleComp],
+
+        props: {
+            trim: Boolean
+        },
 
         computed: {
 
@@ -34,7 +38,9 @@
             },
 
             html() {
-                return this.parsedText && this.$doc.markdown(this.parsedText);
+                const res = this.parsedText && this.$doc.markdown(this.parsedText);
+                const trimmed = this.trim && res ? res.substr(3, res.length -8) : res;
+                return trimmed;
             }
         }
     }

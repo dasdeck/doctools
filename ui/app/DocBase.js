@@ -1,4 +1,4 @@
-import {find} from 'lodash-es';
+import {findKey} from 'lodash-es';
 
 export default {
 
@@ -45,10 +45,7 @@ export default {
             if (this.data.resources[nameOrResource]) {
                 return nameOrResource;
             } else {
-                const mod = find(this.data.resources, res => res.fileInPackage.includes(nameOrResource));
-                if (mod) {
-                    return mod.resource;
-                }
+                return findKey(this.data.resources, (res, key) => key.includes(nameOrResource) || res.name.includes(nameOrResource));
             }
 
         },

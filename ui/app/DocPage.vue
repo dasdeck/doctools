@@ -20,7 +20,7 @@
             <li v-if="module.assets"><a href="">assets</a></li>
             <li v-if="apiHasContent"><a href="">api</a></li>
             <li v-if="globals"><a href="">globals</a></li>
-            <li v-if="module.script"><a href="" >code</a></li>
+            <li v-if="module.code"><a href="" >code</a></li>
             <li v-if="module.template"><a href="">template</a></li>
             <li v-if="module.tests"><a href="">test</a></li>
             <li v-if="module.markdown"><a href="">markdown</a></li>
@@ -32,9 +32,9 @@
             <Assets v-if="module.assets" :assets="module.assets"/>
             <component v-if="apiHasContent" :is="module.type" :moduleProperty="module" ref="layout"/>
             <Globals v-if="globals"/>
-            <div v-if="module.script">
+            <div v-if="module.code">
                 <h2>code:</h2>
-                <Code language="javascript">{{module.script}}</Code>
+                <Code :language="module.code.trim()[0] === '<' ? 'html' : 'javascript'">{{module.code}}</Code>
             </div>
             <div v-if="module.template">
                 <h2>template:</h2>
@@ -75,8 +75,7 @@
             ...Types,
             ...utils,
             Assets,
-            UIkitComponent: Types.Component,
-            Globals,
+            Globals
         },
 
         ref: '$content',

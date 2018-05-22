@@ -1,9 +1,7 @@
 <template>
     <div :class="data.inherited ? 'inherited' : ''">
 
-        <component :is="headline" :id="data.simpleName">
-            {{data.simpleName}}:
-        </component>
+        <div v-html="$t('<h2>$functionName:</h2>', {functionName: data.simpleName})"></div>
 
         <a v-if="data.reference" :href="`#${data.reference}`" uk-scroll>
             <Description :text="data.description"/>
@@ -13,22 +11,16 @@
 
             <code v-if="data.memberof === 'module.exports'">import { {{data.simpleName}} } from '{{module.fileInPackage}}'</code>
 
+            <Code language="js">{{$t('UIkit.$componentName(element).$functionName($params);', {componentName: module.name,functionName:data.simpleName, params: data.params.map(param => param.name)})}}</Code>
+
             <Description :text="data.description"/>
 
-            <h4 class="signature">{{data.simpleName}}(
-                <template v-for="(param, index) in data.params" >
-                    <Param :param="param" />
-                    <span v-if="index < data.params.length - 1">, </span>
-                </template>
-                )<span v-if="data.returns">
-                    : <Types v-for="(ret, i) in data.returns" :key="i" :type="ret.type"/></span></h4>
-
             <PropTable :key="name" v-for="(table, name) in data.tables" :name="name" :data="table" :headers="true"/>
+
             <template v-if="data.returns && data.returns.length">
                 <h4>returns:</h4>
                 <template v-for="(ret, i) in data.returns">
                     <Types :type="ret.type" :key="i"/>
-                    <!-- <h4><code>{{ret.type.names.join('|')}}</code></h4> -->
                     <Description :text="ret.description"/>
                 </template>
             </template>
@@ -37,12 +29,11 @@
 </template>
 
 <script>
-    import PropTable from './PropTable.vue';
-    import ModuleLink from './ModuleLink.vue';
-    import Param from './Param.vue';
-    import Types from './Types.vue';
+
     import ModuleComp from './ModuleComp.js';
     import Description from './Description.vue';
+    import PropTable from './PropTable.vue';
+    import Code from './Code.vue';
 
     /**
      * renders a function
@@ -50,21 +41,17 @@
      *
      */
     export default {
-        components: {
+
+        components: {
+            Code,
             PropTable,
-            ModuleLink,
-            Param,
-            Types,
             Description
         },
 
         extends: ModuleComp,
 
         props: {
-            headline: {
-                type: String,
-                default: "h3"
-            },
+
             data: Object
         }
     }

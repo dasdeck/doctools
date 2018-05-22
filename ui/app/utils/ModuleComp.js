@@ -1,5 +1,6 @@
 import {some} from 'lodash-es';
 
+
 export default {
 
     inject: {
@@ -13,9 +14,9 @@ export default {
     },
 
     computed: {
+
         module() {
             return this.moduleData || this.moduleProperty || this.$page && this.$page.module ||this.$doc.selectedModule;
-
         },
 
         repoLink() {

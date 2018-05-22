@@ -1,7 +1,7 @@
 <template>
     <div v-if="props && Object.keys(props).length">
         <div v-html="$t('<h2>props:</h2>')"/>
-        <PropTable :data="props" :annotations="['examples']" :headers="{name: 'name', type: 'type', defaultvalue: 'default', description: 'description'}"/>
+        <PropTable :data="props" :annotations="['examples']" :headers="headers"/>
     </div>
 </template>
 
@@ -14,6 +14,10 @@
         extends: Base,
 
         computed: {
+
+            headers() {
+                return {name: 'name', type: 'type', defaultvalue: 'default', description: 'description'};
+            },
             /**
             * the lsit of props with added style information for rendering
             */
@@ -36,7 +40,7 @@
                     type: {template: 'Types', type: prop.type},
                     name: {template: 'code', html: prop.name},
                     defaultvalue: {template: 'code', html: prop.defaultvalue},
-                    description: {template: 'Description', text: prop.description}
+                    description: {template: 'Description', text: prop.description, trim: true}
                     })),
                     ["inherited", "name"],
                     ["desc", "asc"]

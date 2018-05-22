@@ -5,7 +5,7 @@
             <h3>{{computed.name}}</h3>
             <h4 class="inherited" v-if="computed.inherited"> ↳ <ModuleLink :resource="computed.inherited"/>.{{computed.name}}</h4>
             <Types :type="computed.type"/>
-            <Description :text="component.description"/>
+            <Description :text="computed.description"/>
         </div>
     </div>
 </template>

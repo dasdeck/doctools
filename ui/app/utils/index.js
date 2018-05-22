@@ -9,12 +9,13 @@ import Param from './Param.vue';
 import Link from './Link.vue';
 import Description from './Description.vue';
 import Function from './Function.vue';
+import FunctionSimple from './FunctionSimple.vue';
 import DescList from './DescList.vue';
 import Constant from './Constant.vue';
-// import Assets from './Assets.vue';
+import Code from './Code.vue';
 
 export default {
-    // Assets,
+    Code,
     Markdown,
     PropTable,
     Type,
@@ -25,6 +26,7 @@ export default {
     Link,
     Description,
     Function,
+    FunctionSimple,
     DescList,
     Constant,
     ModuleLink

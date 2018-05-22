@@ -1,6 +1,6 @@
 <template>
     <span v-if="type">
-        <Type :type="t" v-for="(t, key) in type.names" :key="key"/>
+        <Type :type="t" v-for="(t, index) in type.names" :key="index" :seperator="seperator" :comma="index < type.names.length - 1"/>
     </span>
 </template>
 
@@ -17,7 +17,11 @@ export default {
     extends: ModuleComp,
 
     props: {
-        type: Object
+        type: Object,
+        seperator: {
+            type: String,
+            default: ', '
+        }
     },
 
 }

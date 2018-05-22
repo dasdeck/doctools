@@ -6,7 +6,7 @@
         <ModuleLink v-else-if="types[type]" :resource="types[type]" :name="primeType"/>
         <a v-else-if="apiDocLink" :href="apiDocLink">{{primeType}}</a>
         <span v-else>{{primeType}}</span>
-        <template v-if="comma">, </template>
+        <template v-if="comma">{{seperator}}</template>
     </span>
 </template>
 
@@ -20,7 +20,11 @@ const Type = {
 
     props: {
         comma: Boolean,
-        type: String
+        type: String,
+        seperator: {
+            type: String,
+            default: ', '
+        }
     },
 
     extends: ModuleComp,

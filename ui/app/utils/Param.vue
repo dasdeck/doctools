@@ -3,7 +3,7 @@
     <span>
         {{param.name}}
         <template v-if="param.type"> :
-            <Types :type="param.type"/>
+            <Types :type="param.type" seperator="| "/>
         </template>
     </span>
 </template>
