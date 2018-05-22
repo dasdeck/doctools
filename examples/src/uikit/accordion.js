@@ -16,6 +16,8 @@ export function test() {
 }
 
  /**
+  * @kind test
+  * @hide {props:targets}
   * an accordion component
   */
 export default {

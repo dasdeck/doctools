@@ -113,7 +113,7 @@ class RuntimeAnalyzer extends Plugin {
     }
 
     /**
-     * analyzesRuntimes for on module
+w     * analyzesRuntimes for on module
      */
     analyzeRuntime(desc) {
 

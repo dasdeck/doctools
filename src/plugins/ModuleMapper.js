@@ -38,7 +38,7 @@ class ModuleMapper extends Plugin {
 
     onSerialize(desc, data) {
 
-        data.module = _.pick(desc.module, ['global', 'description', 'type']);
+        data.module = _.pick(desc.module, ['global', 'description', 'type', 'hidden']);
 
     }
 
@@ -86,7 +86,6 @@ class ModuleMapper extends Plugin {
 
         all.forEach((el, index) => {
 
-
             //inline code
             let code;
             if (el.meta && el.meta.range) {
@@ -95,11 +94,15 @@ class ModuleMapper extends Plugin {
                 el.code = code;
             }
 
-            // el.description = el.description && util.parseComment(el.description);
+            const exclude = _.find(el.tags, tag => tag.title === 'exclude');
 
+            if (exclude) {
+
+                res.exclude = res.exclude || {};
+                res.exclude = _.merge(res.exclude, (new Function('return ' + exclude.value))());
+            }
 
             //process types
-
             if (el.kind === 'function') {
                 this.analyseFunction(el, desc);
             }
@@ -122,7 +125,6 @@ class ModuleMapper extends Plugin {
 
             if (el.kind === 'typedef') {
 
-
                 const name = el.type && el.type.names[0] || el.longname;
 
                 el.longname = el.name = name;
@@ -137,7 +139,6 @@ class ModuleMapper extends Plugin {
                 }
 
             }
-
 
             //analyse eports
             let exporter;
