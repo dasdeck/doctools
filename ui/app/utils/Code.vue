@@ -13,12 +13,13 @@ export default {
     extends: ModuleComp,
 
     props: {
-        language: String
+        language: String,
+        code: String
     },
 
     computed: {
         html() {
-            return this.$doc.highlight(this.$slots.default[0].text, this.language, true);
+            return this.$doc.highlight(this.code || this.$slots.default[0].text, this.language, true);
         }
     }
 

@@ -11,7 +11,7 @@
 
             <code v-if="data.memberof === 'module.exports'">import { {{data.simpleName}} } from '{{module.fileInPackage}}'</code>
 
-            <Code language="js">{{$t('UIkit.$componentName(element).$functionName($params);', {componentName: module.name,functionName:data.simpleName, params: data.params.map(param => param.name)})}}</Code>
+            <Code language="js">{{$t('UIkit.$componentName(element).$functionName($params);', {componentName: module.name,functionName:data.simpleName, params: data.params.map(param => param.name).join(', ')})}}</Code>
 
             <Description :text="data.description"/>
 

@@ -12,6 +12,7 @@ const rules = [
             compilerOptions: {
                 preserveWhitespace: false
             },
+            transformAssetUrls: {},
             loaders: {
               js: "babel-loader"
             }
