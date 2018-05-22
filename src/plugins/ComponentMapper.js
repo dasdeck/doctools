@@ -29,7 +29,6 @@ function findMembers(data, name) {
 function findProps(data, runtime) {
     const res = findMembers(data, 'props');
 
-    //
     if (runtime) {
         util.findPropDefaults(res, runtime);
     }
@@ -101,7 +100,6 @@ module.exports = class ComponentMapper extends Plugin {
 
         base = 'module.exports';
 
-
         //find base
         data.all.forEach(entry => {
             if ((entry.type && entry.type.names.includes(data.type)) && entry.kind === 'constant') {
@@ -110,7 +108,6 @@ module.exports = class ComponentMapper extends Plugin {
         });
 
         const mod = desc.module.global[base];
-
 
         [
             {props: findProps},
@@ -128,24 +125,28 @@ module.exports = class ComponentMapper extends Plugin {
             const name = simple ? type : Object.keys(type)[0];
 
             const members = simple ? findMembers(entries, name, runtime) : type[name](entries, runtime);
-            if (_.size(members)) {
-                component[name] = members;
 
+            const visibleMemeber = desc.module.exclude ? _.filter(members, member => {
+                if (desc.module.exclude) {
+                    const hidden = _.get(desc.module.exclude, `${name}.${member.name}`);
+                    return !hidden;
+                } else {
+                    return true;
+                }
+            }) : members;
+
+            if (_.size(visibleMemeber)) {
+                component[name] = visibleMemeber;
             }
 
         });
 
-        desc.component = _.pickBy(component, type => _.size(type));
+        desc.component = component;
 
         if (mod) {
-
             desc.component.description = mod.description;
             desc.component.tutorials = mod.tutorials;
-        } else {
-            // debugger;
-            // this.app.log('what is this?')
         }
-
 
     }
 

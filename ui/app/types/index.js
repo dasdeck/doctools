@@ -4,12 +4,13 @@ import Module from './Module.vue';
 import Package from './Package.vue';
 import VueComponent from './VueComponent.vue';
 import UIkitComponent from './UIkitComponent.vue';
+import UIkitTest from './UIkitTest.vue';
 
 export default {
     Markdown,
-    // Component,
     Module,
     Package,
     VueComponent,
-    UIkitComponent
+    UIkitComponent,
+    UIkitTest
 };

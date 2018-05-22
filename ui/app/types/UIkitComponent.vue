@@ -10,7 +10,7 @@
 
             <h3 id="initialization" class="uk-h4 tm-heading-fragment"><a href="#initialization">Initialization</a></h3>
             <div class="uk-margin-medium">
-                <Code language="js">{{$t('UIkit.$componentName(element, options);', {componentName: module.name})}}</Code>
+                <Code language="js" :code="$t('UIkit.$componentName(element, options);', {componentName: module.name})"/>
             </div>
         </template>
 

@@ -2,6 +2,7 @@ const mkpath = require('mkpath');
 const fs = require('fs');
 const rimraf = require('rimraf');
 const path = require('path');
+const _ = require('lodash');
 
 module.exports = {
 
@@ -30,7 +31,6 @@ module.exports = {
         return path.join(this.getCacheDir(), this.getHash() + '.json' );
     },
 
-
     getCacheDir() {
         return path.join(this.app.getCacheDir(), this.getChacheName() );
     },
@@ -40,8 +40,10 @@ module.exports = {
     },
 
     writeCache(data = this.getState()) {
-        mkpath.sync(this.getCacheDir());
-        fs.writeFileSync(this.getCacheFile(), JSON.stringify(data, null, 2));
+        if (_.size(_.filter(data, d => !_.isUndefined(d)))) {
+            mkpath.sync(this.getCacheDir());
+            fs.writeFileSync(this.getCacheFile(), JSON.stringify(data, null, 2));
+        }
     },
 
     restoreCache() {

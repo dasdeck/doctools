@@ -17,6 +17,7 @@
 
         <!-- This is the nav containing the toggling elements -->
         <ul uk-switcher class="uk-subnav uk-subnav-pill nomd">
+            <li v-if="module.assets && module.assets.test"><a href="">test</a></li>
             <li v-if="module.assets"><a href="">assets</a></li>
             <li v-if="apiHasContent"><a href="">api</a></li>
             <li v-if="globals"><a href="">globals</a></li>
@@ -29,6 +30,7 @@
         <!-- This is the container of the content items -->
         <div class="uk-switcher mdnoclass">
 
+            <UIkitTest v-if="module.assets && module.assets.test" :moduleProperty="$doc.resources[module.assets.test]"/>
             <Assets v-if="module.assets" :assets="module.assets"/>
             <component v-if="apiHasContent" :is="module.type" :moduleProperty="module" ref="layout"/>
             <Globals v-if="globals"/>

@@ -116,11 +116,10 @@ module.exports = class DocTools extends EventEmitter {
     writeCache() {
         _.forEach(this.resources, res => {
             const data = {};
-            this.execPluginCallback('onWriteModuleCache', res, data)
+            this.execPluginCallback('onWriteModuleCache', res, data);
             res.writeCache(data);
-        })
+        });
     }
-
 
     get() {
 
