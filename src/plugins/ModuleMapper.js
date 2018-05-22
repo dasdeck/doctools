@@ -254,7 +254,7 @@ class ModuleMapper extends Plugin {
         const res = regex.exec(code);
         if (!res) {
             // debugger //why
-            console.error('could not determine function name for:', name, 'in:', code);
+            this.app.log('could not determine function name for:', name, 'in:', code);
         } else if (res) {
             const pars = res[1];
             if (pars) {
