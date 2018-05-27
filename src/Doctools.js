@@ -162,7 +162,15 @@ module.exports = class DocTools extends EventEmitter {
 
         data = _.isString(data) ? data : JSON.stringify(data, null, 2);
 
-        fs.writeFileSync(path.join(this.getDocToolsDir(), '_export'), data);
+        if (!path.isAbsolute(dest)) {
+            dest = path.join(this.getDocToolsDir(), '_export', dest);
+        }
+
+        mkpath.sync(path.dirname(dest));
+
+        fs.writeFileSync(dest, data);
+
+        return dest;
 
     }
 
