@@ -18,6 +18,8 @@ class PackageMapper extends Plugin {
             _.assign(data, _.pick(desc, ['packageJson', 'global', 'description', 'type', 'packages', 'resources']));
 
         }
+
+        data.package = desc.package;
     }
 
     onGet(app, data) {

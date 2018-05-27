@@ -7,6 +7,7 @@ export default {
     },
 
     data() {
+
         return {
             data: this.initialData,
             lastRuntime: null,
@@ -14,8 +15,8 @@ export default {
                 private: false,
                 filter: ''
             }
-
         }
+
     },
 
     provide() {
@@ -45,7 +46,9 @@ export default {
             if (this.data.resources[nameOrResource]) {
                 return nameOrResource;
             } else {
-                return findKey(this.data.resources, (res, key) => key.includes(nameOrResource) || res.name.includes(nameOrResource));
+                return findKey(this.data.resources, (res, key) => {
+                    return key.includes(nameOrResource) || (res.name || res.fileInPackage).includes(nameOrResource);
+                });
             }
 
         },
@@ -59,6 +62,7 @@ export default {
             } else if(typeof window !== 'undefined' && window[type]) {
                 return `https://developer.mozilla.org/docs/Web/API/${type}`;
             }
+
         }
     },
 

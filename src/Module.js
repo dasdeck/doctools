@@ -76,7 +76,6 @@ module.exports = class Module {
 
         const data = _.pick(this, [
             'readme',
-            'package',
             'type',
             'name',
             'resource',
