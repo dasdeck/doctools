@@ -1,12 +1,5 @@
-
 <template>
-    <div>
-        <label>
-            RTL
-            <input type="checkbox" v-model="rtl"/>
-        </label>
-        <iframe ref="iframe" width="100%" :srcdoc="html"/>
-    </div>
+    <iframe ref="iframe" height="100%" width="100%" :srcdoc="html"/>
 </template>
 
 <script>
@@ -27,19 +20,9 @@ export default {
 
     ref: '$tester',
 
-    data() {
-        return {rtl: false};
-    },
-
-    mounted() {
-        this.$refs.iframe.onload = res => {
-            this.$refs.iframe.height = this.$refs.iframe.contentWindow.document.body.scrollHeight;
-        }
-    },
-
     computed: {
         html() {
-
+            // debugger
             const sourceHTML = createElementFromHTML(this.module.html);
 
             const headEls = UIkit.util.toNodes(sourceHTML.children)
@@ -50,17 +33,15 @@ export default {
             UIkit.util.remove(UIkit.util.$$('title', sourceHTML));
             UIkit.util.remove(UIkit.util.$$('script[src="js/test.js"]', sourceHTML));
 
-
             const head = headEls.map(node => node.outerHTML)
                                     .join('\n');
 
             const body = sourceHTML.innerHTML.trim();
 
-            debugger
-
-            let html = template.replace('$rtl', this.rtl ? 'rtl' : 'ltr');
-            html = html.replace('$content', body);
-            html = html.replace('$head', head);
+            let html = template.replace('$rtl', this.$doc.settings.rtl ? 'rtl' : 'ltr');
+            html = html.replace('$content', res => body);
+            html = html.replace('$head', res => head);
+            // debugger
             return html;
         }
     }

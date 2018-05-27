@@ -6,31 +6,43 @@ const path = require('path');
 const WebpackDevServer = require('webpack-dev-server');
 const Webpack = require('webpack');
 const Config = require('./Config');
+const _ = require('lodash');
 
 class DevServer {
 
-    constructor(config, router) {
+    constructor(app, router) {
+
+        this.app = app;
+
+        app.on('change', app => {
+
+            this.appChanged();
+
+        });
 
         this.router = router;
-        this.config = config;
-
-        if (config.dev) {
-
-            fs.watch(__dirname, {recursive: true}, (e, file) => this.sourceChanged(file));
-            // fs.watch(__dirname + '/ui', {recursive: true}, (e, file) => this.sourceChanged(file));
-        }
 
         this.createRoutes();
+
+    }
+
+    appChanged() {
+
+        this.app.log('devServer:', 'change');
+
+        this.app.analyze().then(() => {
+            this.data = this.app.get();
+            this.sendDataToClient(this.data);
+        });
 
     }
 
     createRoutes(router = this.router, server = this) {
 
         const index = fs.readFileSync(__dirname + '/../ui/index.html', 'utf8');
-
         router.get('/data.json', (req, res, next) => {
 
-            const app = server.getPack();
+            const app = server.getApp();
 
             app.analyze().then(() => {
                 const data = app.get();
@@ -43,7 +55,7 @@ class DevServer {
 
         router.get('/data', (req, res, next) => {
 
-            const app = server.getPack();
+            const app = server.getApp();
             app.emit('change');
 
             res.send('ok');
@@ -53,11 +65,22 @@ class DevServer {
 
         router.get('*', function(request, response, next) {
 
-            const app = server.getPack();
-            const resources = app.resources;
-            const url = decodeURI(request.url);
-            if (resources[url.substr(1)] || request.url === '/') {
+            const app = server.getApp();
+            const data = server.data = server.data || app.get();
 
+            const pages = data.pages || data.resources;
+            const url = decodeURI(request.url);
+
+            if(_.some(app.config.server.assets, (rep, search) => {
+                if (_.startsWith(request.url, search)) {
+                    const srcPath = path.join(app.config.base, request.url.replace(search, rep));
+                    if (fs.existsSync(srcPath)) {
+                        response.sendFile(srcPath);
+                        return true;
+                    }
+                }
+            })) {}
+            else if (pages[url.substr(1)] || request.url === '/') {
                 response.send(index);
             } else {
                 next();
@@ -65,37 +88,9 @@ class DevServer {
         });
     }
 
-    sourceChanged(file) {
-
-        file = path.resolve(file);
-
-
-        const sources = glob.sync(__dirname + '/+(src|ui)/**/*.js');
-        sources.forEach(file => {
-            delete require.cache[require.resolve(file)];
-        });
-
-
-        if (this.app) {
-
-            this.app.log('code changed');
-
-            this.app.dispose();
-            this.app = null;
-        }
-
-        this.parser = null;
-        this.config._ = null;
-
-        const app = this.getPack();
-
-        app.emit('change');
-
-    }
-
     sendDataToClient(data, message = 'doc-changed') {
 
-        const server = this.config.server;
+        const server = this.app.serverInstance;
         server.sockWrite(server.sockets, message, data);
 
     }
@@ -109,35 +104,14 @@ class DevServer {
         return this.parser;
     }
 
-    getPack() {
-
-        if (!this.app) {
-
-            const app = this.getParser().parse(this.config);
-
-            app.on('change', () => {
-                app.log('devServer:', 'change');
-
-                app.analyze().then(() => {
-                    const data = app.get();
-                    this.sendDataToClient(data);
-                });
-
-            });
-
-            this.app = app;
-        }
+    getApp() {
 
         return this.app;
-
     }
 }
 
 DevServer.webPackConfig = {
 
-    // historyApiFallback: {
-    //     index: 'index.html',
-    // },
     stats: {
         cached: false,
         cachedAssets: false,
@@ -148,13 +122,14 @@ DevServer.webPackConfig = {
     inline: true,
     before(app) {
 
-        const server = new DevServer(global.doctoolsConfig, app);
-        global.doctoolsConfig.devServer = server;// = app;
+        const server = new DevServer(DevServer.docTools, app);
 
     }
 }
 
-DevServer.startWebpackDevServer = function() {
+DevServer.startWebpackDevServer = function(app) {
+
+    this.docTools = app;
 
     const cfg = path.join(__dirname, '..', 'ui', 'webpack.config.js');
     const wpConfig = require(cfg);
@@ -162,11 +137,11 @@ DevServer.startWebpackDevServer = function() {
 
     wpConfig.resolve = {
         alias: {
-            '@base': global.doctoolsConfig.base
+            '@base': app.config.base
         }
     };
 
-    if (!fs.existsSync(path.join(global.doctoolsConfig.base, 'doctools.ui.config.js'))) {
+    if (!fs.existsSync(path.join( app.config.base, 'doctools.ui.config.js'))) {
         wpConfig.externals = wpConfig.externals || {};
         wpConfig.externals['@base/doctools.ui.config.js'] = 'Vue => {}';
 
@@ -186,7 +161,7 @@ DevServer.startWebpackDevServer = function() {
 
         const server = new WebpackDevServer(compiler, devServerConfig);
 
-        global.doctoolsConfig.server = server;
+        app.serverInstance = server;
 
         server.listen(devServerConfig.port, devServerConfig.host, function(err, res) {
             if (err) {

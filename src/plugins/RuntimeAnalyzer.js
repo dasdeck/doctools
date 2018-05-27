@@ -101,7 +101,11 @@ class RuntimeAnalyzer extends Plugin {
     onDispose() {
 
         if (this.watcher) {
-            this.watcher.close();
+
+            setTimeout(res => {
+                this.watcher.close();
+            }, 5000);
+
         }
 
     }

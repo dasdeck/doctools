@@ -38,15 +38,11 @@ if (process.mainModule.filename === __filename) {
 }
 
 /**
- *
- *
  * @file
  * @kind binary
  * @param {String} [--config] - the config file to use
  * @param {Flag} [--explain] - cuases the doctool to only print out json, instead of starting a server
- *
  */
-
 
 if (argv.explain) {
 
@@ -61,13 +57,15 @@ if (argv.explain) {
         console.log(data);
     });
 
-} else if (config.server) {
+} else if (argv.server) {
 
     config.watch = true;
 
-    global.doctoolsConfig = config;
+    config = new Config(config);
 
-    require('../src/DevServer').startWebpackDevServer();
+    const app = new DocTools(config);
+
+    require('../src/DevServer').startWebpackDevServer(app);
 
 } else {
 

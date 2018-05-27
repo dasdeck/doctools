@@ -8,9 +8,9 @@ import _ from 'lodash-es';
 
 import Prism from 'vue-prism-component';
 
-import Doc from './app/Doc.vue';
-import DocPage from './app/DocPage.vue';
-import ExamplerRunner, {Registry} from './app/ExampleRunner.vue';
+import layout from './app/layout';
+
+import ExamplerRunner, {Registry} from './app/utils/ExampleRunner.vue';
 
 import vuerunner from '../src/runnner/VueRunner'
 import uikitrunner from '../src/runnner/UIkitRunner'
@@ -53,7 +53,7 @@ Vue.mixin({
 });
 
 const router = new VueRouter({mode: 'history'});
-const comp = Vue.extend(({...Doc}));
+const comp = Vue.extend(({...layout.Layout}));
 const app = new comp({propsData: {initialData: window.$data}, el: '#app', router});
 
 const socket = new SockJS(`${location.protocol}//${location.host}/sockjs-node`);
@@ -69,14 +69,15 @@ socket.onmessage = res => {
 
             router.addRoutes([{
                 path: '*',
-                component: DocPage
+                component: layout.Page
             }]);
 
             router.beforeEach((route, to, next) => {
 
                 const res = route.fullPath.substr(1);
 
-                window.$data && window.$data.resources[res] ?
+                const set = window.$data && (window.$data.pages || window.$data.resources)
+                set[res] ?
 
                     next() : next(window.$data && window.$data.rootPackage)
 

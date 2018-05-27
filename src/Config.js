@@ -42,11 +42,14 @@ class Config extends EventEmitter {
 
     loadPlugins(config, app) {
 
-        config._ = {};
+        if (app.plugin) {
+            const plugins = app.plugins;
+            setTimeout(res => {
+                plugins.forEach(plugin => plugin.onDispose());
+            }, 1000);
+        }
 
-        config._.plugins = [...config.plugins, ...this.plugins]
-
-        config._.plugins = config._.plugins.map(plugin => {
+        app.plugins = [...config.plugins, ...this.plugins].map(plugin => {
 
             if (_.isString(plugin)) {
                 const Pluigin = require('./plugins/' + plugin);
@@ -57,15 +60,12 @@ class Config extends EventEmitter {
             return plugin;
         });
 
-        this.forcePlugin('PackageMapper', config._.plugins, 'plugins');
-        this.forcePlugin('ModuleMapper', config._.plugins, 'plugins');
-        this.forcePlugin('TypeMapper', config._.plugins, 'plugins');
-        this.forcePlugin('AssetLinker', config._.plugins, 'plugins');
+        this.forcePlugin('PackageMapper', app.plugins, 'plugins');
+        this.forcePlugin('ModuleMapper', app.plugins, 'plugins');
+        this.forcePlugin('TypeMapper', app.plugins, 'plugins');
+        this.forcePlugin('AssetLinker', app.plugins, 'plugins');
 
-
-        config._.loaders = [ ...config.loaders];
-
-        config._.loaders = config._.loaders.map(loader => {
+        app.loaders = [ ...config.loaders].map(loader => {
 
             if (_.isString(loader)) {
                 const Loader = require('./loaders/' + loader);
@@ -76,10 +76,10 @@ class Config extends EventEmitter {
             return loader;
         });
 
-        this.forcePlugin('PackageLoader', config._.loaders, 'loaders');
-        this.forcePlugin('DefaultLoader', config._.loaders, 'loaders');
+        this.forcePlugin('PackageLoader', app.loaders, 'loaders');
+        this.forcePlugin('DefaultLoader', app.loaders, 'loaders');
 
-        config._.plugins.forEach(plugin => plugin.app = app);
+        app.plugins.forEach(plugin => plugin.app = app);
 
     }
 
@@ -103,12 +103,18 @@ class Config extends EventEmitter {
 
 
             // const confFromFile = eval(fs.readFileSync(path.resolve(configFile), 'utf8'));
-            const confFromFile = require(path.resolve(configFile), 'utf8');
+            const confFilePath = path.resolve(configFile);
+            delete require.cache[confFilePath];
+            const confFromFile = require(confFilePath);
 
             if (confFromFile.config) {
                 throw 'use config option only on cli';
             }
             _.defaults(config, confFromFile);
+
+            if (confFromFile.server) {
+                config.server = confFromFile.server;
+            }
 
             config.file = configFile;
 
@@ -118,16 +124,15 @@ class Config extends EventEmitter {
 
         _.defaults(config, Config.defaultConfig);
 
+        config.hash = util.hash(config);
 
         this.loadPlugins(config, app);
 
-        config.hash = util.hash(_.omit(config, ['devServer', 'server']));
 
         return config;
     }
 
 }
-
 
 Config.defaultConfig = {
 
@@ -153,7 +158,6 @@ Config.defaultConfig = {
      * @type {Boolean}
      */
     inferParameterDefaults: true,
-
 
     /**
      * weather to watch and patch the documentation on changes (much faster then complete rebuilds)

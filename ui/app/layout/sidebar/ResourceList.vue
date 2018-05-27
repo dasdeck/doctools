@@ -13,7 +13,7 @@
 
 <script>
 
-    import ModuleLink from '../utils/ModuleLink.vue';
+    import ModuleLink from '../../utils/ModuleLink.vue';
     import {pickBy, reduce, size} from 'lodash-es';
 
     export default {

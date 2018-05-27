@@ -12,16 +12,21 @@ const mkpath = require('mkpath');
 
 module.exports = class DocTools extends EventEmitter {
 
-    constructor(config = new Config()) {
+    constructor(config = new Config(), init = true) {
 
         super();
 
-        this.config = config.prepareConfig(this);
+        this.inputConfig = config;
 
-        if (this.config.file) {
+        init && this.init();
 
-            this.log('config file used: ', this.config.file);
-        }
+        this.startWatch();
+
+    }
+
+    init() {
+
+        this.config = this.inputConfig.prepareConfig(this);
 
         if (this.config.cache) {
 
@@ -34,8 +39,43 @@ module.exports = class DocTools extends EventEmitter {
 
         this.scanFile(this.config.base);
 
+    }
+
+    startWatch() {
+
+        if (this.config.dev) {
+
+            this.devWatch = chokidar.watch(__dirname, {recursive: true}, (e, file) => this.sourceChanged(file));
+            this.devWatch.on('change', res => {
+                this.reloadApp();
+
+            });
+        }
+
         if (this.config.watch && fs.lstatSync(this.config.base).isDirectory()) {
+
+            if (this.config.file) {
+
+                this.configWatch = chokidar.watch(this.config.file);
+                this.configWatch.on('change', res => {
+                    this.reloadApp();
+                });
+
+                this.log('config file used: ', this.config.file);
+            }
+
             this.watcher = chokidar.watch(this.config.base);
+
+            this.watcher.on('change', file => {
+
+                const resource = this.getResourceByFile(file);
+                if (resource && resource.watch) {
+                    resource.load();
+                    this.emit('change', resource);
+                }
+
+            });
+
             this.watcher.on('add', file => {
                 if (!this.getResourceByFile(file) && util.match(this.config, file, {matchBase: this.config.base})) {
                     this.scanFile(file);
@@ -57,12 +97,51 @@ module.exports = class DocTools extends EventEmitter {
 
     }
 
+    reloadApp() {
+
+
+        if(this.analyzes) {
+            this.analyzes.then(res => {
+                this.reloadApp();
+            });
+            return;
+        }
+
+        if(this.config.dev) {
+
+            const sources = glob.sync(__dirname + '/**/*.js');
+            sources.forEach(file => {
+                delete require.cache[require.resolve(file)];
+            });
+
+
+            this.log('code changed');
+
+            const DocTools = require('./Doctools');
+
+            const name = Object.getOwnPropertyNames(DocTools.prototype);
+            name.forEach(name => {
+                this[name] = DocTools.prototype[name];
+            });
+
+        }
+
+        this.execPluginCallback('onDispose', this);
+
+        this.init();
+        this.emit('change');
+
+
+    }
+
     log(...args) { if (this.config.dev) console.log(...args); }
 
     logFile() {}
 
     dispose() {
 
+        this.configWatch && this.configWatch.close();
+        this.devWatch && this.devWatch.close();
         this.watcher && this.watcher.close();
         _.forEach(this.resources, res => res.dispose());
         this.execPluginCallback('onDispose', this);
@@ -77,6 +156,14 @@ module.exports = class DocTools extends EventEmitter {
 
     getHash() {
         return this.config.hash;
+    }
+
+    writeExport(dest, data) {
+
+        data = _.isString(data) ? data : JSON.stringify(data, null, 2);
+
+        fs.writeFileSync(path.join(this.getDocToolsDir(), '_export'), data);
+
     }
 
     analyze() {
@@ -181,11 +268,7 @@ module.exports = class DocTools extends EventEmitter {
             }
         } else {
 
-            if (!this.config._) {
-                debugger;
-            }
-
-            const jobs = this.config._.plugins.map(plugin => {
+            const jobs = this.plugins.map(plugin => {
                 return () => plugin[name] && plugin[name](module, data) || Promise.resolve();
             });
 
@@ -238,8 +321,12 @@ module.exports = class DocTools extends EventEmitter {
 
     }
 
+    getDocToolsDir() {
+        return path.join(this.config.cache && (this.config.cache.dir || this.config.base), '.doctools');
+    }
+
     getCacheDir() {
-        return path.join(this.config.cache && (this.config.cache.dir || this.config.base), '.doctools','_cache');
+        return path.join(this.getDocToolsDir(),'_cache');
     }
 
     loadFile(file) {
@@ -251,7 +338,7 @@ module.exports = class DocTools extends EventEmitter {
             throw file + ' already loaded!';
         }
 
-        for(const loader of this.config._.loaders) {
+        for(const loader of this.loaders) {
 
             if (loader.match(file)) {
 

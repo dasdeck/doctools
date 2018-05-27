@@ -59,12 +59,12 @@
 
 <script>
 
-    import Types from './types';
-    import utils from './utils';
-    import Assets from './utils/Assets.vue';
+    import Types from '../types';
+    import utils from '../utils';
+    import Assets from '../utils/Assets.vue';
 
-    import Globals from './utils/Globals.vue';
-    import ModuleComp from './utils/ModuleComp.js';
+    import Globals from '../utils/Globals.vue';
+    import ModuleComp from '../utils/ModuleComp.js';
     import {some, size, upperFirst} from 'lodash-es';
 
     /**
@@ -74,8 +74,8 @@
     export default {
 
         components: {
-            ...Types,
             ...utils,
+            ...Types,
             Assets,
             Globals
         },

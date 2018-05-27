@@ -67,7 +67,7 @@ class HTMLExporter extends Plugin {
     prepareDocApp() {
 
       const app = this.app;
-      const {DocPage, DocBase, ExampleRunner, Registry} = require('./MarkdownAdapter.min.js');
+      const {Page, DocBase, ExampleRunner, Registry} = require('./MarkdownAdapter.min.js');
 
       const exporter = this;
 
@@ -92,7 +92,7 @@ class HTMLExporter extends Plugin {
 
       this.docApp = new Vue(DocBase);
 
-      this.Page = Vue.extend(DocPage);
+      this.Page = Vue.extend(Page);
 
       Vue.component('RouterLink', {
         template: '<a :href="`${link}`"><slot/></a>',

@@ -33,14 +33,7 @@ module.exports = class Module {
         this.resource = this.config.getResourceUri(this);
         this.loader = loader;
 
-        if (this.app.config.watch) {
-
-            this.watcher = chokidar.watch(this.path);
-            this.watcher.on('change', res => {
-                this.load();
-                this.app.emit('change', this);
-            });
-        }
+        this.watch = this.app.config.watch;
 
         this.load();
 
@@ -96,7 +89,7 @@ module.exports = class Module {
     }
 
     unwatch() {
-        this.watcher && this.watcher.close();
+        this.watch = false;// && this.watcher.close();
     }
 
     dispose() {

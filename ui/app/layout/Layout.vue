@@ -44,8 +44,7 @@
     import PackageTree from './sidebar/PackageTree.vue';
     import FileTree from './sidebar/FileTree.vue';
     import Menu from './sidebar/Menu.vue';
-    import DocApp from './DocApp.js';
-    import {size} from 'lodash-es'
+    import DocApp from '../DocApp.js';
 
     /**
      * Container Component for the doctools app ui
@@ -60,31 +59,7 @@
 
         extends: DocApp,
 
-        ref: '$doc',
-
-        computed: {
-
-            selectedPackage() {
-                const resource = this.selectedModule;
-                if (resource) {
-                    return resource && this.resources[resource.type === 'package' ? resource.resource : resource.package];
-                }
-            },
-
-            selectedModuleResource() {
-                return decodeURI(this.$route.fullPath).substr(1);
-            },
-
-            selectedModule() {
-                return this.resources[this.selectedModuleResource];
-            }
-
-        },
-
-        methods: {
-            size
-        }
-
+        ref: '$doc'
 
     }
 </script>

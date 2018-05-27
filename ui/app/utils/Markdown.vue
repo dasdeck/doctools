@@ -6,7 +6,7 @@
 
 <script>
 
-import ExampleRunner, {Registry} from '../ExampleRunner.vue';
+import ExampleRunner, {Registry} from '../utils/ExampleRunner.vue';
 import ModuleComp from '../utils/ModuleComp.js';
 import RepoLink from '../utils/RepoLink.vue';
 
