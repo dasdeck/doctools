@@ -34,6 +34,7 @@
     import Description from './Description.vue';
     import PropTable from './PropTable.vue';
     import Code from './Code.vue';
+    import Types from './Types.vue';
 
     /**
      * renders a function
@@ -45,7 +46,8 @@
         components: {
             Code,
             PropTable,
-            Description
+            Description,
+            Types
         },
 
         extends: ModuleComp,

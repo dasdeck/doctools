@@ -4,9 +4,20 @@ const glob = require('glob');
 const fs = require('fs');
 const path = require('path');
 const WebpackDevServer = require('webpack-dev-server');
+const Config = require('../Config');
+const Plugin = require('../Plugin');
 const Webpack = require('webpack');
-const Config = require('./Config');
 const _ = require('lodash');
+
+let instance = null;
+
+module.exports = class DevServerPlugin extends Plugin {
+    onLoad(app) {
+        if (!instance) {
+            DevServer.startWebpackDevServer(app);
+        }
+    }
+}
 
 class DevServer {
 
@@ -39,7 +50,7 @@ class DevServer {
 
     createRoutes(router = this.router, server = this) {
 
-        const index = fs.readFileSync(__dirname + '/../ui/index.html', 'utf8');
+        const index = fs.readFileSync(__dirname + '/../../ui/index.html', 'utf8');
         router.get('/data.json', (req, res, next) => {
 
             const app = server.getApp();
@@ -95,18 +106,15 @@ class DevServer {
 
     }
 
-    getParser() {
-
-        if (!this.parser) {
-            this.parser = require('./parser');
-        }
-
-        return this.parser;
-    }
-
     getApp() {
 
         return this.app;
+    }
+}
+
+DevServer.defaultConfig = {
+    getPages(app, data) {
+        return _.mapValues(data, res => res.resource);
     }
 }
 
@@ -117,12 +125,12 @@ DevServer.webPackConfig = {
         cachedAssets: false,
         color: true
     },
-    contentBase: [__dirname + '/..'],
+    contentBase: [__dirname + '/../..'],
     watchContentBase: false,
     inline: true,
     before(app) {
 
-        const server = new DevServer(DevServer.docTools, app);
+        instance = new DevServer(DevServer.docTools, app);
 
     }
 }
@@ -131,7 +139,7 @@ DevServer.startWebpackDevServer = function(app) {
 
     this.docTools = app;
 
-    const cfg = path.join(__dirname, '..', 'ui', 'webpack.config.js');
+    const cfg = path.join(__dirname, '..' , '..', 'ui', 'webpack.config.js');
     const wpConfig = require(cfg);
     const portfinder = require('portfinder');
 
@@ -175,7 +183,6 @@ DevServer.startWebpackDevServer = function(app) {
     });
 
 
-
 }
 
-module.exports = DevServer;
+// module.exports = DevServer;

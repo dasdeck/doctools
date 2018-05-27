@@ -4,23 +4,20 @@
 -utils seperate?
 
 caching:
-    -respect config
+    -respect relevant config in runtime analyzer and jsdoc
+
 
 -give runtime analyzer a filter instead of assigning from module
 
--mode serializations to single plugins
+-move all serializations to single plugins
 
 -change to markdown-it
-
--reactive uikit tabs
-    -v-if
 
 -vuepress export:
     -folder followmenu structure
 
 -give each plugin reserved memeory
--prevent multiple analysis at once
-    -busy flag?
+
 -assign vue templates
     -sidebars
     -menus
@@ -28,9 +25,6 @@ caching:
     -etc.
 
 -add server config to config?
-
--re-unify runtime builds to web/umd
--refactor out 'assets'
 
 -refactore
     -move adapters and bridges, so compiler loads only if relevant code changes

@@ -36,7 +36,7 @@
             <Globals v-if="globals"/>
             <div v-if="module.code">
                 <h2>code:</h2>
-                <Code :language="module.code.trim()[0] === '<' ? 'html' : 'javascript'">{{module.code}}</Code>
+                <Code :language="module.code.trim()[0] === '<' ? 'html' : 'javascript'" :code="module.code"></Code>
             </div>
             <div v-if="module.template">
                 <h2>template:</h2>

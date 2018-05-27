@@ -4,6 +4,7 @@ const _ = require('lodash');
 const parser = require('../src/parser');
 const Config = require('../src/Config');
 const DocTools = require('../src/Doctools');
+const DevServerPlugin = require('../src/plugins/DevServerPlugin');
 
 let config = {};
 
@@ -63,9 +64,11 @@ if (argv.explain) {
 
     config = new Config(config);
 
+    config.addPlugin(new DevServerPlugin());
+
     const app = new DocTools(config);
 
-    require('../src/DevServer').startWebpackDevServer(app);
+    // require('../src/DevServer').startWebpackDevServer(app);
 
 } else {
 

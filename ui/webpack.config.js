@@ -42,7 +42,7 @@ const output = {
     hotUpdateMainFilename: 'hot/[hash].hot-update.json'
 };
 
-const DevServer = require('../src/DevServer');
+// const DevServer = require('../src/plugins/DevServerPlugin');
 
 const base = {
 
@@ -54,7 +54,7 @@ const base = {
 
     output,
 
-    devServer: DevServer.webPackConfig,
+    // devServer: DevServer.webPackConfig,
 
     mode: 'development',
 
