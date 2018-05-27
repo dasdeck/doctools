@@ -163,28 +163,6 @@
                 "--server",
                 "--watch"
             ]
-        },
-        {
-            "type": "node",
-            "request": "launch",
-            "name": "example2 (dev-server)",
-            "program": "${workspaceFolder}/bin/doctools.js",
-            "args": [
-                "${workspaceFolder}/example2",
-                "--dev",
-                "--server"
-            ]
-        },
-        {
-            "type": "node",
-            "request": "launch",
-            "name": "example2 (explain)",
-            "program": "${workspaceFolder}/bin/doctools.js",
-            "args": [
-                "${workspaceFolder}/example2",
-                "--dev",
-                "--explain"
-            ]
         }
     ]
 }
