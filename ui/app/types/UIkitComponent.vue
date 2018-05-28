@@ -20,7 +20,7 @@
 
         <Methods/>
 
-        <RepoLink/>
+        <RepoLink v-if="size(module.component)"/>
 
     </div>
 
