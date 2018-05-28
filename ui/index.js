@@ -76,15 +76,17 @@ socket.onmessage = res => {
 
                 const res = route.fullPath.substr(1);
 
-                const set = window.$data && (window.$data.pages || window.$data.resources)
+                const indexPage = data.indexPage || data.rootPackageM
+
+                const set = (data.pages || data.resources)
                 set[res] ?
 
-                    next() : next(window.$data && window.$data.rootPackage)
+                    next() : next(indexPage)
 
             });
 
-            if (app.$route.path === '/' && data.rootPackage) {
-                router.push(`/${data.rootPackage}`);
+            if (app.$route.path === '/' && indexPage) {
+                router.push(`/${indexPage}`);
             }
 
         }

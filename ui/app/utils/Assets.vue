@@ -2,7 +2,7 @@
 
     <div>
     <div v-for="(asset, name) in assets" :key="name">
-        <component v-if="getAsset(asset)" :is="getAsset(asset).type"  :moduleProperty="getAsset(asset)"/>
+        <component v-if="getAsset(asset)" :is="getAsset(asset).type" :moduleProperty="getAsset(asset)"/>
         <div v-else>asset {{name}} not found</div>
     </div>
     </div>

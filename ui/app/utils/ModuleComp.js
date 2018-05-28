@@ -6,7 +6,12 @@ export default {
     inject: {
 
         $doc:  {from:'$doc', default: {}},
-        $page: {from:'$page', default: null}
+        $page: {from:'$page', default: null},
+        $module: {from: '$module', default: null}
+    },
+
+    provide() {
+        return {$module: this};
     },
 
     props: {
@@ -16,7 +21,7 @@ export default {
     computed: {
 
         module() {
-            return this.moduleData || this.moduleProperty || this.$page && this.$page.module ||this.$doc.selectedModule;
+            return this.moduleData || this.moduleProperty || this.$module.module || this.$page && this.$page.module ||this.$doc.selectedModule;
         },
 
         repoLink() {

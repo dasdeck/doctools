@@ -98,7 +98,7 @@ export default {
 
         repo() {
             const root = this.rootPackage;
-            return root && root.packageJson && root.packageJson.repository;
+            return this.data.repo || (root && root.packageJson && root.packageJson.repository);
 
         }
 

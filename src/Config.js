@@ -128,7 +128,6 @@ class Config extends EventEmitter {
 
         this.loadPlugins(config, app);
 
-
         return config;
     }
 

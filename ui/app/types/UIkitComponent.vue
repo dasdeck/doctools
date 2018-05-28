@@ -20,8 +20,6 @@
 
         <Methods/>
 
-        <Mixins/>
-
         <RepoLink/>
 
     </div>
