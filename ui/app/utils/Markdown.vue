@@ -23,7 +23,8 @@ const Markdown = {
     data() {
 
         return {
-            runners: []
+            runners: [],
+            replacements: []
         };
     },
 
@@ -47,18 +48,31 @@ const Markdown = {
 
         preprocess(markdown) {
 
+            this.replacements = [];
+
             this.processCodeBlocks(markdown, ([text, fence, lang, code]) => {
 
                 if(lang.includes(':')) {
 
                     const replacement = this.addRunner(code, lang.split(':').map(e => e.trim()));
-                    markdown = markdown.replace(text, replacement);
+                    const placeholder =  `<replace>${this.replacements.length}</replace>`;
+                    markdown = markdown.replace(text, placeholder);
+                    this.replacements.push({placeholder, replacement});
+                    // this.replacements
 
                 }
             });
 
             return markdown;
 
+        },
+
+        postprocess(html) {
+
+            this.replacements.forEach(replacer => {
+                html = html.replace(replacer.placeholder, replacer.replacement);
+            });
+            return html;
         },
 
         processCodeBlocks(text, callback = x => x, fences = ['```']) {
@@ -151,8 +165,8 @@ const Markdown = {
 
         markdown(markdown) {
             markdown = this.preprocess(markdown);
-
-            return this.$doc.markdown(markdown)
+            const html = this.$doc.markdown(markdown);
+            return this.postprocess(html);
 
         }
     },

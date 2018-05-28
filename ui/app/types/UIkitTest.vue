@@ -22,7 +22,7 @@ export default {
 
     computed: {
         html() {
-            // debugger
+
             const sourceHTML = createElementFromHTML(this.module.html);
 
             const headEls = UIkit.util.toNodes(sourceHTML.children)
@@ -41,8 +41,9 @@ export default {
             let html = template.replace('$rtl', this.$doc.settings.rtl ? 'rtl' : 'ltr');
             html = html.replace('$content', res => body);
             html = html.replace('$head', res => head);
-            // debugger
+
             return html;
+
         }
     }
 
