@@ -9,18 +9,18 @@ export default {
     data() {
 
         return {
-            data: this.initialData,
+            data: this.initialData,
             lastRuntime: null,
             settings: {
                 private: false,
                 filter: ''
             }
-        }
+        };
 
     },
 
     provide() {
-        return {$doc: this}
+        return {$doc: this};
     },
 
     methods: {
@@ -38,7 +38,7 @@ export default {
         },
 
         getUrl(resource) {
-            return `${this.uriPrefix}${resource}`
+            return `${this.uriPrefix}${resource}`;
         },
 
         resolveModule(nameOrResource) {
@@ -55,11 +55,11 @@ export default {
 
         getTypeUrl(type) {
 
-            if(this.types[type]) {
+            if (this.types[type]) {
                 return this.getUrl(this.types[type]);
-            } else if(this.nodeGlobals.includes(type)) {
+            } else if (this.nodeGlobals.includes(type)) {
                 return `https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/${type}`;
-            } else if(typeof window !== 'undefined' && window[type]) {
+            } else if (typeof window !== 'undefined' && window[type]) {
                 return `https://developer.mozilla.org/docs/Web/API/${type}`;
             }
 
@@ -69,7 +69,7 @@ export default {
     computed: {
 
         uriPrefix() {
-            return "/";
+            return '/';
         },
 
         runtime() {

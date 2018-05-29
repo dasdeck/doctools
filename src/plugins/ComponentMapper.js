@@ -17,7 +17,7 @@ function findMembers(data, name) {
     data.forEach(el => {
 
         const longAdd = base + '.' + name;
-        if (['member', 'function', 'event'].includes(el.kind)&& el.memberof && el.memberof === longAdd) {
+        if (['member', 'function', 'event'].includes(el.kind) && el.memberof && el.memberof === longAdd) {
             el.simpleName = el.name;
             props[el.name] = el;
         }
@@ -83,10 +83,10 @@ module.exports = class ComponentMapper extends Plugin {
     onMap(app) {
 
         _.forEach(app.resources, res => {
-            if(res.module) {
+            if (res.module) {
                 this.onMapModule(res);
             }
-        })
+        });
 
     }
 

@@ -30,4 +30,4 @@ export default {
     DescList,
     Constant,
     ModuleLink
-}
+};

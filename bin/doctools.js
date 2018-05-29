@@ -3,7 +3,7 @@ const path = require('path');
 const _ = require('lodash');
 const parser = require('../src/parser');
 const Config = require('../src/Config');
-const DocTools = require('../src/Doctools');
+const DocTools = require('../src/DocTools');
 const DevServerPlugin = require('../src/plugins/DevServerPlugin');
 
 let config = {};

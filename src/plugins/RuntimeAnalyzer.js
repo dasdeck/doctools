@@ -1,13 +1,14 @@
 const Plugin = require('../Plugin');
 const util = require('../util');
 const fs = require('fs');
+const mkpath = require('mkpath');
 const tempfile = require('tempfile');
 const _ = require('lodash');
 const webpack = require('webpack');
 const MemFs = require('memory-fs');
 const requireFromString = require('require-from-string');
 const path = require('path');
-const Cachable = require('../Chachable');
+const Cachable = require('../Cachable');
 
 /**
  * attemts to load the described class
@@ -31,9 +32,9 @@ class RuntimeAnalyzer extends Plugin {
 
     /**
      *assozciate the package to build and watch
-     * @param {Object} desc
+     * @param {DocTools} app
      */
-    onLoad() {
+    onLoad(app) {
 
         this.outputFileSystem = new MemFs;
 
@@ -97,7 +98,6 @@ class RuntimeAnalyzer extends Plugin {
 
     }
 
-
     onDispose() {
 
         if (this.watcher) {
@@ -121,8 +121,6 @@ w     * analyzesRuntimes for on module
      */
     analyzeRuntime(desc) {
 
-        const {config} = desc;
-
         if (_.isPlainObject(this.config.runtime)) {
 
             const runtime = _.get(this.config.runtime, `${desc.type}.${desc.name}`) || _.get(this.config.runtime, desc.name);
@@ -135,7 +133,6 @@ w     * analyzesRuntimes for on module
         }
 
     }
-
 
     adaptConfig(files) {
 
@@ -167,7 +164,6 @@ w     * analyzesRuntimes for on module
 
     }
 
-
     createCompiler(filename = this.indexFile) {
 
         const conf = this.adaptConfig(filename);
@@ -177,7 +173,6 @@ w     * analyzesRuntimes for on module
 
         conf.plugins = [...(conf.plugins || []), plugin];
 
-        ;
         const compiler = webpack(conf);
 
         compiler.outputFileSystem = this.outputFileSystem;
@@ -222,9 +217,9 @@ w     * analyzesRuntimes for on module
             } else {
                 return new Promise(resolve => {
                     this.once('built', res => {
-                        resolve(this.cache && this.cache[resource])
+                        resolve(this.cache && this.cache[resource]);
                     });
-                })
+                });
             }
 
         } else {
@@ -241,9 +236,9 @@ w     * analyzesRuntimes for on module
 
         this.firstBuild = true;
 
-        if(this.config.watch) {
+        if (this.config.watch) {
 
-            if (this.watcher){
+            if (this.watcher) {
                 return;
             }
             this.app.log('watching package:', this.app.name);
@@ -307,7 +302,7 @@ w     * analyzesRuntimes for on module
 
             this.cache = rt.default;
 
-        } catch(e) {
+        } catch (e) {
 
             this.app.log('could not load runtime');
             this.app.log(e);
@@ -327,7 +322,7 @@ w     * analyzesRuntimes for on module
     onWebPack(err, res) {
 
         const resfname = Object.keys(res.compilation.assets)[0];
-        const script = this.outputFileSystem.readFileSync(resfname ,'utf8');
+        const script = this.outputFileSystem.readFileSync(resfname, 'utf8');
 
         const scriptChanged = script !== this.script;
 
@@ -337,7 +332,6 @@ w     * analyzesRuntimes for on module
         this.firstBuild = false;
         this.patched = false;
 
-
         if (scriptChanged) {
 
             this.script = script;
@@ -345,7 +339,6 @@ w     * analyzesRuntimes for on module
             this.scriptChanged();
 
         }
-
 
         this.app.log(this.constructor.name, 'webpack built', triggerChange);
 
@@ -375,6 +368,6 @@ RuntimeAnalyzer.defaultOptions = {
     library: 'RuntimeAnalyzer',
     target: 'web',
     serve: 'runtime'
-}
+};
 
 module.exports = RuntimeAnalyzer;

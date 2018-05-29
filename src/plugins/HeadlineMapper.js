@@ -1,6 +1,5 @@
 
 const _ = require('lodash');
-const util = require('../util');
 
 const Plugin = require('../Plugin');
 

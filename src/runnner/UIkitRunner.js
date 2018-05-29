@@ -21,7 +21,7 @@ class UIkitRunner {
                         </ul>
                     </div>
                 </div>`;
-            return res;
+        return res;
 
     }
 
@@ -36,7 +36,7 @@ class UIkitRunner {
 
     }
 
-};
+}
 
 UIkitRunner.edit = code => {
 
@@ -68,15 +68,15 @@ UIkitRunner.edit = code => {
 
     // Quotes will screw up the JSON
     const dataString = JSON.stringify(data)
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&apos;");
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&apos;');
 
-    const form = UIkit.util.append(document.body, `<form action="https://codepen.io/pen/define" method="POST" target="_blank">
+    const form = window.UIkit.util.append(document.body, `<form action="https://codepen.io/pen/define" method="POST" target="_blank">
             <input type="hidden" name="data" value='${dataString}'>
         </form>`)[0];
 
     form.submit();
-    UIkit.util.remove(form);
+    window.UIkit.util.remove(form);
 
 };
 

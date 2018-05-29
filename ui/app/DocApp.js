@@ -33,7 +33,7 @@ export default {
 
             return marked(markdown, {
                 highlight: (code, lang) => {
-                    return this.highlight(code,lang);
+                    return this.highlight(code, lang);
                 }
             });
         },
@@ -41,7 +41,7 @@ export default {
         highlight(code, lang, frame = false) {
 
             if (Prism.languages[lang]) {
-                 const html = Prism.highlight(code, Prism.languages[lang], lang);
+                const html = Prism.highlight(code, Prism.languages[lang], lang);
                 return frame ? `<pre><code class="language-${lang}">${html}</code></pre>` : html;
             }
 

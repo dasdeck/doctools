@@ -8,6 +8,12 @@ module.exports = class TypeMapper extends Plugin {
         this.nodeGlobals = Object.getOwnPropertyNames(global);
     }
 
+    /**
+     * maps all found types to a global data member
+     * @inheritDoc
+     * @param {DocTools} app
+     * @param {Object} data
+     */
     onGet(app, data) {
 
         data.nodeGlobals = this.nodeGlobals;
@@ -29,10 +35,6 @@ module.exports = class TypeMapper extends Plugin {
             return types;
 
         }, {});
-
-    }
-
-    getAllTypes(app) {
 
     }
 

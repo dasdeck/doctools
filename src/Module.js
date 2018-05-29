@@ -2,17 +2,16 @@
 
 const util = require('./util');
 const fs = require('fs');
-const chokidar = require('chokidar');
 const path = require('path');
 const _ = require('lodash');
 const mkpath = require('mkpath');
-const Chachable = require('./Chachable');
+const Cachable = require('./Cachable');
 
 module.exports = class Module {
 
     constructor(app, file , loader) {
 
-        _.extend(this, Chachable);
+        _.extend(this, Cachable);
 
         this.app = app;
 

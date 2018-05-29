@@ -4,4 +4,4 @@ import Page from './Page.vue';
 export default {
     Layout,
     Page
-}
+};

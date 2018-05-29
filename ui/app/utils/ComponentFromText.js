@@ -36,7 +36,7 @@ export default {
 
         },
 
-        evaluate(param , res) {
+        evaluate(param, res) {
             return isFunction(param) && param(res) || param;
         }
 
@@ -52,7 +52,7 @@ export default {
             this.replaces.forEach(replace => {
 
                 let res;
-                while(res = replace.search.exec(this.text)) {
+                while (res = replace.search.exec(this.text)) {
 
                     let response = replace;
 
@@ -63,7 +63,7 @@ export default {
                     if (response.text) {
                         result = result.replace(res[0], this.evaluate(response.text, res));
 
-                    } else if(response.comp) {
+                    } else if (response.comp) {
 
                         const componentConstructor = this.constructor.extend(this.evaluate(response.comp, res));
                         const component = new componentConstructor({parent: this, propsData: this.evaluate(response.propsData, res)});
@@ -89,4 +89,4 @@ export default {
             return [];
         }
     }
-}
+};

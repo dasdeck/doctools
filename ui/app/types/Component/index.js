@@ -5,8 +5,6 @@ import Computeds from './Computeds.vue';
 import Events from './Events.vue';
 import EventList from './EventList.vue';
 
-
-
 export default {
     Computeds,
     Events,

@@ -117,7 +117,7 @@ module.exports = class DocTools extends EventEmitter {
 
             this.log('code changed');
 
-            const DocTools = require('./Doctools');
+            const DocTools = require('./DocTools');
 
             const name = Object.getOwnPropertyNames(DocTools.prototype);
             name.forEach(name => {

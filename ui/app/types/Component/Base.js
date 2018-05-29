@@ -14,4 +14,4 @@ export default {
             return this.$component.module.component;
         }
     }
-}
+};

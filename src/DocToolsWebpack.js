@@ -33,7 +33,10 @@ class DoctoolsWebpack extends EventEmitter {
         this.initial = true;
     }
 
-
+    /**
+     * abstraction to register a hook to a class member with the same name on newer and older versions of webpack
+     * @param {String} name
+     */
     registerHook(name) {
         if (compiler.hooks) {
             compiler.hooks[name].tap(this.constructor.name, (...args) => this[name](...args));

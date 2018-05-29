@@ -37,7 +37,6 @@ class PackageMapper extends Plugin {
         const packages = _.sortBy(_.filter(app.resources, res => res.type === 'package'), desc => -desc.path.length);
         // const resources = _.filter(desc.app.resources, res => res.type !== 'package'));
 
-
         _.forEach(app.resources, res => {
 
             _.some(packages, pack => {
@@ -57,7 +56,7 @@ class PackageMapper extends Plugin {
                 }
             })
 
-        })
+        });
 
         _.forEach(packages, pack => {
 
@@ -66,6 +65,10 @@ class PackageMapper extends Plugin {
     }
 
     //TODO
+    /**
+     * finds the main module for this pacakge, if existing
+     * @param {Module} pack
+     */
     findMain(pack) {
 
         if (pack.packageJson.main) {

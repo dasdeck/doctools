@@ -164,9 +164,6 @@ Config.defaultConfig = {
      */
     watch: true,
 
-
-    menu: false,
-
     /**
      *
      */
@@ -221,7 +218,10 @@ Config.defaultConfig = {
      */
     subPackages: true,
 
-
+    /**
+     *
+     * @param {Module} desc
+     */
     getResourceUri(desc) {
         return desc.fileInPackage.substr(1).replace(/\//g, '.').substr(1) || desc.name;
     }

@@ -1,17 +1,17 @@
 
+/* global process */
 import * as babel from '@babel/standalone';
 
 import umdPlugin from 'babel-plugin-transform-es2015-modules-umd';
 import * as vueTemplateCompiler from 'vue-template-compiler';
 
-import Vue from 'vue' //hack for vuepress
-
+import Vue from 'vue'; //hack for vuepress
 
 //fake weird bug in vuepress
 if (typeof process === 'undefined') {
-    process = {
+    process = { // eslint-disable-line
         platform: 'browser'
-    }
+    };
 }
 
 class VueRunner {
@@ -29,7 +29,7 @@ class VueRunner {
 
         const scopeCode = `${transformed.code.replace('void 0', 'scope')
         .replace('global.undefined', 'global.result')}
-        return scope.result.default;`
+        return scope.result.default;`;
 
         const fun = new Function('scope', scopeCode);
 
@@ -77,6 +77,5 @@ class VueRunner {
 
     }
 }
-
 
 export default VueRunner;

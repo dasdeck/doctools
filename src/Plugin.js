@@ -26,7 +26,6 @@ module.exports = class Plugin extends EventEmitter {
      */
     onLoad(app) {}
 
-
     onPrepare(app) {}
 
     onAnalyze(app) {}

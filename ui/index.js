@@ -2,22 +2,22 @@ import Vue from 'vue';
 import VueRouter from 'vue-router';
 import SockJS from 'sockjs-client';
 
-import 'prismjs'
-import 'prismjs/themes/prism.css'
+import 'prismjs';
+import 'prismjs/themes/prism.css';
 import _ from 'lodash-es';
 
 import Prism from 'vue-prism-component';
 
 import layout from './app/layout';
 
-import ExamplerRunner, {Registry} from './app/utils/ExampleRunner.vue';
+import {Registry} from './app/utils/ExampleRunner.vue';
 
-import vuerunner from '../src/runnner/VueRunner'
-import uikitrunner from '../src/runnner/UIkitRunner'
+import vuerunner from '../src/runnner/VueRunner';
+import uikitrunner from '../src/runnner/UIkitRunner';
 
 import ui from '@base/doctools.ui.config.js';
 
-ui(Vue)
+ui(Vue);
 
 Registry.runners['vue'] = new vuerunner;
 Registry.runners['uikit'] = new uikitrunner;
@@ -28,9 +28,15 @@ Vue.component('Code', Prism);
 
 Vue.mixin({
 
-    computed:{
+    computed: {
         _() {
             return _;
+        }
+    },
+
+    created() {
+        if (this.$options.ref) {
+            window[this.$options.ref] = this;
         }
     },
 
@@ -42,12 +48,6 @@ Vue.mixin({
                 return text;
             }
         },
-    },
-
-    created() {
-        if (this.$options.ref) {
-            window[this.$options.ref] = this;
-        }
     }
 
 });
@@ -72,16 +72,16 @@ socket.onmessage = res => {
                 component: layout.Page
             }]);
 
+            const indexPage = data.indexPage || data.rootPackage;
+
             router.beforeEach((route, to, next) => {
 
                 const res = route.fullPath.substr(1);
 
-                const indexPage = data.indexPage || data.rootPackageM
-
-                const set = (data.pages || data.resources)
+                const set = (data.pages || data.resources);
                 set[res] ?
 
-                    next() : next(indexPage)
+                    next() : next(indexPage);
 
             });
 
@@ -95,8 +95,8 @@ socket.onmessage = res => {
 
     }
 
-}
+};
 
 socket.onopen = res => {
     fetch('/data');
-}
+};

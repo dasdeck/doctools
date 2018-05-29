@@ -1,17 +1,7 @@
 /* eslint-env node */
 
-const fs = require('fs');
-const _ = require('lodash');
-
-const path = require('path');
-
-const util = require('./util');
-// const {getTestCodes} = require('./testParser');
-
 const Config = require('./Config');
-
-const DocTools = require('./Doctools');
-
+const DocTools = require('./DocTools');
 
 /**
  * @file

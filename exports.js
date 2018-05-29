@@ -1,5 +1,5 @@
 
-const DocTools = require('./src/Doctools');
+const DocTools = require('./src/DocTools');
 
 module.exports = {
     DocTools,

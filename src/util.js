@@ -1,7 +1,5 @@
 /* eslint-env node */
 const _ = require('lodash');
-const path = require('path');
-const fs = require('fs');
 const getTypesRaw = arr => arr ? arr.join(' | ') : '';
 const xxhash = require('xxhash');
 
@@ -58,15 +56,14 @@ module.exports = {
                     rootParams.push({
                         name,
                         defaultvalue
-                    })
+                    });
                 }
             });
 
             //compare found params
             rootParams.forEach(param => {
-                if (!param.name in defaults) {
-                    debugger;
-                    throw 'parameter definition mismatch'
+                if (!(param.name in defaults)) {
+                    throw 'parameter definition mismatch';
                 } else {
                     const value = defaults[param.name];
 
@@ -82,7 +79,6 @@ module.exports = {
 
         }
 
-
         //filter out prams with sub options
         params
         .filter(param => ~param.name.indexOf('.'))
@@ -92,7 +88,7 @@ module.exports = {
 
             const parent = _.find(params, param => param.name === option);
             if (!parent) {
-                debugger;
+                throw 'param should have a parent';
             }
 
             parent.children = parent.children || {};
@@ -103,7 +99,6 @@ module.exports = {
             options[option].push(param);
 
         });
-
 
         rootParams.forEach(param => {
             options[0].push(param);
@@ -143,8 +138,6 @@ module.exports = {
             tables[name == 0 ? 'arguments' : name] = table;
 
         });
-
-
         return {
             tables,
             params: rootParams
@@ -177,7 +170,7 @@ module.exports = {
                 const realProp = realProps[prop.name];
                 if (typeof realProp !== 'undefined') {
 
-                    prop.required = prop.required || realProp && realProp.required || prop.meta.code.value && ~prop.meta.code.value.indexOf('{"required":true}');
+                    prop.required = prop.required || realProp && realProp.required || prop.meta.code.value && ~prop.meta.code.value.indexOf('{"required":true}');
 
                     if (!prop.type) {
                         if (realProp === null) {
@@ -189,7 +182,7 @@ module.exports = {
                         } else if (typeof realProp === 'string') {
                             prop.type = {names: [realProp]};
                         } else {
-                            debugger;
+                            throw 'could not determine prop type';
                         }
                     }
 

@@ -14,9 +14,9 @@ const rules = [
             },
             transformAssetUrls: {},
             loaders: {
-              js: "babel-loader"
+                js: 'babel-loader'
             }
-          }
+        }
     },
     {
         test: /\.svg$/,
@@ -30,8 +30,8 @@ const rules = [
 ];
 
 const externals = {
-    'vue': 'Vue',
-    'uikit': "UIkit"
+    vue: 'Vue',
+    uikit: 'UIkit'
 };
 
 const output = {
@@ -70,6 +70,5 @@ const base = {
         rules
     }
 };
-
 
 module.exports = base;

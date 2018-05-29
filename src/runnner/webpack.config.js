@@ -1,6 +1,4 @@
 /* eslint-env node */
-const glob_entries = require('webpack-glob-entries');
-
 const rules = [
     {
         test: /\.js$/,
@@ -10,8 +8,8 @@ const rules = [
 ];
 
 const externals = {
-    'vue': 'Vue',
-    'uikit': "UIkit"
+    vue: 'Vue',
+    uikit: 'UIkit'
 };
 
 const output = {

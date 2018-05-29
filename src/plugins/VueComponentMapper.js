@@ -3,9 +3,18 @@ const _ = require('lodash');
 const ComponentMapper = require('./ComponentMapper');
 const util = require('../util');
 
+/**
+ * Creates a VueComponentMapper
+ * @class
+ */
 module.exports = class VueComponentMapper extends ComponentMapper {
 
 
+    /**
+     *
+     * maps global events (triggers) and template commends
+     * @inheritDoc
+     */
     onMapModule(desc) {
 
         if(desc.type !== 'VueComponent') {
@@ -29,9 +38,6 @@ module.exports = class VueComponentMapper extends ComponentMapper {
                 trigger.params = params;
                 trigger.tables = tables;
 
-                // desc.package.globals.trigger = desc.package.globals.trigger || [];
-                // desc.package.globals.trigger.push(trigger);
-
             });
 
         }
@@ -40,6 +46,11 @@ module.exports = class VueComponentMapper extends ComponentMapper {
 
     }
 
+    /**
+     * parses the vue template for doc comments
+     *
+     * @param {Module} desc
+     */
     parseTemplate(desc) {
 
         const {template} = desc.template;

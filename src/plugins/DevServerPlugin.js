@@ -1,10 +1,8 @@
 /* eslint-env node */
 
-const glob = require('glob');
 const fs = require('fs');
 const path = require('path');
 const WebpackDevServer = require('webpack-dev-server');
-const Config = require('../Config');
 const Plugin = require('../Plugin');
 const Webpack = require('webpack');
 const _ = require('lodash');
@@ -17,7 +15,7 @@ module.exports = class DevServerPlugin extends Plugin {
             DevServer.startWebpackDevServer(app);
         }
     }
-}
+};
 
 class DevServer {
 
@@ -77,12 +75,12 @@ class DevServer {
         router.get('*', function(request, response, next) {
 
             const app = server.getApp();
-            const data = server.data = server.data || app.get();
+            const data = server.data = server.data || app.get();
 
             const pages = data.pages || data.resources;
             const url = decodeURI(request.url);
 
-            if(_.some(app.config.server.assets, (rep, search) => {
+            if (_.some(app.config.server.assets, (rep, search) => {
                 if (_.startsWith(request.url, search)) {
                     const srcPath = path.join(app.config.base, request.url.replace(search, rep));
                     if (fs.existsSync(srcPath)) {
@@ -90,8 +88,9 @@ class DevServer {
                         return true;
                     }
                 }
-            })) {}
-            else if (pages[url.substr(1)] || request.url === '/') {
+            })) {
+                //
+            } else if (pages[url.substr(1)] || request.url === '/') {
                 response.send(index);
             } else {
                 next();
@@ -116,7 +115,7 @@ DevServer.defaultConfig = {
     getPages(app, data) {
         return _.mapValues(data, res => res.resource);
     }
-}
+};
 
 DevServer.webPackConfig = {
 
@@ -133,13 +132,13 @@ DevServer.webPackConfig = {
         instance = new DevServer(DevServer.docTools, app);
 
     }
-}
+};
 
 DevServer.startWebpackDevServer = function(app) {
 
     this.docTools = app;
 
-    const cfg = path.join(__dirname, '..' , '..', 'ui', 'webpack.config.js');
+    const cfg = path.join(__dirname, '..', '..', 'ui', 'webpack.config.js');
     const wpConfig = require(cfg);
     const portfinder = require('portfinder');
 
@@ -149,7 +148,7 @@ DevServer.startWebpackDevServer = function(app) {
         }
     };
 
-    if (!fs.existsSync(path.join( app.config.base, 'doctools.ui.config.js'))) {
+    if (!fs.existsSync(path.join(app.config.base, 'doctools.ui.config.js'))) {
         wpConfig.externals = wpConfig.externals || {};
         wpConfig.externals['@base/doctools.ui.config.js'] = 'Vue => {}';
 
@@ -182,7 +181,6 @@ DevServer.startWebpackDevServer = function(app) {
         });
     });
 
-
-}
+};
 
 // module.exports = DevServer;

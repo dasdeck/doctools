@@ -2,15 +2,12 @@ const _ = require('lodash');
 const jsdoc = require('jsdoc-api');
 const Plugin = require('../Plugin');
 const util = require('../util');
-const fs = require('fs');
 
 class ModuleMapper extends Plugin {
 
     constructor(config = ModuleMapper.defaultConfig) {
         super();
-
         this.config = config;
-
     }
 
     onAnalyze(app) {
@@ -27,7 +24,6 @@ class ModuleMapper extends Plugin {
                         desc.jsdoc = jsdoc;
                         app.log('jsdoc parsed:', desc.name, !!jsdoc);
                     }).catch(e => {
-                        debugger;
                         app.log('error while jsdoc:', desc.path);
                     });
 
@@ -55,7 +51,7 @@ class ModuleMapper extends Plugin {
 
     onMap(app) {
         _.forEach(app.resources, res => {
-            if(res.jsdoc) {
+            if (res.jsdoc) {
                 this.onMapModule(res);
             }
         });
@@ -79,10 +75,9 @@ class ModuleMapper extends Plugin {
             }
         });
 
-        const config = desc.config;
-        const res =  desc.module = {all, global: {}, types: {}};
+        const res = desc.module = {all, global: {}, types: {}};
 
-        if (!all) debugger;
+        if (!all) throw 'did jsdoc run properly?';
 
         all.forEach((el, index) => {
 
@@ -165,8 +160,6 @@ class ModuleMapper extends Plugin {
             } else {
                 this.addMemberTo(el, res.global);
             }
-
-
 
             delete el.code;
             // delete el.meta;
@@ -284,7 +277,7 @@ class ModuleMapper extends Plugin {
     analyseFunction(el, desc) {
 
         if (el.simpleName) {
-            debugger;
+            throw 'analyze function twice?';
         }
 
         //might be function alias?
@@ -292,7 +285,7 @@ class ModuleMapper extends Plugin {
             const orig = _.find(desc.module.all, func => func.name === el.see[0]);
 
             if (!orig) {
-                debugger;
+                throw 'could not find referenced function';
             } else {
                 el.reference = orig.longname;
             }
@@ -320,6 +313,6 @@ ModuleMapper.defaultConfig = {
     getAssets(desc) {
         return {readme: desc.path + '.md'};
     }
-}
+};
 
 module.exports = ModuleMapper;
