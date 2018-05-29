@@ -1,4 +1,3 @@
-const fs = require('fs');
 const _ = require('lodash');
 const ComponentMapper = require('./ComponentMapper');
 const util = require('../util');
@@ -9,7 +8,6 @@ const util = require('../util');
  */
 module.exports = class VueComponentMapper extends ComponentMapper {
 
-
     /**
      *
      * maps global events (triggers) and template commends
@@ -17,7 +15,7 @@ module.exports = class VueComponentMapper extends ComponentMapper {
      */
     onMapModule(desc) {
 
-        if(desc.type !== 'VueComponent') {
+        if (desc.type !== 'VueComponent') {
             return;
         }
         super.onMapModule(desc);
@@ -26,7 +24,7 @@ module.exports = class VueComponentMapper extends ComponentMapper {
             this.parseTemplate(desc);
         }
 
-        if(desc.component.trigger) {
+        if (desc.component.trigger) {
 
             _.forEach(desc.component.trigger, trigger => {
 
@@ -85,17 +83,17 @@ module.exports = class VueComponentMapper extends ComponentMapper {
                     } else {
 
                         const key = subKeyMapping[kind] || kind;
-                        currentParent[key] = currentParent[key] || [];
-                        currentParent[key][current.name]= current;
+                        currentParent[key] = currentParent[key] || [];
+                        currentParent[key][current.name] = current;
                     }
                 } else if (parentKind.includes(kind)) {
                     currentParent = current;
                     component[kind] = component[kind] || {};
-                    component[kind][current.name]= current;
+                    component[kind][current.name] = current;
                 }
             }
 
         } while (templateComment);
 
     }
-}
+};

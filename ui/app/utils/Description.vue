@@ -34,14 +34,14 @@
                         comp: Link,
                         propsData: res => ({link: res[1]})
                     }
-                ]
+                ];
             },
 
             html() {
                 const res = this.parsedText && this.$doc.markdown(this.parsedText);
-                const trimmed = this.trim && res ? res.substr(3, res.length -8) : res;
+                const trimmed = this.trim && res ? res.substr(3, res.length - 8) : res;
                 return trimmed;
             }
         }
-    }
+    };
 </script>

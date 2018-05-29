@@ -1,6 +1,6 @@
 <template>
     <div>
-        <h2>{{data.name}}:</h2>
+        <h2>{{ data.name }}:</h2>
         <Types v-if="data.type" :type="data.type"/>
         <Description :text="data.description"/>
 
@@ -31,6 +31,6 @@
              */
             data: Object,
         }
-    }
+    };
 </script>
 

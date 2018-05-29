@@ -92,28 +92,26 @@ module.exports = class DocTools extends EventEmitter {
                     this.emit('change', {'remove': file});
 
                 }
-            })
+            });
         }
 
     }
 
     reloadApp() {
 
-
-        if(this.analyzes) {
+        if (this.analyzes) {
             this.analyzes.then(res => {
                 this.reloadApp();
             });
             return;
         }
 
-        if(this.config.dev) {
+        if (this.config.dev) {
 
             const sources = glob.sync(__dirname + '/**/*.js');
             sources.forEach(file => {
                 delete require.cache[require.resolve(file)];
             });
-
 
             this.log('code changed');
 
@@ -130,7 +128,6 @@ module.exports = class DocTools extends EventEmitter {
 
         this.init();
         this.emit('change');
-
 
     }
 
@@ -325,7 +322,7 @@ module.exports = class DocTools extends EventEmitter {
 
             this.scanFile(file);
 
-        })
+        });
 
     }
 
@@ -334,7 +331,7 @@ module.exports = class DocTools extends EventEmitter {
     }
 
     getCacheDir() {
-        return path.join(this.getDocToolsDir(),'_cache');
+        return path.join(this.getDocToolsDir(), '_cache');
     }
 
     loadFile(file) {
@@ -346,16 +343,14 @@ module.exports = class DocTools extends EventEmitter {
             throw file + ' already loaded!';
         }
 
-        for(const loader of this.loaders) {
+        for (const loader of this.loaders) {
 
             if (loader.match(file)) {
 
-                const module = loader.createModule && loader.createModule(this, file)
-                    || new Module(this, file, loader);
-
+                const module = loader.createModule && loader.createModule(this, file);
 
                 if (this.resources[module.resource]) {
-                    throw 'module resource uri ' + module.resource + ' already existing'
+                    throw 'module resource uri ' + module.resource + ' already existing';
                 }
 
                 this.resources[module.resource] = module;
@@ -366,5 +361,4 @@ module.exports = class DocTools extends EventEmitter {
         }
     }
 
-
-}
+};

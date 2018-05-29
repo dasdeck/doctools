@@ -3,25 +3,25 @@
         <div v-if="data" uk-grid>
             <div class="uk-width-1-4">
                 <label>
-                    {{$t('show private members:')}}
-                    <input class="uk-checkbox" type="checkbox" v-model="settings.private">
+                    {{ $t('show private members:') }}
+                    <input v-model="settings.private" class="uk-checkbox" type="checkbox">
                 </label>
 
                 <label>
-                    {{$t('filter:')}}
-                    <input type="text" v-model="settings.filter">
+                    {{ $t('filter:') }}
+                    <input v-model="settings.filter" type="text">
                 </label>
 
-                <template v-if="">
-                    <ul  uk-switcher class="uk-subnav uk-subnav-pill">
+                <template>
+                    <ul uk-switcher class="uk-subnav uk-subnav-pill">
                         <li v-if="data.menu && data.config.menus.menu"><a href="">menu</a></li>
                         <li ><a href="">packages</a></li>
                         <li ><a href="">files</a></li>
                     </ul>
                     <div :class="'uk-switcher'">
-                        <Menu v-if="data.menu && data.config.menus.menu" :menu="data.menu"/>
+                        <CustomMenu v-if="data.menu && data.config.menus.menu" :menu="data.menu"/>
                         <PackageTree :data="resources[data.rootPackage]"/>
-                        <FileTree  :resources="resources"/>
+                        <FileTree :resources="resources"/>
                     </div>
                 </template>
             </div>
@@ -30,11 +30,10 @@
 
         </div>
         <div v-else>
-        <div class="uk-position-center" style="text-align:center;">
-
-            <div uk-spinner></div>
-            <div v-html="$t('waiting for data...')"></div>
-        </div>
+            <div class="uk-position-center" style="text-align:center;">
+                <div uk-spinner></div>
+                <div v-html="$t('waiting for data...')"></div>
+            </div>
         </div>
     </div>
 </template>
@@ -43,7 +42,7 @@
 
     import PackageTree from './sidebar/PackageTree.vue';
     import FileTree from './sidebar/FileTree.vue';
-    import Menu from './sidebar/Menu.vue';
+    import CustomMenu from './sidebar/Menu.vue';
     import DocApp from '../DocApp.js';
 
     /**
@@ -54,12 +53,12 @@
         components: {
             PackageTree,
             FileTree,
-            Menu
+            CustomMenu
         },
 
         extends: DocApp,
 
         ref: '$doc'
 
-    }
+    };
 </script>

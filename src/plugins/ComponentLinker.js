@@ -15,7 +15,7 @@ module.exports = class ComponentLinker extends Plugin {
         _.forEach(resources, desc => {
 
             const comp = desc.component;
-            const runtime = desc.runtime
+            const runtime = desc.runtime;
 
             if (runtime && comp) {
 
@@ -27,14 +27,13 @@ module.exports = class ComponentLinker extends Plugin {
                         desc.template = {
                             ...linked.template,
                             inherited: linked.resource
-                        }
+                        };
                     }
                 }
 
                 ['mixins', 'components'].forEach(name => {
 
-
-                    if(runtime[name]) {
+                    if (runtime[name]) {
                         comp[name] = _.map(runtime[name], (mixin, index) => {
                             return this.getLink(mixin, 'could not link/find  mixin ' + index + ' for: ' + desc.path);
                         });
@@ -56,15 +55,15 @@ module.exports = class ComponentLinker extends Plugin {
                         if (desc) {
 
                             const def = resources[desc.resource];
-                            if(def) {
-                                if(!def.component) {
-                                    debugger;
+                            if (def) {
+                                if (!def.component) {
+                                    throw 'expected module to have a component';
                                 }
                                 const props = _.mapValues(def.component[type], member => {
                                     return {
                                         ...member,
                                         inherited: desc.resource,
-                                        _style : {
+                                        _style: {
                                             ...member._style,
                                             'font-style': 'italic'
                                         }
@@ -73,12 +72,11 @@ module.exports = class ComponentLinker extends Plugin {
                                 _.assign(res, props);
                             }
 
-                            if(!!desc.resource !== !!def) {
-                                debugger
+                            if (!!desc.resource !== !!def) {
+                                throw 'unexpected module structure';
                             }
-
                         } else {
-                            debugger;
+                            throw 'unexpected module structure';
                         }
                     });
 
@@ -104,11 +102,11 @@ module.exports = class ComponentLinker extends Plugin {
 
             const res = _.find(this.app.resources, res => res.runtime === runtime);
 
-            if(res && res.runtime !== runtime) {
-                debugger
+            if (res && res.runtime !== runtime) {
+                throw 'unexpected runtime mapping';
             }
 
-            if(!res && warning) {
+            if (!res && warning) {
                 this.pack.log(warning);
             }
 
@@ -116,4 +114,4 @@ module.exports = class ComponentLinker extends Plugin {
         }
     }
 
-}
+};

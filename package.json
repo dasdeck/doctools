@@ -14,7 +14,7 @@
     "help": "./bin/doctools.js",
     "example": "./bin/doctools.js examples",
     "link": "npm link uikit-utils",
-    "eslint": "eslint ./ui, ./src",
+    "eslint": "eslint './@(ui|src|bin|packages)/**'",
     "eslint-fix": "eslint --fix src/js"
   },
   "workspaces": [

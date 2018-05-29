@@ -1,7 +1,7 @@
 <template>
     <div>
         <template v-for="(title, category) in filteredCategories">
-            <h4>{{title}}</h4>
+            <h4>{{ title }}</h4>
             <ul class="uk-nav uk-nav-default">
                 <li v-for="(entry) in types[category]" >
                     <ModuleLink :resource="entry"/>
@@ -65,8 +65,7 @@
                 }, {});
 
                 return types;
-            },
-
+            }
 
         }
 

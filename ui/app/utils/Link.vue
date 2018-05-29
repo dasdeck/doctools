@@ -9,11 +9,11 @@
     import ModuleLink from './ModuleLink.vue';
     export default {
 
-        extends: ModuleComp,
-
         components: {
             ModuleLink
         },
+
+        extends: ModuleComp,
 
         props: {
             link: String

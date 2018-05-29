@@ -1,6 +1,6 @@
 <template>
     <div>
-        <h2>{{name}}</h2>
+        <h2>{{ name }}</h2>
         <Description :text="data.description"/>
     </div>
 </template>
@@ -27,6 +27,6 @@
                 return this.data.type && this.data.type.names[0] || this.data.longname;
             }
         }
-    }
+    };
 </script>
 

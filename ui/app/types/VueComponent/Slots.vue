@@ -1,8 +1,8 @@
 <template>
     <div v-if="component.slot">
-        <div v-html="$t('<h2>slots:</h2>')"/>
+        <div v-html="$t('<h2>slots:</h2>')"></div>
         <div v-for="slot in component.slot">
-            <h4>{{slot.name}}</h4>
+            <h4>{{ slot.name }}</h4>
             <Description :text="slot.description"/>
         </div>
         <hr>
@@ -16,6 +16,6 @@
     export default {
 
         extends: Base
-    }
+    };
 
 </script>

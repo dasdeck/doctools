@@ -2,14 +2,13 @@ const path = require('path');
 const fs = require('fs');
 const minimatch = require('minimatch');
 
-function match(conf, file, opts = {}) {
-
+function match(conf, file, opts = {}) {
 
     Object.keys(match.defaultOptions).forEach(name => {
         if (typeof opts[name] === 'undefined') {
             opts[name] = match.defaultOptions[name];
         }
-    })
+    });
 
     conf = Array.isArray(conf) ? conf : [conf];
 
@@ -66,9 +65,8 @@ class AndMatch {
 
 }
 
-
 match.and = function(...args) {
     return new AndMatch(...args);
-}
+};
 
 module.exports = match;

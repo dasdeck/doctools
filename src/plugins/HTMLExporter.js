@@ -32,7 +32,7 @@ class HTMLExporter extends Plugin {
         if (this.config.serve) {
 
             const http = require('http');
-            const port = this.config.serve.port || 3050;
+            const port = this.config.serve.port || 3050;
             this.server = http.createServer((req, res) => {
 
                 this.app.analyze().then(() => {
@@ -58,7 +58,7 @@ class HTMLExporter extends Plugin {
             });
 
             this.server.listen(port, res => {
-                this.app.log('HTMLExporter listening @ port:  ' + port + ' ')
+                this.app.log('HTMLExporter listening @ port:  ' + port + ' ');
             });
 
         }
@@ -86,7 +86,7 @@ class HTMLExporter extends Plugin {
 
         const DocBaseData = DocBase.data;
         DocBase.data = () => _.omit(DocBaseData.call(this), ['data']);
-        DocBase.computed = DocBase.computed || {};
+        DocBase.computed = DocBase.computed || {};
         DocBase.computed.data = function() {
             return app.get();
         };
@@ -96,19 +96,19 @@ class HTMLExporter extends Plugin {
         this.Page = Vue.extend(Page);
 
         Vue.component('RouterLink', {
-            template: '<a :href="`${link}`"><slot/></a>',
-            props: ['to'],
+            props: {to: String},
             computed: {
                 link() {
                   // debugger
                     return exporter.config.createLink(app, app.resources[this.to.substr(1)], app.get());
                 }
-            }
+            },
+            template: '<a :href="`${link}`"><slot/></a>' // eslint-disable-line
         });
 
         Vue.component('Code', {
-            template: '<pre><code :class="`language-${language}`"><slot/></code></pre>',
-            props: ['language']
+            props: {language: String},
+            template: '<pre><code :class="`language-${language}`"><slot/></code></pre>', // eslint-disable-line
         });
     }
 
@@ -116,7 +116,7 @@ class HTMLExporter extends Plugin {
 
         this.domClear = require('jsdom-global')();
         global.UIkit = require('uikit');
-        document.body.innerHTML = `<div id="app"></div>`;
+        document.body.innerHTML = '<div id="app"></div>';
         this.appEl = document.getElementById('app');
 
     }
@@ -209,7 +209,7 @@ HTMLExporter.defaultConfig = {
     },
 
     getFileName(app, desc, data) {
-        return desc.resource + '.html'
+        return desc.resource + '.html';
     },
 
     resources (app, data) {

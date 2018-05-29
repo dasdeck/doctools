@@ -2,8 +2,8 @@
     <div>
         <ul class="uk-list">
             <li v-for="(entry, resource) in menu">
-                {{entry.label}}
-                <Menu v-if="entry.items" :menu="entry.items"/>
+                {{ entry.label }}
+                <CustomMenu v-if="entry.items" :menu="entry.items"/>
                 <ModuleLink v-else-if="!entry.items" :resource="resource"/>
             </li>
         </ul>
@@ -13,18 +13,18 @@
 <script>
 import ModuleLink from '../../utils/ModuleLink.vue';
 
-const Menu = {
+const CustomMenu = {
     props: {
         menu: [Array, Object]
     }
-}
+};
 
-Menu.components = {
-    Menu,
+CustomMenu.components = {
+    CustomMenu,
     ModuleLink
-}
+};
 
-export default Menu;
+export default CustomMenu;
 </script>
 
 <style>

@@ -20,9 +20,10 @@
      *
      */
     export default {
-        extends: ModuleComp,
 
         components: utils,
+
+        extends: ModuleComp,
 
         computed: {
             descs() {
@@ -34,7 +35,7 @@
             return data.module && (data.module.description || data.module.global && size(data.module.global));
         }
 
-    }
+    };
 </script>
 
 <style>

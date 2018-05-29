@@ -1,7 +1,5 @@
 #!/usr/bin/env node
-const path = require('path');
-const _ = require('lodash');
-const parser = require('../src/parser');
+/* eslint-env node*/
 const Config = require('../src/Config');
 const DocTools = require('../src/DocTools');
 const DevServerPlugin = require('../src/plugins/DevServerPlugin');
@@ -66,9 +64,7 @@ if (argv.explain) {
 
     config.addPlugin(new DevServerPlugin());
 
-    const app = new DocTools(config);
-
-    // require('../src/DevServer').startWebpackDevServer(app);
+    new DocTools(config);
 
 } else {
 
@@ -79,7 +75,7 @@ if (argv.explain) {
     app.on('change', res => {
         app.log('package changed, updating...');
         app.analyze().then(() => {
-            const data = app.write().then(res => app.log('package updated!'));
+            app.write().then(res => app.log('package updated!'));
         });
     });
     app.emit('change');

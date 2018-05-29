@@ -1,5 +1,4 @@
 const _ = require('lodash');
-const fs = require('fs');
 const util = require('../util');
 const Loader = require('../Loader');
 
@@ -18,7 +17,6 @@ class DefaultLoader extends Loader {
     }
 
     load(source, desc) {
-
 
         desc[this.config.member] = source;
         _.assign(desc, {
@@ -40,6 +38,6 @@ DefaultLoader.defaultOptions = {
 
     desc: {}
 
-}
+};
 
 module.exports = DefaultLoader;

@@ -3,16 +3,16 @@
 
         <div class="nomd">
 
-            <h1>{{module.name}}</h1>
+            <h1>{{ module.name }}</h1>
             <Description/>
             <hr>
 
         </div>
 
-         <template v-if="module.component && module.component.extends">
-                <span class="inherited">
-                    ↳ <ModuleLink :resource="module.component.extends.resource"/>
-                </span>
+        <template v-if="module.component && module.component.extends">
+            <span class="inherited">
+                ↳ <ModuleLink :resource="module.component.extends.resource"/>
+            </span>
         </template>
 
         <!-- This is the nav containing the toggling elements -->
@@ -30,9 +30,9 @@
         <!-- This is the container of the content items -->
         <div class="uk-switcher mdnoclass">
 
-            <UIkitTest v-if="module.assets && module.assets.test" :moduleProperty="$doc.resources[module.assets.test]"/>
+            <UIkitTest v-if="module.assets && module.assets.test" :module-property="$doc.resources[module.assets.test]"/>
             <Assets v-if="module.assets" :assets="module.assets"/>
-            <component v-if="apiHasContent" :is="module.type" :moduleProperty="module" ref="layout"/>
+            <component v-if="apiHasContent" ref="layout" :is="module.type" :module-property="module"/>
             <Globals v-if="globals"/>
             <div v-if="module.code">
                 <h2>code:</h2>
@@ -43,16 +43,16 @@
                 <template v-if="module.template.inherited">
                     : <ModuleLink :resource="module.template.inherited"/>
                 </template>
-                <Code :class="module.template.inherited && 'inherited'" language="html">{{module.template.template}}</Code>
+                <Code :class="module.template.inherited && 'inherited'" language="html">{{ module.template.template }}</Code>
             </div>
             <div v-if="module.tests">
                 tests
             </div>
-            <Markdown class="nomd" v-if="module.markdown" :text="module.markdown"/>
+            <Markdown v-if="module.markdown" :text="module.markdown" class="nomd"/>
         </div>
 
         <hr>
-        <i class="nomd" v-if="module.package">package: <ModuleLink :resource="module.package"/></i>
+        <i v-if="module.package">package: <ModuleLink :resource="module.package" class="nomd"/></i>
     </div>
     <div v-else v-html="$t('select a module on the left')"></div>
 </template>
@@ -65,7 +65,7 @@
 
     import Globals from '../utils/Globals.vue';
     import ModuleComp from '../utils/ModuleComp.js';
-    import {some, size, upperFirst} from 'lodash-es';
+    import {size, upperFirst} from 'lodash-es';
 
     /**
      * component wrapper for the vue-router
@@ -88,21 +88,6 @@
             return {$page: this};
         },
 
-        methods: {
-
-            toHtml() {
-
-                const toMD = this.$el.cloneNode(true);
-
-                const {$$, remove} = require('uikit').util;
-
-                UIkit.util.remove(UIkit.util.$$('.nomd', toMD));
-                UIkit.util.attr(UIkit.util.$$('.mdnoclass', toMD), 'class', '');
-
-                return toMD.outerHTML;
-            }
-        },
-
         computed: {
 
             apiHasContent() {
@@ -114,8 +99,20 @@
                 return this.module.globals && size(this.module.globals);
             },
 
+        },
 
+        methods: {
 
+            toHtml() {
+
+                const toMD = this.$el.cloneNode(true);
+
+                UIkit.util.remove(UIkit.util.$$('.nomd', toMD));
+                UIkit.util.attr(UIkit.util.$$('.mdnoclass', toMD), 'class', '');
+
+                return toMD.outerHTML;
+            }
         }
-    }
+
+    };
 </script>

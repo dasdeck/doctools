@@ -1,32 +1,32 @@
 <template>
     <div>
-        <h4 v-if="name">{{name}}</h4>
+        <h4 v-if="name">{{ name }}</h4>
         <table class="uk-table uk-table-divider">
 
             <thead v-if="headerToUse">
-            <tr>
-                <th v-for="header in filteredHeaders">{{header}}</th>
-            </tr>
+                <tr>
+                    <th v-for="header in filteredHeaders">{{ header }}</th>
+                </tr>
             </thead>
 
             <tbody>
-            <template v-for="row in filteredData">
-                <tr :style="row._style">
-                    <td v-for="(header, col) in filteredHeaders">
-                        <component v-if="row[col] && row[col].template" :is="row[col].template" v-bind="omit(row[col], 'template')">{{row[col].html}}</component>
-                        <span v-else>{{row[col]}}</span>
-                    </td>
-                </tr>
-
-                <template v-for="annotation in annotations">
-                    <tr v-if="row[annotation]" v-for="content in row[annotation]">
-                        <td :colspan="numCols">
-                            ↳<code>{{content}}</code>
+                <template v-for="row in filteredData">
+                    <tr :style="row._style">
+                        <td v-for="(header, col) in filteredHeaders">
+                            <component v-if="row[col] && row[col].template" :is="row[col].template" v-bind="omit(row[col], 'template')">{{ row[col].html }}</component>
+                            <span v-else>{{ row[col] }}</span>
                         </td>
                     </tr>
-                </template>
 
-            </template>
+                    <template v-for="annotation in annotations" v-if="row[annotation]">
+                        <tr v-for="content in row[annotation]">
+                            <td :colspan="numCols">
+                                ↳<code>{{ content }}</code>
+                            </td>
+                        </tr>
+                    </template>
+
+                </template>
 
             </tbody>
         </table>
@@ -69,9 +69,6 @@
             annotations: [Array]
         },
 
-        methods: {
-            omit
-        },
         computed: {
             /**
              * the header to use or undefined
@@ -89,13 +86,13 @@
                 const res = {};
                 forEach(this.headerToUse, (title, index) => {
                     if (some(this.filteredData, row => {
-                            const val = row[index];
-                            if (isPlainObject(val)) {
-                                return size(filter(val, v => !isUndefined(v))) > 1;
-                            } else {
-                                return val;
-                            }
-                        })) {
+                        const val = row[index];
+                        if (isPlainObject(val)) {
+                            return size(filter(val, v => !isUndefined(v))) > 1;
+                        } else {
+                            return val;
+                        }
+                    })) {
                         res[index] = title;
                     }
                 });
@@ -110,7 +107,11 @@
                 return this.headers === true ? this.data.slice(1) : this.data;
             }
         },
-    }
+
+        methods: {
+            omit
+        }
+    };
 </script>
 
 <style>

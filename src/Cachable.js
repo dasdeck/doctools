@@ -6,7 +6,7 @@ const _ = require('lodash');
 
 module.exports = {
 
-    onWriteCache() {
+    onWriteCache() {
         this.writeCache();
     },
 
@@ -28,15 +28,15 @@ module.exports = {
     // },
 
     getCacheFile() {
-        return path.join(this.getCacheDir(), this.getHash() + '.json' );
+        return path.join(this.getCacheDir(), this.getHash() + '.json');
     },
 
     getCacheDir() {
-        return path.join(this.app.getCacheDir(), this.getChacheName() );
+        return path.join(this.app.getCacheDir(), this.getChacheName());
     },
 
     checkCache() {
-        return fs.existsSync(this.getCacheFile()) || rimraf.sync(this.getCacheDir());
+        return fs.existsSync(this.getCacheFile()) || rimraf.sync(this.getCacheDir());
     },
 
     writeCache(data = this.getState()) {
@@ -50,4 +50,4 @@ module.exports = {
         const state = JSON.parse(fs.readFileSync(this.getCacheFile(), 'utf8'));
         this.setState(state);
     }
-}
+};

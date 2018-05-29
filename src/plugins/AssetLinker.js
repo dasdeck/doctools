@@ -18,10 +18,10 @@ class AssetLinker extends Plugin {
 
             const resources = app.resources;
 
-            const files = _.reduce(resources, (res, mod) =>  {
+            const files = _.reduce(resources, (res, mod) => {
                 res[mod.path] = mod.resource;
                 return res;
-            }, {})
+            }, {});
 
             _.forEach(resources, resource => {
                 const assets = this.config.getAssets(resource);
@@ -34,7 +34,7 @@ class AssetLinker extends Plugin {
                         const assetModule = resources[assetsResource];
                         assetModule.isAsset = true;
 
-                        resource.assets = resource.assets || {};
+                        resource.assets = resource.assets || {};
                         resource.assets[name] = this.config.inline ? assetModule : assetsResource;
 
                     }
@@ -42,7 +42,7 @@ class AssetLinker extends Plugin {
             });
         }
     }
-};
+}
 
 AssetLinker.defaultConfig = {
 
@@ -52,21 +52,19 @@ AssetLinker.defaultConfig = {
 
         switch (desc.type) {
 
-        case 'package':
+            case 'package':
 
-            return {
-                readme: path.join(path.dirname(desc.path), 'README.md')
-            };
+                return {
+                    readme: path.join(path.dirname(desc.path), 'README.md')
+                };
 
-            break;
-
-        default:
-            return {
-                readme: desc.path + '.md'
-            };
+            default:
+                return {
+                    readme: desc.path + '.md'
+                };
 
         }
     }
-}
+};
 
 module.exports = AssetLinker;

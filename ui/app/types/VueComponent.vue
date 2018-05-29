@@ -41,5 +41,5 @@
         },
 
         extends: Component
-    }
+    };
 </script>

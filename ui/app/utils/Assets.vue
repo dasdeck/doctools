@@ -1,34 +1,34 @@
 <template>
 
     <div>
-    <div v-for="(asset, name) in assets" :key="name">
-        <component v-if="getAsset(asset)" :is="getAsset(asset).type" :moduleProperty="getAsset(asset)"/>
-        <div v-else>asset {{name}} not found</div>
-    </div>
+        <div v-for="(asset, name) in assets" :key="name">
+            <component v-if="getAsset(asset)" :is="getAsset(asset).type" :module-property="getAsset(asset)"/>
+            <div v-else>asset {{ name }} not found</div>
+        </div>
     </div>
 
 </template>
 
 <script>
 
-import ModuleComp from './ModuleComp';
-import components from '../types';
+    import ModuleComp from './ModuleComp';
+    import components from '../types';
 
-export default {
+    export default {
 
-    components,
+        components,
 
-    extends: ModuleComp,
+        extends: ModuleComp,
 
-    props: {
-        assets: Object
-    },
+        props: {
+            assets: Object
+        },
 
-    methods: {
-        getAsset(desc) {
-            return typeof desc === 'string' ? this.$doc.resources[desc] : desc;
+        methods: {
+            getAsset(desc) {
+                return typeof desc === 'string' ? this.$doc.resources[desc] : desc;
+            }
         }
-    }
-}
+    };
 </script>
 

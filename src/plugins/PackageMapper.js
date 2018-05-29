@@ -1,8 +1,5 @@
 const _ = require('lodash');
-const jsdoc = require('jsdoc-api');
 const Plugin = require('../Plugin');
-const util = require('../util');
-const fs = require('fs');
 const path = require('path');
 
 class PackageMapper extends Plugin {
@@ -43,7 +40,7 @@ class PackageMapper extends Plugin {
 
                 const packDir = path.dirname(pack.path);
 
-                if(pack !== res && _.startsWith(res.path, packDir)) {
+                if (pack !== res && _.startsWith(res.path, packDir)) {
                     res.package = pack.resource;
                     if (res.type === 'package') {
                         pack.packages = pack.packages || {};
@@ -54,13 +51,9 @@ class PackageMapper extends Plugin {
                     }
                     return true;
                 }
-            })
+            });
 
         });
-
-        _.forEach(packages, pack => {
-
-        })
 
     }
 
@@ -71,7 +64,7 @@ class PackageMapper extends Plugin {
      */
     findMain(pack) {
 
-        if (pack.packageJson.main) {
+        if (pack.packageJson.main) {
 
             const pathToMain = path.resolve(path.join(this.path, this.packageJson.main));
             this.getPackageModules().forEach(res => {
@@ -83,12 +76,12 @@ class PackageMapper extends Plugin {
         }
     }
 
-};
+}
 
 PackageMapper.defaultConfig = {
     getAssets(desc) {
         return {readme: path.join(path.dirname(desc.path), 'README.md')};
     }
-}
+};
 
 module.exports = PackageMapper;

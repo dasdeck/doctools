@@ -12,10 +12,10 @@ export default {
 
     computed: {
         html() {
-            return this.$t('<a href="$repoLink">edit in repo</a>', {repoLink: this.repoLink});
+            return this.$t('<a href="$repoLink">edit in repo</a>', {repoLink: this.repoLink});
         }
     }
 
-}
+};
 
 </script>

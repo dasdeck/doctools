@@ -8,13 +8,12 @@
 
 import ExampleRunner, {Registry} from '../utils/ExampleRunner.vue';
 import ModuleComp from '../utils/ModuleComp.js';
-import RepoLink from '../utils/RepoLink.vue';
 
 const Markdown = {
 
     extendRenderer: {},
 
-    props:{
+    props: {
         text: String,
     },
 
@@ -52,10 +51,10 @@ const Markdown = {
 
             this.processCodeBlocks(markdown, ([text, fence, lang, code]) => {
 
-                if(lang.includes(':')) {
+                if (lang.includes(':')) {
 
                     const replacement = this.addRunner(code, lang.split(':').map(e => e.trim()));
-                    const placeholder =  `<replace>${this.replacements.length}</replace>`;
+                    const placeholder = `<replace>${this.replacements.length}</replace>`;
                     markdown = markdown.replace(text, placeholder);
                     this.replacements.push({placeholder, replacement});
                     // this.replacements
@@ -77,7 +76,7 @@ const Markdown = {
 
         processCodeBlocks(text, callback = x => x, fences = ['```']) {
 
-            fences = Array.isArray(fences) && fences || [fences];
+            fences = Array.isArray(fences) && fences || [fences];
             const reg = new RegExp(/(fences)(.*)\n((?:\r\n|\n|.)*?)\n\1/.source.replace('fences', fences.join('|')), 'g');
             let res;
 
@@ -144,13 +143,13 @@ const Markdown = {
 
                     } else if (retry) {
 
-                        Vue.nextTick(res => {
+                        this.$nextTick(res => {
                             this.updateExampleRunners(false);
                         });
 
                     } else {
 
-                        debugger;
+                        throw 'unable to mount runners';
 
                     }
 
@@ -182,9 +181,10 @@ const Markdown = {
         }
 
     }
-}
+};
 
 export default Markdown;
+
 </script>
 
 <style>

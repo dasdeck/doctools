@@ -13,6 +13,6 @@
 
     export default {
         extends: Base
-    }
+    };
 
 </script>

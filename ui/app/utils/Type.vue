@@ -4,9 +4,9 @@
             <Type :type="primeType"/>.&lt;<Type v-for="(t,i) in secondaryTypes" :key="t" :type="t" :comma="i < secondaryTypes.length - 1"/>&gt;
         </template>
         <ModuleLink v-else-if="types[type]" :resource="types[type]" :name="primeType"/>
-        <a v-else-if="apiDocLink" :href="apiDocLink">{{primeType}}</a>
-        <span v-else>{{primeType}}</span>
-        <template v-if="comma">{{seperator}}</template>
+        <a v-else-if="apiDocLink" :href="apiDocLink">{{ primeType }}</a>
+        <span v-else>{{ primeType }}</span>
+        <template v-if="comma">{{ seperator }}</template>
     </span>
 </template>
 
@@ -31,8 +31,8 @@ const Type = {
 
     computed: {
 
-        types() {
-            return this.$doc.types || {};
+        types() {
+            return this.$doc.types || {};
         },
 
         subTypes() {
@@ -58,9 +58,9 @@ const Type = {
             return this.$doc.getTypeUrl(this.primeType);
         }
     }
-}
+};
 
-Type.components = {
+Type.components = {
     ModuleLink,
     Type
 };

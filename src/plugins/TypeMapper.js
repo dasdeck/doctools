@@ -24,12 +24,12 @@ module.exports = class TypeMapper extends Plugin {
 
                 _.forEach(res.module.types, (source, name) => {
 
-                    if(types[name]) {
-                        debugger;
+                    if (types[name]) {
+                        throw 'type already defined';
                     }
                     types[name] = source;
 
-                })
+                });
             }
 
             return types;
@@ -38,4 +38,4 @@ module.exports = class TypeMapper extends Plugin {
 
     }
 
-}
+};

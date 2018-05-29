@@ -112,7 +112,7 @@ class ModuleMapper extends Plugin {
                 res.description = el.description;
                 if (el.type) {
                     desc.type = el.type.names[0];
-                } else if(el.ignore) {
+                } else if (el.ignore) {
                     res.ignore = true;
                 }
 
@@ -154,7 +154,7 @@ class ModuleMapper extends Plugin {
             const parent = _.find(all, els => els.longname === el.memberof);
             if (parent) {
 
-                parent.children = parent.children || {}
+                parent.children = parent.children || {};
                 this.addMemberTo(el, parent.children);
 
             } else {
@@ -185,7 +185,7 @@ class ModuleMapper extends Plugin {
 
             }
 
-            if  (!existing.meta) {
+            if (!existing.meta) {
                 // debugger;
                 console.warn('unhandled el:', el);
                 return;
@@ -195,11 +195,11 @@ class ModuleMapper extends Plugin {
 
             existing.extras = existing.extras || {};
 
-            const existingExtra  = existing.extras[type];
+            const existingExtra = existing.extras[type];
             if (existingExtra) {
 
-                if (!!_.isArray(existingExtra)) {
-                    existing.extras[type] = [existingExtra]
+                if (_.isArray(existingExtra)) {
+                    existing.extras[type] = [existingExtra];
                 }
 
             }
@@ -224,7 +224,7 @@ class ModuleMapper extends Plugin {
                 }
             }
 
-        })
+        });
 
         return res;
     }
@@ -239,7 +239,7 @@ class ModuleMapper extends Plugin {
      * "guesses" functions default parameters by parsing the code
      * @param {Object} el - the JSDoc function descriptor
      */
-    guessDefaultParamValues(code, name = ".*") {
+    guessDefaultParamValues(code, name = '.*') {
 
         const params = {};
         //extract default values
@@ -266,7 +266,7 @@ class ModuleMapper extends Plugin {
             const more = regex.exec(code);
 
             if (more && more.index !== res.index) {
-                throw 'could not find unique method definition for: ' + name + ' in: ' + script;
+                throw 'could not find unique method definition for: ' + name + ' in: ' + code;
             }
 
             return params;
@@ -300,14 +300,14 @@ class ModuleMapper extends Plugin {
             //delete code to save space
         }
 
-        const mappedPrams = util.mapParams(el.params || [], params);
+        const mappedPrams = util.mapParams(el.params || [], params);
         el.params = mappedPrams.params;
         el.tables = mappedPrams.tables;
 
         return el;
     }
 
-};
+}
 
 ModuleMapper.defaultConfig = {
     getAssets(desc) {

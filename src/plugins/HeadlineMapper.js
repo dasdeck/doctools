@@ -14,13 +14,13 @@ module.exports = class HeadlineMapper extends Plugin {
                 const regex = /^## (.*)$/gm;
                 let res;
                 const headlines = [];
-                while (res = regex.exec(desc.readme)) {
+                while (res = regex.exec(desc.readme)) {
                     headlines.push(res[1]);
                 }
 
                 desc.headlines = headlines;
             }
-        })
+        });
 
     }
 

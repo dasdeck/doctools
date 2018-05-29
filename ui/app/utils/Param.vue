@@ -1,7 +1,7 @@
 
 <template>
     <span>
-        {{param.name}}
+        {{ param.name }}
         <template v-if="param.type"> :
             <Types :type="param.type" seperator="| "/>
         </template>
@@ -26,6 +26,6 @@ export default {
     props: {
         param: Object
     }
-}
+};
 </script>
 

@@ -1,41 +1,42 @@
 <template>
-  <div v-if="data">
-      <div class="nomd uk-position-relative uk-margin-medium">
+    <div v-if="data">
+        <div class="nomd uk-position-relative uk-margin-medium">
 
-        <ul uk-tab>
-            <li><a href="#">Preview</a></li>
-            <li><a href="#">Markup</a></li>
-        </ul>
+            <ul uk-tab>
+                <li><a href="#">Preview</a></li>
+                <li><a href="#">Markup</a></li>
+            </ul>
 
-        <div class="uk-switcher uk-margin">
-            <div v-if="error" class="error">{{error}}</div>
-            <div v-else ref="preview" >
-                <div v-html="preview"></div>
+            <div class="uk-switcher uk-margin">
+                <div v-if="error" class="error">{{ error }}</div>
+                <div v-else ref="preview" >
+                    <div v-html="preview"></div>
+                </div>
+                <div>
+                    <Code v-if="language" :language="language">{{ code }}</Code>
+                </div>
             </div>
-            <div>
-                <Code v-if="language" :language="language">{{code}}</Code>
-            </div>
-        </div>
 
-        <div class="uk-position-top-right uk-margin-small-top">
-            <ul class="uk-iconnav">
-                <li>
-                    <a @click="copyToCB(code)" uk-tooltip="Copy to Clipboard" rel="#${id}">
-                        <div class="uk-icon" uk-icon icon="copy"></div>
+            <div class="uk-position-top-right uk-margin-small-top">
+                <ul class="uk-iconnav">
+                    <li>
+                        <a uk-tooltip="Copy to Clipboard" rel="#${id}" @click="copyToCB(code)">
+                            <div class="uk-icon" uk-icon icon="copy"></div>
                         </a>
                     </li>
-                <li v-if="runner.edit">
-                    <a @click="runner.edit(code)" class="edit" uk-tooltip="Edit on Codepen">
-                    <div class="uk-icon" uk-icon icon="edit"></div></a>
-                </li>
-            </ul>
+                    <li v-if="runner.edit">
+                        <a class="edit" uk-tooltip="Edit on Codepen" @click="runner.edit(code)">
+                            <div class="uk-icon" uk-icon icon="edit"></div>
+                        </a>
+                    </li>
+                </ul>
+            </div>
         </div>
-      </div>
-      <div style="display:none;">
-          {{`&lt;ExampleRunner id="${data.id}" resource="${data.resource}"/>`}}
-      </div>
-  </div>
-  <div v-else>could not load example data</div>
+        <div style="display:none;">
+            {{ `&lt;ExampleRunner id="${data.id}" resource="${data.resource}"/>` }}
+        </div>
+    </div>
+    <div v-else>could not load example data</div>
 </template>
 
 <script>
@@ -53,7 +54,7 @@ const Registry = {
     examples: {},
     runtime: {}
 
-}
+};
 
 export {
     Registry
@@ -66,8 +67,8 @@ export default {
         dynamicRuntime: Object,
         data: {
             type: Object,
-            default() {
-                return Registry.examples[this.id] || null;
+            default() {
+                return Registry.examples[this.id] || null;
             }
         }
     },
@@ -76,6 +77,44 @@ export default {
         return {
             error: '',
             preview: '...loading'
+        };
+    },
+
+    computed: {
+
+        runtime() {
+            return this.dynamicRuntime || Registry.runtime[this.data.resource];
+        },
+
+        moduleName() {
+            return this.data.name;
+        },
+
+        codemirrorOpts() {
+            return {
+                mode: langMap[this.type],
+                theme: 'base16-dark',
+                lineNumbers: true,
+                line: true
+            };
+        },
+        code: {
+            get() {
+                return this.data && this.data.code;
+            },
+            set(code) {
+                if (this.data) {
+                    this.data.code = code;
+                }
+            }
+        },
+
+        language() {
+            return this.runner && this.runner.getLanguage(this.code);
+        },
+
+        runner() {
+            return Registry.runners[this.data.runnerName];
         }
     },
 
@@ -83,6 +122,10 @@ export default {
         code() {
             this.createPreview();
         }
+    },
+
+    mounted() {
+        this.createPreview();
     },
 
     methods: {
@@ -93,16 +136,16 @@ export default {
         },
 
         createPreview(retry = true) {
-            if(this.data) {
+            if (this.data) {
 
                 if (!this.$refs.preview) {
 
-                    if(retry) {
+                    if (retry) {
                         this.$nextTick(res => {
                             this.createPreview(false);
                         });
                     } else {
-                        debugger;
+                        throw 'could not mount preview';
                     }
                 } else {
                     try {
@@ -118,51 +161,8 @@ export default {
                 }
             }
         }
-    },
-
-    mounted() {
-        this.createPreview();
-    },
-
-    computed: {
-
-
-        runtime() {
-            return this.dynamicRuntime || Registry.runtime[this.data.resource];
-        },
-
-        moduleName() {
-            return this.data.name;
-        },
-
-        codemirrorOpts(){
-            return {
-                mode: langMap[this.type],
-                theme: 'base16-dark',
-                lineNumbers: true,
-                line: true
-            }
-        },
-        code: {
-            get() {
-                return this.data && this.data.code;
-            },
-            set(code) {
-                if (this.data) {
-
-                    this.data.code = code;
-                }
-            }
-        },
-
-        language() {
-            return this.runner && this.runner.getLanguage(this.code);
-        },
-
-        runner() {
-            return Registry.runners[this.data.runnerName];
-        }
     }
-}
+
+};
 
 </script>

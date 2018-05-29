@@ -7,16 +7,16 @@
 
 <script>
 
-import ModuleComp from '../utils/ModuleComp.js';
-import utils from '../utils';
+    import ModuleComp from '../utils/ModuleComp.js';
+    import utils from '../utils';
 
-export default {
+    export default {
 
-    components: utils,
+        components: utils,
 
-    extends: ModuleComp,
+        extends: ModuleComp,
 
-}
+    };
 
 </script>
 

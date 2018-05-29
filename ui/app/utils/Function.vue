@@ -2,7 +2,7 @@
     <div :class="data.inherited ? 'inherited' : ''">
 
         <component :is="headline" :id="data.simpleName">
-            {{data.simpleName}}:
+            {{ data.simpleName }}:
         </component>
 
         <a v-if="data.reference" :href="`#${data.reference}`" uk-scroll>
@@ -11,24 +11,23 @@
 
         <template v-else>
 
-            <code v-if="data.memberof === 'module.exports'">import { {{data.simpleName}} } from '{{module.fileInPackage}}'</code>
+            <code v-if="data.memberof === 'module.exports'">import { {{ data.simpleName }} } from '{{ module.fileInPackage }}'</code>
 
             <Description :text="data.description"/>
 
-            <h4 class="signature">{{data.simpleName}}(
+            <h4 class="signature">{{ data.simpleName }}(
                 <template v-for="(param, index) in data.params" >
-                    <Param :param="param" />
+                    <Param :param="param"></Param>
                     <span v-if="index < data.params.length - 1">, </span>
                 </template>
                 )<span v-if="data.returns">
                     : <Types v-for="(ret, i) in data.returns" :key="i" :type="ret.type"/></span></h4>
 
-            <PropTable :key="name" v-for="(table, name) in data.tables" :name="name" :data="table" :headers="true"/>
+            <PropTable v-for="(table, name) in data.tables" :key="name" :name="name" :data="table" :headers="true"/>
             <template v-if="data.returns && data.returns.length">
                 <h4>returns:</h4>
                 <template v-for="(ret, i) in data.returns">
                     <Types :type="ret.type" :key="i"/>
-                    <!-- <h4><code>{{ret.type.names.join('|')}}</code></h4> -->
                     <Description :text="ret.description"/>
                 </template>
             </template>
@@ -63,9 +62,9 @@
         props: {
             headline: {
                 type: String,
-                default: "h3"
+                default: 'h3'
             },
             data: Object
         }
-    }
+    };
 </script>

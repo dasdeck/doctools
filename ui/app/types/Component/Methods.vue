@@ -1,6 +1,6 @@
 <template>
     <div v-if="methods.length">
-        <div v-html="$t('<h2>methods:</h2>')"/>
+        <div v-html="$t('<h2>methods:</h2>')"></div>
         <div v-for="method in methods">
             <FunctionSimple :data="method"/>
             <hr>
@@ -26,10 +26,10 @@
             methods() {
                 return filter(
                     this.component.methods,
-                    method => this.$doc.settings.private || method.access !== "private"
+                    method => this.$doc.settings.private || method.access !== 'private'
                 );
             },
         }
-    }
+    };
 
 </script>

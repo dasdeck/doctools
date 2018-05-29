@@ -1,7 +1,6 @@
 
 const path = require('path');
 const _ = require('lodash');
-const fs = require('fs');
 const parser = require('./parser');
 const {EventEmitter} = require('events');
 
@@ -37,7 +36,7 @@ class DoctoolsWebpack extends EventEmitter {
      * abstraction to register a hook to a class member with the same name on newer and older versions of webpack
      * @param {String} name
      */
-    registerHook(name) {
+    registerHook(name, compiler) {
         if (compiler.hooks) {
             compiler.hooks[name].tap(this.constructor.name, (...args) => this[name](...args));
         } else {
@@ -53,7 +52,7 @@ class DoctoolsWebpack extends EventEmitter {
             this.pack.config.watch = compiler.options.watch;
         }
 
-        this.registerHook('beforeRun');
+        this.registerHook('beforeRun', compiler);
 
     }
 
@@ -61,6 +60,5 @@ class DoctoolsWebpack extends EventEmitter {
         return this.pack.analyze().then(res => this.pack.write());
     }
 }
-
 
 module.exports = DoctoolsWebpack;

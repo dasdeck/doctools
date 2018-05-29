@@ -4,12 +4,11 @@ const util = require('./util');
 const fs = require('fs');
 const path = require('path');
 const _ = require('lodash');
-const mkpath = require('mkpath');
 const Cachable = require('./Cachable');
 
 module.exports = class Module {
 
-    constructor(app, file , loader) {
+    constructor(app, file, loader) {
 
         _.extend(this, Cachable);
 
@@ -56,12 +55,10 @@ module.exports = class Module {
             this._raw = fs.readFileSync(this.path, 'utf8');
             this._hash = util.hash(this._raw);
 
-
-
             this.loader.load(this._raw, this);
             this.app.execPluginCallback('onLoadModule', this, null, true);
 
-            if(this.checkCache()) {
+            if (this.checkCache()) {
                 this.restoreCache();
             }
 
@@ -96,5 +93,4 @@ module.exports = class Module {
 
     }
 
-
-}
+};

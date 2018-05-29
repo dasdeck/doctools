@@ -6,11 +6,13 @@
 
         <template v-if="size(module.component)">
             <h2 id="javascript" class="uk-h3 tm-heading-fragment"><a href="#javascript">JavaScript</a></h2>
-            <p>Learn more about <Link link="javascript.md">JavaScript components</Link></p>
+            <p>Learn more about
+                <Link link="javascript.md">JavaScript components</Link>
+            </p>
 
             <h3 id="initialization" class="uk-h4 tm-heading-fragment"><a href="#initialization">Initialization</a></h3>
             <div class="uk-margin-medium">
-                <Code language="js" :code="$t('UIkit.$componentName(element, options);', {componentName: module.name})"/>
+                <Code :code="$t('UIkit.$componentName(element, options);', {componentName: module.name})" language="js"></Code>
             </div>
         </template>
 
@@ -29,7 +31,7 @@
 <script>
 
     import Component from './Component.vue';
-    import {size} from 'lodash-es'
+    import {size} from 'lodash-es';
 
     export default {
 

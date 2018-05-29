@@ -1,10 +1,8 @@
 const vueComiler = require('vue-template-compiler');
 const _ = require('lodash');
-const fs = require('fs');
 const Loader = require('../Loader');
 
 module.exports = class VueLoader extends Loader {
-
 
     match(file) {
         return _.endsWith(file, '.vue');
@@ -15,7 +13,7 @@ module.exports = class VueLoader extends Loader {
         try {
             return this.unpack(source, desc);
         } catch (e) {
-            console.warn('error loading vue component', file);
+            console.warn('error loading vue component', desc.path);
         }
         return {script: ''};
     }
@@ -39,8 +37,6 @@ module.exports = class VueLoader extends Loader {
                 desc.readme = el.content;
             }
         });
-
-
 
     }
 };

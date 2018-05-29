@@ -3,7 +3,6 @@ const _ = require('lodash');
 const path = require('path');
 const fs = require('fs');
 const {EventEmitter} = require('events');
-const chokidar = require('chokidar');
 const util = require('./util');
 /**
  * @file
@@ -17,14 +16,12 @@ const util = require('./util');
   */
 class Config extends EventEmitter {
 
-
     constructor(data = {}) {
 
         super();
 
         this.plugins = [];
         this.inputConfig = data;
-        // _.assign(this, data);
 
     }
 
@@ -91,7 +88,6 @@ class Config extends EventEmitter {
 
         const config = _.cloneDeep(this.inputConfig);
 
-
         const base = config.base || Config.defaultConfig.base;
 
         //ests teh resourceBase e.g. the root package
@@ -100,7 +96,6 @@ class Config extends EventEmitter {
         const configFile = path.join(base, 'doctools.config.js');
 
         if (fs.existsSync(configFile)) {
-
 
             // const confFromFile = eval(fs.readFileSync(path.resolve(configFile), 'utf8'));
             const confFilePath = path.resolve(configFile);
@@ -190,7 +185,6 @@ Config.defaultConfig = {
         'UIkitComponentMapper',
         'VueComponentMapper',
         'ComponentLinker'
-
 
         // 'HTMLExporter',
         // 'VuePressExporter',

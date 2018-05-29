@@ -10,37 +10,37 @@
 
 <script>
 
-import {upperFirst} from 'lodash-es';
+    import {upperFirst} from 'lodash-es';
 
-import Function from './Function.vue';
-import Constant from './Constant.vue';
-import Typedef from './Typedef.vue';
-import ModuleComp from './ModuleComp.js';
+    import Function from './Function.vue';
+    import Constant from './Constant.vue';
+    import Typedef from './Typedef.vue';
+    import ModuleComp from './ModuleComp.js';
 
-const DescList = {
-    components: {
-        Function,
-        Constant,
-        Member: Constant,
-        Typedef
-    },
+    const DescList = {
+        components: {
+            Function,
+            Constant,
+            Member: Constant,
+            Typedef
+        },
 
-extends: ModuleComp,
+        extends: ModuleComp,
 
-    props: {
-        descs: Object
-    },
+        props: {
+            descs: Object
+        },
 
-    methods: {
-        hasKind(kind) {
-            return this.$options.components[upperFirst(kind)];
+        methods: {
+            hasKind(kind) {
+                return this.$options.components[upperFirst(kind)];
+            }
         }
-    }
-}
+    };
 
-DescList.components.DescList = DescList;
+    DescList.components.DescList = DescList;
 
-export default DescList;
+    export default DescList;
 </script>
 
 <style>

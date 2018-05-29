@@ -11,9 +11,9 @@ const rules = [
         loader: 'vue-loader',
         options: {
             loaders: {
-              js: "babel-loader"
+                js: 'babel-loader'
             }
-          }
+        }
     },
     {
         test: /\.svg$/,
@@ -27,8 +27,8 @@ const rules = [
 ];
 
 const externals = {
-    'vue': 'Vue',
-    'uikit': "UIkit"
+    vue: 'Vue',
+    uikit: 'UIkit'
 };
 
 const output = {
@@ -60,6 +60,6 @@ const MarkdownAdapter = {
         'MarkdownAdapter': './MarkdownAdapter.js'
     }
 
-}
+};
 
 module.exports = MarkdownAdapter;

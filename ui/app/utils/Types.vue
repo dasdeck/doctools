@@ -1,16 +1,16 @@
 <template>
     <span v-if="type">
-        <Type :type="t" v-for="(t, index) in type.names" :key="index" :seperator="seperator" :comma="index < type.names.length - 1"/>
+        <Type v-for="(t, index) in type.names" :key="index" :type="t" :seperator="seperator" :comma="index < type.names.length - 1"/>
     </span>
 </template>
 
 <script>
 
 import Type from './Type.vue';
-import ModuleComp from './ModuleComp.js'
+import ModuleComp from './ModuleComp.js';
 
 export default {
-    components : {
+    components: {
         Type
     },
 
@@ -24,7 +24,7 @@ export default {
         }
     },
 
-}
+};
 </script>
 
 <style>

@@ -1,6 +1,6 @@
 <template>
     <div v-if="component.trigger">
-        <div v-html="$t('<h2>global events:</h2>')"/>
+        <div v-html="$t('<h2>global events:</h2>')"></div>
         <div v-for="trigger in component.trigger">
             <Function :data="trigger"/>
         </div>
@@ -13,6 +13,6 @@
 
     export default {
         extends: Base
-    }
+    };
 
 </script>

@@ -30,10 +30,10 @@
                         text: event.description,
                         trim: true
                     }
-                }))
+                }));
             }
 
         }
-    }
+    };
 
 </script>

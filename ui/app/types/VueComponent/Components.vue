@@ -1,6 +1,6 @@
 <template>
     <div v-if="component.components">
-        <div v-html="$t('<h2>components:</h2>')"/>
+        <div v-html="$t('<h2>components:</h2>')"></div>
         <div v-for="comp in component.components">
             <ModuleLink :resource="comp.resource"/>
         </div>
@@ -15,6 +15,6 @@
     export default {
 
         extends: Base
-    }
+    };
 
 </script>

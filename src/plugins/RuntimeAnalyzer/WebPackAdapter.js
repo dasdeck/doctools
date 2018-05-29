@@ -13,7 +13,7 @@ module.exports = class WebpackAdapter {
         });
 
         compiler.hooks.compilation.tap(this.constructor.name, compilation => {
-             compilation.hooks.buildModule.tap(this.constructor.name, info => {
+            compilation.hooks.buildModule.tap(this.constructor.name, info => {
                 if (info && info.rawRequest) {
                     const file = info.rawRequest;
                     try {
@@ -33,4 +33,4 @@ module.exports = class WebpackAdapter {
 
     }
 
-}
+};
