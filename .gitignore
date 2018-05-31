@@ -5,3 +5,4 @@ examples/log
 log
 *.min.js
 examples/runtime
+examples/.doctools

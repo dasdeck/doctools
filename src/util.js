@@ -40,7 +40,7 @@ module.exports = {
      * util function to map function (or similar) structures into a unified format
      * @param {*} el
      */
-    mapParams(params, defaults) {
+    mapParams(params, defaults  ) {
 
         const tables = {};
 
@@ -63,7 +63,8 @@ module.exports = {
             //compare found params
             rootParams.forEach(param => {
                 if (!(param.name in defaults)) {
-                    throw 'parameter definition mismatch';
+                    console.warn('parameter definition missmatch:', param.name);
+                    // throw 'parameter definition mismatch';
                 } else {
                     const value = defaults[param.name];
 

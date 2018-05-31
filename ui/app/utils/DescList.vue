@@ -1,7 +1,8 @@
 <template>
     <div>
         <div v-for="desc in descs" v-if="hasKind(desc.kind) && !desc.undocumented">
-            <component :is="desc.template || desc.kind" :data="desc" :headline="h2"/>
+            <a id="desc.longname"></a>
+            <component :is="desc.template || desc.kind" :data="desc"/>
             <DescList v-if="desc.children" :descs="desc.children"/>
             <hr>
         </div>

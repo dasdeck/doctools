@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div v-html="html"></div>
+        <div ref="container" v-html="html"></div>
     </div>
 </template>
 
@@ -29,6 +29,12 @@ const Markdown = {
 
     mounted() {
         this.updateExampleRunners();
+        this.loadScripts();
+
+    },
+
+    updated() {
+        this.loadScripts();
     },
 
     watch: {
@@ -44,6 +50,14 @@ const Markdown = {
     },
 
     methods: {
+
+        loadScripts() {
+            const el = this.$refs.container;
+            el.innerHTML = '';
+            const range = document.createRange();
+            range.selectNode(el);
+            el.appendChild(range.createContextualFragment(this.html));
+        },
 
         preprocess(markdown) {
 
@@ -177,7 +191,8 @@ const Markdown = {
         },
 
         html() {
-            return this.sourceText && this.markdown(this.sourceText);
+            const html = this.sourceText && this.markdown(this.sourceText);
+            return html;
         }
 
     }

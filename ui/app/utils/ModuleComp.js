@@ -10,7 +10,8 @@ export default {
     },
 
     provide() {
-        return {$module: this};
+        //only use top level provide or recursion?
+        return !this.$module ? {$module: this} : null;
     },
 
     props: {
@@ -20,7 +21,7 @@ export default {
     computed: {
 
         module() {
-            return this.moduleData || this.moduleProperty || this.$module.module || this.$page && this.$page.module || this.$doc.selectedModule;
+            return this.moduleData || this.moduleProperty || this.$module && this.$module.module || this.$page && this.$page.module || this.$doc.selectedModule;
         },
 
         repoLink() {

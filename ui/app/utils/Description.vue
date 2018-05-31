@@ -11,9 +11,9 @@
 
     export default {
 
-        extends: ComponentFromText,
+        extends: ModuleComp,
 
-        mixins: [ModuleComp],
+        mixins: [ComponentFromText],
 
         props: {
             trim: Boolean
