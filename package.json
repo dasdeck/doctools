@@ -17,9 +17,6 @@
     "eslint": "eslint './@(ui|src|bin|packages)/**/*.@(js|vue)'",
     "eslint-fix": "eslint --fix src/js"
   },
-  "workspaces": [
-    "packages/*"
-  ],
   "private": true,
   "extra": {
     "binDocs": {
@@ -61,7 +58,7 @@
     "lodash-es": "^4.17.10",
     "markdown-it": "^8.4.1",
     "marked": "^0.3.19",
-    "megamatch": "^1.0.0",
+    "megamatch": "dasdeck/megamatch",
     "minimist": "^1.2.0",
     "mkpath": "^1.0.0",
     "portfinder": "^1.0.13",
@@ -89,6 +86,7 @@
     "webpack-glob-entries": "^1.0.1"
   },
   "devDependencies": {
-    "eslint": "^4.19.1"
+    "eslint": "^4.19.1",
+    "eslint-config-yootheme": "dasdeck/eslint-config"
   }
 }

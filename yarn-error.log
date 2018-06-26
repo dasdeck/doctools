@@ -1,8 +1,8 @@
 Arguments: 
-  /usr/local/bin/node /usr/local/Cellar/yarn/1.5.1/libexec/bin/yarn.js eslint
+  /usr/local/bin/node /usr/local/Cellar/yarn/1.5.1/libexec/bin/yarn.js
 
 PATH: 
-  /opt/local/bin:/opt/local/sbin:/Applications/MAMP/bin/php/php7.1.6/bin:/Applications/MAMP/library/bin:/Applications/MAMP/bin/php/php7.1.6:/Applications/MAMP/library/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:/opt/local/bin:/opt/local/sbin:/Applications/MAMP/bin/php/php7.1.6/bin:/Applications/MAMP/library/bin:/Applications/MAMP/bin/php/php7.1.6
+  /opt/local/bin:/opt/local/sbin:/Applications/MAMP/bin/php/php7.1.6/bin:/Applications/MAMP/library/bin:/Applications/MAMP/bin/php/php7.1.6:/Applications/MAMP/library/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin
 
 Yarn version: 
   1.5.1
@@ -33,9 +33,6 @@ npm manifest:
       "eslint": "eslint './@(ui|src|bin|packages)/**/*.@(js|vue)'",
       "eslint-fix": "eslint --fix src/js"
     },
-    "workspaces": [
-      "packages/*"
-    ],
     "private": true,
     "extra": {
       "binDocs": {
@@ -77,7 +74,7 @@ npm manifest:
       "lodash-es": "^4.17.10",
       "markdown-it": "^8.4.1",
       "marked": "^0.3.19",
-      "megamatch": "^1.0.0",
+      "megamatch": "dasdeck/megamatch",
       "minimist": "^1.2.0",
       "mkpath": "^1.0.0",
       "portfinder": "^1.0.13",
@@ -105,7 +102,8 @@ npm manifest:
       "webpack-glob-entries": "^1.0.1"
     },
     "devDependencies": {
-      "eslint": "^4.19.1"
+      "eslint": "^4.19.1",
+      "eslint-config-yootheme": "dasdeck/eslint-config"
     }
   }
 
@@ -7620,15 +7618,21 @@ Lockfile:
 
 Trace: 
   Error: Command failed.
-  Exit code: 1
-  Command: sh
-  Arguments: -c eslint './@(ui|src|bin|packages)/**/*.@(js|vue)'
+  Exit code: 128
+  Command: git
+  Arguments: ls-remote --tags --heads ssh://git@github.com/dasdeck/eslint-config.git
   Directory: /Users/jms/yootheme-doctools
   Output:
+  ERROR: Repository not found.
+  fatal: Could not read from remote repository.
   
+  Please make sure you have the correct access rights
+  and the repository exists.
       at ProcessTermError.MessageError (/usr/local/Cellar/yarn/1.5.1/libexec/lib/cli.js:186:110)
       at new ProcessTermError (/usr/local/Cellar/yarn/1.5.1/libexec/lib/cli.js:226:113)
       at ChildProcess.<anonymous> (/usr/local/Cellar/yarn/1.5.1/libexec/lib/cli.js:30281:17)
       at ChildProcess.emit (events.js:180:13)
       at maybeClose (internal/child_process.js:936:16)
-      at Process.ChildProcess._handle.onexit (internal/child_process.js:220:5)
+      at Socket.stream.socket.on (internal/child_process.js:353:11)
+      at Socket.emit (events.js:180:13)
+      at Pipe._handle.close [as _onclose] (net.js:538:12)

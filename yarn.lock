@@ -2476,6 +2476,13 @@ escodegen@^1.9.0:
   optionalDependencies:
     source-map "~0.6.1"
 
+eslint-config-yootheme@dasdeck/eslint-config:
+  version "1.0.0"
+  resolved "https://codeload.github.com/dasdeck/eslint-config/tar.gz/8e6428891abc3f46c70cc3845de2127dc7b38abd"
+  dependencies:
+    babel-eslint "^8.2.3"
+    eslint-plugin-vue "^4.5.0"
+
 eslint-plugin-vue@^4.5.0:
   version "4.5.0"
   resolved "https://registry.yarnpkg.com/eslint-plugin-vue/-/eslint-plugin-vue-4.5.0.tgz#09d6597f4849e31a3846c2c395fccf17685b69c3"
@@ -4412,6 +4419,12 @@ mdurl@^1.0.1:
 media-typer@0.3.0:
   version "0.3.0"
   resolved "https://registry.yarnpkg.com/media-typer/-/media-typer-0.3.0.tgz#8710d7af0aa626f8fffa1ce00168545263255748"
+
+megamatch@dasdeck/megamatch:
+  version "1.0.0"
+  resolved "https://codeload.github.com/dasdeck/megamatch/tar.gz/dd4841d9cb3e2f74ef75a55d8339dc8552e566cb"
+  dependencies:
+    minimatch "^3.0.4"
 
 mem-fs-editor@^4.0.0:
   version "4.0.2"
