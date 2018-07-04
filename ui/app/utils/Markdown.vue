@@ -177,6 +177,7 @@ const Markdown = {
         },
 
         markdown(markdown) {
+            markdown = this.$doc.markdownPreprocess(markdown);
             markdown = this.preprocess(markdown);
             const html = this.$doc.markdown(markdown);
             return this.postprocess(html);

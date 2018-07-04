@@ -1,7 +1,6 @@
 <template>
     <div>
         <Markdown :text="module.readme"/>
-        <RepoLink/>
     </div>
 </template>
 

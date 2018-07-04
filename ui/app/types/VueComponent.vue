@@ -24,8 +24,6 @@
 
         <Mixins/>
 
-        <RepoLink/>
-
     </div>
 
 </template>

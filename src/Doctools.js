@@ -133,6 +133,7 @@ module.exports = class DocTools extends EventEmitter {
 
     log(...args) { if (this.config.dev) console.log(...args); }
 
+    //@TODO re-implement
     logFile() {}
 
     dispose() {

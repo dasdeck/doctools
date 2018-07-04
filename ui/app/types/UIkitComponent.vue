@@ -22,8 +22,6 @@
 
         <Methods/>
 
-        <RepoLink v-if="size(module.component)"/>
-
     </div>
 
 </template>

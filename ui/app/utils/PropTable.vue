@@ -1,6 +1,7 @@
 <template>
     <div>
-        <h4 v-if="name">{{ name }}</h4>
+
+        <div v-if="name" v-html="$t('<h4>$name</h4>')"></div>
         <table class="uk-table uk-table-divider">
 
             <thead v-if="headerToUse">

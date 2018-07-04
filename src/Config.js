@@ -123,6 +123,8 @@ class Config extends EventEmitter {
 
         this.loadPlugins(config, app);
 
+        config.base = config.base && fs.realpathSync(config.base);
+
         return config;
     }
 

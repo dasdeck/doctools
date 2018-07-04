@@ -31,6 +31,10 @@ export default {
 
         },
 
+        markdownPreprocess(markdown) {
+            return markdown;
+        },
+
         highlight(code, lang, frame = false) {
 
             throw 'abstract call';

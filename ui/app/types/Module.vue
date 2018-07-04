@@ -4,8 +4,6 @@
 
         <DescList :descs="descs"/>
 
-        <RepoLink/>
-
     </div>
 </template>
 
