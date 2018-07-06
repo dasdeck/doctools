@@ -8,10 +8,12 @@
 <script>
 
     import Base from './Base';
-    import {mapValues} from 'lodash-es';
+    import {mapValues, filter, size} from 'lodash-es';
 
     export default {
         extends: Base,
+
+        inject: ['$doc'],
 
         computed: {
 
@@ -19,8 +21,18 @@
                 return {name: 'name', description: 'description'};
             },
 
+            hasEvent() {
+                return size(this.events);
+            },
+
             events() {
-                return mapValues(this.component.emit, event => ({
+
+                const events = filter(
+                    this.component.emit,
+                    event => this.$doc.settings.private || event.access !== 'private'
+                );
+
+                return mapValues(events, event => ({
                     name: {
                         template: 'code',
                         html: event.name

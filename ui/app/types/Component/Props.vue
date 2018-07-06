@@ -8,10 +8,12 @@
 <script>
 
     import Base from './Base';
-    import {mapValues, forEach, orderBy} from 'lodash-es';
+    import {mapValues, forEach, orderBy, filter} from 'lodash-es';
 
     export default {
         extends: Base,
+
+        inject: ['$doc'],
 
         computed: {
 
@@ -22,7 +24,11 @@
             * the lsit of props with added style information for rendering
             */
             props() {
-                const props = this.component.props;
+
+                const props = filter(
+                    this.component.props,
+                    prop => this.$doc.settings.private || prop.access !== 'private'
+                );
 
                 forEach(
                     props,

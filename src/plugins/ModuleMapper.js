@@ -89,12 +89,16 @@ class ModuleMapper extends Plugin {
                 el.code = code;
             }
 
-            const exclude = _.find(el.tags, tag => tag.title === 'exclude');
+            if (el.tags) {
 
-            if (exclude) {
-
-                res.exclude = res.exclude || {};
-                res.exclude = _.merge(res.exclude, (new Function('return ' + exclude.value))());
+                ['exclude', 'customize', 'structure'].forEach(customTag => {
+                    const data = _.find(el.tags, tag => tag.title === customTag);
+                    if (data) {
+                        const value = (new Function('return ' + data.value))();
+                        res[customTag] = res[customTag] || {};
+                        res[customTag] = _.merge(res[customTag], value);
+                    }
+                });
             }
 
             //process types

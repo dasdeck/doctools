@@ -126,17 +126,17 @@ module.exports = class ComponentMapper extends Plugin {
 
             const members = simple ? findMembers(entries, name, runtime) : type[name](entries, runtime);
 
-            const visibleMemeber = desc.module.exclude ? _.filter(members, member => {
-                if (desc.module.exclude) {
-                    const hidden = _.get(desc.module.exclude, `${name}.${member.name}`);
-                    return !hidden;
-                } else {
-                    return true;
-                }
-            }) : members;
+            // const visibleMemeber = desc.module.exclude ? _.filter(members, member => {
+            //     if (desc.module.exclude) {
+            //         const hidden = _.get(desc.module.exclude, `${name}.${member.name}`);
+            //         return !hidden;
+            //     } else {
+            //         return true;
+            //     }
+            // }) : members;
 
-            if (_.size(visibleMemeber)) {
-                component[name] = visibleMemeber;
+            if (_.size(members)) {
+                component[name] = members;
             }
 
         });

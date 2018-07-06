@@ -93,7 +93,60 @@ module.exports = class ComponentLinker extends Plugin {
 
             desc.component = _.pickBy(comp, type => _.size(type));
 
+            this.applyCustomizations(desc);
+
         });
+    }
+
+    applyCustomizations(desc) {
+
+        if (!desc.module) {
+            return;
+        }
+
+        if (desc.module.exclude) {
+            _.forEach(desc.module.exclude, (members, type) => {
+
+                _.forEach(desc.module.exclude[type], (value, name) => {
+                    const current = _.find(desc.component[type], desc => desc.name === name);
+                    if (current) {
+                        current.access = 'private';
+                    }
+                });
+
+            });
+        }
+
+        if (desc.module.customize) {
+
+            _.forEach(desc.module.customize, (members, type) => {
+
+                _.forEach(desc.module.customize[type], (value, name) => {
+                    const current = _.find(desc.component[type], desc => desc.name === name);
+                    if (current) {
+                        Object.assign(current, value);
+                    }
+                });
+
+            });
+        }
+
+        if (desc.module.structure) {
+            const result = {};
+            _.forEach(desc.module.structure, (members, type) => {
+
+                _.forEach(desc.module.structure[type], name => {
+                    const current = _.find(desc.component[type], desc => desc.name === name);
+                    if (current) {
+                        result[type] = result[type] || {};
+                        result[type][name] = current;
+                    }
+                });
+
+            });
+
+            desc.component = result;
+        }
     }
 
     getLink(runtime, warning = null) {

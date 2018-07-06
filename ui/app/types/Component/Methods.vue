@@ -3,7 +3,6 @@
         <div v-html="$t('<h2>methods:</h2>')"></div>
         <div v-for="method in methods">
             <FunctionSimple :data="method"/>
-            <hr>
         </div>
     </div>
 </template>

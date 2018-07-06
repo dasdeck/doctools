@@ -3,11 +3,25 @@ const _ = require('lodash');
 const getTypesRaw = arr => arr ? arr.join(' | ') : '';
 const xxhash = require('xxhash');
 
+const hyphenateCache = {};
+const hyphenateRe = /([a-z\d])([A-Z])/g;
+
 module.exports = {
 
     getTypesRaw,
 
     match: require('megamatch'),
+
+    hyphenate(str) {
+
+        if (!(str in hyphenateCache)) {
+            hyphenateCache[str] = str
+                .replace(hyphenateRe, '$1-$2')
+                .toLowerCase();
+        }
+
+        return hyphenateCache[str];
+    },
 
     hash(input) {
         input = _.isPlainObject(input) && JSON.stringify(input) || input;
@@ -164,9 +178,10 @@ module.exports = {
         if (runtime && runtime['props']) {
 
             const realProps = runtime['props'];
-            const ukDefaults = _.isPlainObject(runtime['data']) && runtime['data'];
 
             _.forEach(props, prop => {
+
+                //use explicit default value from @default
 
                 const realProp = realProps[prop.name];
                 if (typeof realProp !== 'undefined') {
@@ -187,8 +202,11 @@ module.exports = {
                         }
                     }
 
-                    // TODO override defaultValues
-                    if (ukDefaults) {
+                    const ukDefaults = _.isPlainObject(runtime['data']) && runtime['data'];
+
+                    if (typeof prop.defaultvalue !== 'undefined') {
+                        return;
+                    } else if (ukDefaults) {
                         prop.defaultvalue = ukDefaults[prop.name];
 
                         if (prop.type.names.includes('list') && _.isArray(prop.defaultvalue)) {
